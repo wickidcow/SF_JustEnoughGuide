@@ -74,14 +74,14 @@ public class GuideModeOption implements PrioritySlimefunGuideOption<SlimefunGuid
 
                 ItemMeta meta = item.getItemMeta();
                 ChatColor color = ChatColor.GRAY;
-                meta.setDisplayName(color + "Slimefun 指南样式: " + ChatColor.YELLOW + selectedMode.getDisplayName());
+                meta.setDisplayName(color + "Slimefun Guide Mode: " + ChatColor.YELLOW + selectedMode.getDisplayName());
                 List<String> lore = new ArrayList<>();
                 lore.add("");
                 color = selectedMode == SlimefunGuideMode.SURVIVAL_MODE ? ChatColor.GREEN : ChatColor.GRAY;
-                lore.add(color + "普通模式");
-                lore.add((selectedMode == SlimefunGuideMode.CHEAT_MODE ? ChatColor.GREEN : ChatColor.GRAY) + "作弊模式");
+                lore.add(color + "Survival Mode");
+                lore.add((selectedMode == SlimefunGuideMode.CHEAT_MODE ? ChatColor.GREEN : ChatColor.GRAY) + "Cheat Mode");
                 lore.add("");
-                lore.add(ChatColor.GRAY + "⇨ " + ChatColor.YELLOW + "单击修改指南样式");
+                lore.add(ChatColor.GRAY + "⇨ " + ChatColor.YELLOW + "Click to change guide mode");
                 meta.setLore(lore);
                 item.setItemMeta(meta);
                 return Optional.of(item);
