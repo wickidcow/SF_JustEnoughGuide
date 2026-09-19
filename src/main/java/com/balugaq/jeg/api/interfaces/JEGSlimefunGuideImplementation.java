@@ -434,6 +434,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         GuideUtil.addBigRecipeButton(menu, format, profile, p, item);
         GuideUtil.addCerButton(menu, format, profile, p, item);
         GuideUtil.addSlimefunRecipeEditButton(menu, p, profile, item, format);
+        LegacyMachineRecipeBridge.addMachineRecipeButton(menu, format, profile, p, item);
 
         menu.open(p);
 
