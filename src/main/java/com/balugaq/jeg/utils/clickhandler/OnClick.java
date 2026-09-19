@@ -119,9 +119,9 @@ public interface OnClick {
         Component base = LegacyComponentSerializer.legacySection().deserialize(sharedMessage)
                 .hoverEvent(HoverEvent.showText(Component.text(CLICK_TO_SEARCH)));
         Component clickToSearch =
-                base.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sf search " + ChatColor.stripColor(itemName)));
+                base.clickEvent(ClickEvent.runCommand("/sf search " + ChatColor.stripColor(itemName)));
         Component clickToCopy =
-                base.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, itemName));
+                base.clickEvent(ClickEvent.copyToClipboard(itemName));
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (ShareInGuideOption.instance().isEnabled(p)) {
                 if (p.hasPermission("slimefun.command.search")) {
@@ -1164,7 +1164,7 @@ public interface OnClick {
         class ItemMark extends Normal {
             public static final ObjectImmutableList<Action> listActions = ObjectImmutableList.of(
                     Action.of(
-                            "left-click", "物品标记", Material.WRITABLE_BOOK, (guide, player, slot, slimefunItem, item,
+                            "left-click", "Bookmark Item", Material.WRITABLE_BOOK, (guide, player, slot, slimefunItem, item,
                                                                                action, menu, page) -> {
                                 if (slimefunItem == null) slimefunItem = SlimefunItem.getByItem(item);
                                 if (slimefunItem == null) return;
@@ -1174,7 +1174,7 @@ public interface OnClick {
                                         , guide
                                 )).ifSuccess(() -> {
                                     JustEnoughGuide.getBookmarkManager().addBookmark(player, finalSlimefunItem);
-                                    player.sendMessage(ChatColor.GREEN + "已添加到收藏列表!");
+                                    player.sendMessage(ChatColor.GREEN + "Added to bookmarks!");
                                     player.playSound(player.getLocation(), Sounds.COLLECTED_ITEM, 1f, 1f);
 
                                     return false;
