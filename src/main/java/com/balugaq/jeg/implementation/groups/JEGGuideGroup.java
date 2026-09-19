@@ -385,7 +385,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_recipe_item_name + "<recipe_item_name> to filter by recipe ingredient name.",
                 "&7Example: " + FilterType.BY_RECIPE_ITEM_NAME.apply("battery") + " finds recipes using items whose name contains 'battery'.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
@@ -408,7 +408,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_recipe_type_name + "<recipe_type_name> to filter by recipe-type name.",
                 "&7Example: " + FilterType.BY_RECIPE_TYPE_NAME.apply("crafting table") + " filters recipes by type name.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
@@ -431,7 +431,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_display_item_name + "<display_item_name> to filter by displayed recipe item name.",
                 "&7Example: " + FilterType.BY_DISPLAY_ITEM_NAME.apply("copper dust") + " filters by displayed recipe items.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
@@ -454,7 +454,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_addon_name + "<addon_name> to filter by addon name.",
                 "&7Example: " + FilterType.BY_ADDON_NAME.apply("Slimefun") + " filters items by addon name.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
@@ -523,7 +523,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_material_name + "<material_name> to filter by Minecraft material name.",
                 "&7Example: " + FilterType.BY_MATERIAL_NAME.apply("iron") + " filters material names containing 'iron'.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
@@ -546,7 +546,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
                 "&bFeature: Search Filters",
                 "&7Use " + flag_full_name + "<item_name> to require an exact item name.",
                 "&7Example: " + FilterType.BY_FULL_NAME.apply("Aluminum Ingot") + " requires the exact name 'Aluminum Ingot'.",
-                "&c      不支持拼音搜索。",
+                "&cThis filter does not use pinyin matching.",
                 "&cMultiple filters can be combined.",
                 "&bClick to try this feature."
             ),
