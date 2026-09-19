@@ -53,7 +53,7 @@ public class RecipeCompleteOpenModeGuideOption extends AbstractBooleanGuideOptio
             isEnabled(p) ? Material.ENCHANTED_BOOK : Material.KNOWLEDGE_BOOK,
             "&bRecipe Completion Open Mode: &" + (enabled ? "4Reuse Previous Guide" : "aOpen Fresh Guide"),
             "",
-            "&7\u21E8 &e点击切换配方补全打开模式为 " + (enabled ? "Open Fresh Guide" : "Reuse Previous Guide")
+            "&7\u21E8 &eClick to switch recipe-completion mode to " + (enabled ? "Open Fresh Guide" : "Reuse Previous Guide")
         );
     }
 
