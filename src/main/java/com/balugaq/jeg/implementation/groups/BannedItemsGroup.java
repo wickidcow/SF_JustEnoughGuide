@@ -66,7 +66,7 @@ public class BannedItemsGroup extends BaseGroup<BannedItemsGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("已禁用的物品");
+        ChestMenu chestMenu = new ChestMenu("Disabled Items");
 
         Format format = Formats.sub;
         int maxPage = (this.slimefunItemList.size() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;
