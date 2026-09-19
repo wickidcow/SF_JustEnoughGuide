@@ -48,13 +48,13 @@ public class BeginnersGuideOption extends AbstractBooleanGuideOption {
     public ItemStack getDisplayItem(Player p, ItemStack guide, boolean enabled) {
         return Converter.getItem(
             isEnabled(p) ? Material.KNOWLEDGE_BOOK : Material.BOOK,
-            "&b新手指引: &" + (enabled ? "a启用" : "4禁用"),
+            "&bBeginner Guide: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个物品的时候",
-            "&7Shift+右键点击搜索这个物品的名字.",
+            "&7Choose whether Shift + right-clicking",
+            "&7an item in the guide searches",
+            "&7for that item's name.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 新手指引"
+            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Beginner Guide"
         );
     }
 
