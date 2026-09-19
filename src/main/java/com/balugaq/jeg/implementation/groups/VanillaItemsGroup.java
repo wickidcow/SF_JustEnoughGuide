@@ -116,7 +116,7 @@ public class VanillaItemsGroup extends BaseGroup<VanillaItemsGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("原版物品");
+        ChestMenu chestMenu = new ChestMenu("Vanilla Items");
 
         Format format = Formats.sub;
         int maxPage = (slimefunItems.size() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;
