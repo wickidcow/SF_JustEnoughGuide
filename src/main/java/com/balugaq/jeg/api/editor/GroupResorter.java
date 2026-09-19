@@ -272,4 +272,55 @@ public class GroupResorter {
     public static void sort(final List<ItemGroup> list) {
         list.sort(Comparator.comparingInt(GroupResorter::getTier));
     }
+
+    /**
+     * Orders the normal JEG main menu like Slimefun Legacy's standard guide:
+     * built-in Slimefun groups first in their established registry order,
+     * followed by addon groups alphabetically by addon and then group name.
+     */
+    public static void sortForGuide(final List<ItemGroup> list) {
+        if (!JustEnoughGuide.getConfigManager().isCoreFirstAddonAlphabetical()) {
+            sort(list);
+            return;
+        }
+
+        list.sort((first, second) -> {
+            boolean firstCore = isCoreGroup(first);
+            boolean secondCore = isCoreGroup(second);
+
+            if (firstCore != secondCore) {
+                return firstCore ? -1 : 1;
+            }
+
+            // Java's List.sort is stable, so returning 0 preserves the normal
+            // Slimefun registry order for built-in core categories.
+            if (firstCore) {
+                return 0;
+            }
+
+            String firstAddon = addonName(first);
+            String secondAddon = addonName(second);
+            int addonCompare = String.CASE_INSENSITIVE_ORDER.compare(firstAddon, secondAddon);
+            if (addonCompare != 0) {
+                return addonCompare;
+            }
+
+            int groupCompare = String.CASE_INSENSITIVE_ORDER.compare(
+                first.getUnlocalizedName(), second.getUnlocalizedName());
+            if (groupCompare != 0) {
+                return groupCompare;
+            }
+
+            return String.CASE_INSENSITIVE_ORDER.compare(
+                first.getKey().toString(), second.getKey().toString());
+        });
+    }
+
+    private static boolean isCoreGroup(final ItemGroup group) {
+        return group.getAddon() == null || group.getAddon() == Slimefun.instance();
+    }
+
+    private static String addonName(final ItemGroup group) {
+        return group.getAddon() == null ? "" : group.getAddon().getName();
+    }
 }
