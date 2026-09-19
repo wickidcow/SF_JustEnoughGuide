@@ -50,13 +50,13 @@ public class ShareOutGuideOption extends AbstractBooleanGuideOption {
     public ItemStack getDisplayItem(Player p, ItemStack guide, boolean enabled) {
         return Converter.getItem(
             Material.WRITABLE_BOOK,
-            "&b向他人分享物品: &" + (enabled ? "a启用" : "4禁用"),
+            "&bShare Items with Others: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择",
-            "&7在粘液书中的物品上按 Q 时",
-            "&7是否向他人分享这个物品",
+            "&7Choose whether pressing Q on",
+            "&7an item in the guide shares",
+            "&7that item with other players.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 向他人分享物品"
+            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Share Items with Others"
         );
     }
 }
