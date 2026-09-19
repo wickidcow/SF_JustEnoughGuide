@@ -46,7 +46,7 @@ public class ClipboardUtil {
             Component base =
                 Component.text(ChatColors.color(display) + ": ", TextColor.color(0x00FF00)).append(Component.text(text, TextColor.color(0xFFFF00))).hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text(ChatColors.color(hover), TextColor.color(0xFFFF00))));
             Component clickToCopy =
-                base.clickEvent(net.kyori.adventure.text.event.ClickEvent.clickEvent(net.kyori.adventure.text.event.ClickEvent.Action.COPY_TO_CLIPBOARD, text));
+                base.clickEvent(net.kyori.adventure.text.event.ClickEvent.copyToClipboard(text));
             player.sendMessage(clickToCopy);
         } else {
             player.spigot().sendMessage(makeComponent(display, hover, text));
@@ -56,7 +56,7 @@ public class ClipboardUtil {
     public static Component makeComponentPaper(Component display, String text) {
         return makeComponentPaper(
             display,
-            Component.text().color(NamedTextColor.YELLOW).append(Component.text("点击复制")).build(),
+            Component.text().color(NamedTextColor.YELLOW).append(Component.text("Click to copy")).build(),
             text);
     }
 
