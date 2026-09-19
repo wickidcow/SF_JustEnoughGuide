@@ -750,13 +750,13 @@ public class GuideUtil {
             }
         }
 
+        groups.addAll(specialGroups);
         groups = new ArrayList<>(groups.stream().distinct().toList());
         if (guideTierMode) {
             GroupResorter.sort(groups);
         } else {
             GroupResorter.sortForGuide(groups);
         }
-        groups.addAll(specialGroups);
 
         return groups;
     }
