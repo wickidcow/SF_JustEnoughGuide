@@ -54,7 +54,7 @@ public class BeginnersGuideOption extends AbstractBooleanGuideOption {
             "&7an item in the guide searches",
             "&7for that item's name.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Beginner Guide"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Beginner Guide"
         );
     }
 
