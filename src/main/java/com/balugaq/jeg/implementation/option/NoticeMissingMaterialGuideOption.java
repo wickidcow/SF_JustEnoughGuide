@@ -82,7 +82,7 @@ public class NoticeMissingMaterialGuideOption implements PrioritySlimefunGuideOp
             "&e&lExperimental feature; use with care.",
             "&c&lSome integrations may report false positives.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " missing-material notices"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " missing-material notices"
         );
         return Optional.of(item);
     }
