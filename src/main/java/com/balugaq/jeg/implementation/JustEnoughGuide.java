@@ -510,7 +510,7 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         }
 
         if (javaVersion < LEAST_JAVA_VERSION) {
-            getLogger().warning("Java version is too old. Use Java " + RECOMMENDED_JAVA_VERSION + " 或以上版本!");
+            getLogger().warning("Java version is too old. Use Java " + RECOMMENDED_JAVA_VERSION + " or newer!");
         }
 
         if (!Bukkit.getServer().getPluginManager().isPluginEnabled("GuizhanLibPlugin")) {
