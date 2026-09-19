@@ -53,7 +53,7 @@ public class CerPatchGuideOption extends AbstractBooleanGuideOption {
             "&7of producing the exact searched item",
             "&7with each compatible machine.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Value Comparison Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Value Comparison Display"
         );
     }
 
