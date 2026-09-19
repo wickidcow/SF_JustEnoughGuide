@@ -83,7 +83,7 @@ public class RecipeFillingWithNearbyContainerGuideOption implements PrioritySlim
             "&7from nearby compatible Slimefun containers.",
             "&eOnly supported Slimefun containers are scanned.",
             "&7Current radius: " + value + " (allowed: 0-" + MAX_REACH_LENGTH + ")",
-            "&7\u21E8 &e点击设置配方补全自动抓取范围"
+            "&7\u21E8 &eClick to set pull radius"
         );
         return Optional.of(item);
     }

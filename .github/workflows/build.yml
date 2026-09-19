@@ -30,12 +30,12 @@ jobs:
 
       - name: Verify canonical addon JAR
         run: |
-          test -s build/libs/SF_JustEnoughGuide2.1.55.jar
-          jar tf build/libs/SF_JustEnoughGuide2.1.55.jar >/dev/null
+          test -s build/libs/SF_JustEnoughGuide2.1.56.jar
+          jar tf build/libs/SF_JustEnoughGuide2.1.56.jar >/dev/null
 
       - name: Upload addon JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JustEnoughGuide2.1.55
-          path: build/libs/SF_JustEnoughGuide2.1.55.jar
+          name: SF_JustEnoughGuide2.1.56
+          path: build/libs/SF_JustEnoughGuide2.1.56.jar
           if-no-files-found: error

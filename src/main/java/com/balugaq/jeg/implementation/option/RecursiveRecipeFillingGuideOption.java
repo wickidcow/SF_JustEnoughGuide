@@ -87,7 +87,7 @@ public class RecursiveRecipeFillingGuideOption implements PrioritySlimefunGuideO
             "&c&lComplex addon recipes may not be suitable.",
             "",
             "&7Current depth: " + value + " (allowed: 1-" + RECIPE_DEPTH_THRESHOLD + ")",
-            "&7\u21E8 &e点击设置深度"
+            "&7\u21E8 &eClick to set depth"
         );
         return Optional.of(item);
     }

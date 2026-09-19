@@ -17,7 +17,7 @@ SF_JustEnoughGuide<version>.jar
 Example:
 
 ```
-SF_JustEnoughGuide2.1.55.jar
+SF_JustEnoughGuide2.1.56.jar
 ```
 
 ## Requirements
@@ -36,6 +36,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 - Bookmarks
 - Recipe completion and large recipe support
 - Custom guide layouts
+- Core Slimefun categories first, followed by addon categories alphabetically
 - Slimefun item ID display
 - Addon integrations
 - Slimefun Legacy Doctor shortcuts
@@ -73,7 +74,7 @@ Existing JEG configuration is not overwritten.
 
 The generated `config.yml` is English-facing by default. Pinyin search is disabled by default in this maintained build but can still be enabled by server owners who need it.
 
-The `custom-format` section controls guide layouts. Legacy-specific markers include:
+The default guide title is **Slimefun Legacy Guide**. The `custom-format` section controls guide layouts. Legacy-specific markers include:
 
 - `D` — Slimefun Legacy Doctor
 - `M` — Slimefun Legacy machine recipes

@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.55"
+version = "2.1.56"
 
 repositories {
     mavenCentral()
@@ -100,7 +100,7 @@ java {
 }
 
 tasks.withType<Javadoc>().configureEach {
-    // 出错（含 doclint 之外的警告）也不让 javadoc 任务失败，避免阻断构建/发布
+    // Keep documentation warnings from blocking local builds or releases.
     isFailOnError = false
     (options as StandardJavadocDocletOptions).apply {
         encoding = "UTF-8"
@@ -138,7 +138,7 @@ tasks {
         relocate("com.jeff_media", "com.balugaq.jeg.libraries.jeff_media")
         relocate("org.bstats", "com.balugaq.jeg.libraries.bstats")
         relocate("net.wesjd.anvilgui", "com.balugaq.jeg.libraries.anvilgui")
-        // ACF 命令框架 shade/relocate，避免同服多插件类冲突
+        // Shade and relocate ACF to avoid class conflicts with other plugins.
         relocate("co.aikar.commands", "com.balugaq.jeg.libraries.acf.commands")
         relocate("co.aikar.locales", "com.balugaq.jeg.libraries.acf.locales")
 

@@ -750,9 +750,13 @@ public class GuideUtil {
             }
         }
 
-        groups = new ArrayList<>(groups.stream().distinct().toList());
-        GroupResorter.sort(groups);
         groups.addAll(specialGroups);
+        groups = new ArrayList<>(groups.stream().distinct().toList());
+        if (guideTierMode) {
+            GroupResorter.sort(groups);
+        } else {
+            GroupResorter.sortForGuide(groups);
+        }
 
         return groups;
     }
@@ -797,7 +801,11 @@ public class GuideUtil {
                 }
             }
         }
-        GroupResorter.sort(groups);
+        if (guideTierMode) {
+            GroupResorter.sort(groups);
+        } else {
+            GroupResorter.sortForGuide(groups);
+        }
 
         return groups;
     }

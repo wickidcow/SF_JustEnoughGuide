@@ -51,6 +51,7 @@ public class ConfigManager extends AbstractManager {
     private final boolean RECIPE_COMPLETE;
     private final boolean PINYIN_SEARCH;
     private final boolean BOOKMARK;
+    private final boolean CORE_FIRST_ADDON_ALPHABETICAL;
     private final boolean RTS_SEARCH;
     private final boolean BEGINNER_OPTION;
     private final boolean DISABLE_BUNDLE_INTERACTION;
@@ -101,10 +102,12 @@ public class ConfigManager extends AbstractManager {
         this.RECIPE_COMPLETE = cfg.getBoolean("recipe-complete", true);
         this.PINYIN_SEARCH = cfg.getBoolean("improvements.pinyin-search", true);
         this.BOOKMARK = cfg.getBoolean("improvements.bookmark", true);
+        migrateMaintainedDefaults(cfg);
+        this.CORE_FIRST_ADDON_ALPHABETICAL = cfg.getBoolean("guide.core-first-addon-alphabetical", true);
         this.SURVIVAL_GUIDE_TITLE = cfg
-            .getString("guide.survival-guide-title", "&2&lSlimefun Guide &7(Enhanced)");
+            .getString("guide.survival-guide-title", "&2&lSlimefun Legacy Guide");
         this.CHEAT_GUIDE_TITLE = cfg
-            .getString("guide.cheat-guide-title", "&c&lSlimefun Guide &4(Cheat Mode)");
+            .getString("guide.cheat-guide-title", "&c&lSlimefun Legacy Guide &4(Cheat Mode)");
         this.SETTINGS_GUIDE_TITLE = cfg.getString("guide.settings-guide-title", "Settings & Details");
         this.CREDITS_GUIDE_TITLE = cfg.getString("guide.credits-guide-title", "Slimefun4 Contributors");
         this.RTS_SEARCH = cfg.getBoolean("improvements.rts-search", true);
@@ -345,6 +348,35 @@ public class ConfigManager extends AbstractManager {
         configUpdate();
     }
 
+    private void migrateMaintainedDefaults(FileConfiguration cfg) {
+        boolean changed = false;
+
+        String survivalTitle = cfg.getString("guide.survival-guide-title");
+        if ("&2&lSlimefun Guide &7(Enhanced)".equals(survivalTitle)) {
+            cfg.set("guide.survival-guide-title", "&2&lSlimefun Legacy Guide");
+            changed = true;
+        }
+
+        String cheatTitle = cfg.getString("guide.cheat-guide-title");
+        if ("&c&lSlimefun Guide &4(Cheat Mode)".equals(cheatTitle)) {
+            cfg.set("guide.cheat-guide-title", "&c&lSlimefun Legacy Guide &4(Cheat Mode)");
+            changed = true;
+        }
+
+        if (!cfg.contains("guide.core-first-addon-alphabetical")) {
+            cfg.set("guide.core-first-addon-alphabetical", true);
+            changed = true;
+        }
+
+        if (changed) {
+            try {
+                cfg.save(getConfigFile());
+            } catch (IOException e) {
+                Debug.trace(e);
+            }
+        }
+    }
+
     private File getConfigFile() {
         return new File(plugin.getDataFolder(), "config.yml");
     }
@@ -431,6 +463,10 @@ public class ConfigManager extends AbstractManager {
 
     public boolean isBookmark() {
         return BOOKMARK;
+    }
+
+    public boolean isCoreFirstAddonAlphabetical() {
+        return CORE_FIRST_ADDON_ALPHABETICAL;
     }
 
     public boolean isBeginnerOption() {
