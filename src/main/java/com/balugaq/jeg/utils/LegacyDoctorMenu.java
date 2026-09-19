@@ -78,7 +78,7 @@ public final class LegacyDoctorMenu {
             "&7Core and platform health evidence.");
         addCommand(menu, 11, Material.COMPARATOR, "&eCompatibility", "doctor compatibility",
             "&7Addon compatibility declarations", "&7and runtime evidence.");
-        addCommand(menu, 12, Material.CHAIN, "&eDependencies", "doctor dependencies",
+        addCommand(menu, 12, Material.TRIPWIRE_HOOK, "&eDependencies", "doctor dependencies",
             "&7Missing, disabled or aliased", "&7plugin dependencies.");
         addCommand(menu, 13, Material.REDSTONE, "&6Runtime", "doctor runtime",
             "&7Machine/runtime isolation", "&7and retry state.");
