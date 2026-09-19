@@ -117,6 +117,13 @@ tasks.withType<JavaExec>().configureEach {
 }
 
 tasks {
+    // The thin Gradle JAR is not a runnable plugin because runtime libraries such
+    // as Libby, FoliaLib and ACF are supplied by shadowJar. Publishing only the
+    // shaded plugin prevents bundle tooling from accidentally selecting the thin JAR.
+    jar {
+        enabled = false
+    }
+
     compileJava {
         options.compilerArgs.add("-Xlint:-removal")
         // ACF uses -parameters for parameter-name based syntax hints
