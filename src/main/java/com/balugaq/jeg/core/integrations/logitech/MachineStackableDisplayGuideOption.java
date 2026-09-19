@@ -73,7 +73,7 @@ public class MachineStackableDisplayGuideOption implements PrioritySlimefunGuide
             "&7whether the item can be stacked",
             "&7by LogiTech stacking machines.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " LogiTech Stackability Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " LogiTech Stackability Display"
         );
         return Optional.of(item);
     }
