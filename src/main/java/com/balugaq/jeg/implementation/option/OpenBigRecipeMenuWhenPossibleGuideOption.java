@@ -46,13 +46,13 @@ public class OpenBigRecipeMenuWhenPossibleGuideOption extends AbstractBooleanGui
     public ItemStack getDisplayItem(Player p, ItemStack guide, boolean enabled) {
         return Converter.getItem(
             isEnabled(p) ? Material.GOLD_INGOT : Material.IRON_INGOT,
-            "&b自动打开大配方菜单: &" + (enabled ? "a启用" : "4禁用"),
+            "&bAuto-Open Large Recipe Menu: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个物品的时候",
-            "&7是否自动打开其大配方菜单. (若有)",
+            "&7Choose whether compatible items",
+            "&7automatically open their large",
+            "&7recipe menu when viewed.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 自动打开大配方菜单"
+            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Auto-Open Large Recipe Menu"
         );
     }
 
