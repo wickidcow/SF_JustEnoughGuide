@@ -79,7 +79,7 @@ public class HUDMachineInfoLocationGuideOption implements PrioritySlimefunGuideO
             "&7machine information while",
             "&7you are looking at a machine.",
             "",
-            "&7\u21E8 &e点击切换为使用 " + (bossbar ? "Action Bar" : actionbar ? "Default" : "Boss Bar") + ""
+            "&7\u21E8 &eClick to switch to " + (bossbar ? "Action Bar" : actionbar ? "Default" : "Boss Bar") + ""
         );
         return Optional.of(item);
     }
