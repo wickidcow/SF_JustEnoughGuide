@@ -29,7 +29,7 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.commands.annotation.Values;
 import com.balugaq.jeg.api.groups.SearchGroup;
-import com.balugaq.jeg.implementation.JustEnoughGuide;
+import com.balugaq.jeg.implementation.JustEnoughGuide;\nimport com.balugaq.jeg.implementation.legacy.LegacyDiagnosticsMenu;
 import com.balugaq.jeg.implementation.items.GroupTierEditorGuide;
 import com.balugaq.jeg.utils.Debug;
 import com.balugaq.jeg.utils.GuideUtil;
@@ -90,7 +90,8 @@ public class JEGCommands extends BaseCommand {
         sender.sendMessage(ChatColor.GREEN + "/jeg cache <section> <key>");
         sender.sendMessage(ChatColor.GREEN + "/jeg disable - Disable JEG plugin");
         sender.sendMessage(ChatColor.GREEN + "/jeg gteg - Get Guide Tier Editor");
-        sender.sendMessage(ChatColor.GREEN + "/jeg categories - View all the groups");
+        sender.sendMessage(ChatColor.GREEN + "/jeg categories - View all Slimefun item groups");
+        sender.sendMessage(ChatColor.GREEN + "/jeg diagnostics - Open Slimefun Legacy Doctor shortcuts");
         sender.sendMessage(ChatColor.GREEN + "/jeg share - Share the item on your hand");
         sender.sendMessage(ChatColor.GREEN + "/jeg viewitem <Slimefun Item> - View Slimefun item");
         sender.sendMessage(ChatColor.GREEN + "/jeg search [item name] - Search item on hand or search your input");
@@ -180,11 +181,18 @@ public class JEGCommands extends BaseCommand {
         player.getInventory().addItem(GroupTierEditorGuide.instance().clone());
     }
 
+    @Subcommand("diagnostics|doctor")
+    @CommandPermission("jeg.diagnostics")
+    @Description("Open Slimefun Legacy diagnostic shortcuts")
+    public void onDiagnostics(Player player) {
+        LegacyDiagnosticsMenu.open(player);
+    }
+
     @Subcommand("categories")
     @CommandPermission("jeg.categories")
     @Description("View all Slimefun item groups")
     public void onCategories(Player player) {
-        ChestMenu menu = new ChestMenu("&6物品组大全");
+        ChestMenu menu = new ChestMenu("&6Slimefun Item Groups");
         menu.setSize(54);
         populateCategoryMenu(menu, new ArrayList<>(Slimefun.getRegistry().getAllItemGroups()), 1, player);
         menu.setPlayerInventoryClickable(false);
@@ -201,7 +209,7 @@ public class JEGCommands extends BaseCommand {
                 stack = player.getInventory().getItemInOffHand();
             }
             if (stack == null || stack.getType().isAir()) {
-                player.sendMessage(ChatColor.RED + "你必须手持一个物品在手上");
+                player.sendMessage(ChatColor.RED + "You must hold an item in either hand.");
                 return;
             }
 
@@ -223,7 +231,7 @@ public class JEGCommands extends BaseCommand {
             item = player.getInventory().getItemInOffHand();
         }
         if (item == null || item.getType().isAir()) {
-            player.sendMessage(ChatColors.color("&c请将物品放在手上"));
+            player.sendMessage(ChatColors.color("&cYou must hold an item in either hand."));
             return;
         }
         OnClick.share(player, ItemStackHelper.getDisplayName(item).trim());
@@ -235,7 +243,7 @@ public class JEGCommands extends BaseCommand {
     public void onViewItem(Player player, @Single String id) {
         SlimefunItem slimefunItem = SlimefunItem.getById(id.toUpperCase(Locale.ROOT));
         if (slimefunItem == null || (!player.isOp() && slimefunItem.isDisabledIn(player.getWorld()))) {
-            player.sendMessage(ChatColors.color("&c无法查看 ID 为 " + id + "物品"));
+            player.sendMessage(ChatColors.color("&cNo viewable Slimefun item exists with ID " + id + "."));
             return;
         }
         PlayerProfile profile = PlayerProfile.find(player).orElse(null);
@@ -274,14 +282,14 @@ public class JEGCommands extends BaseCommand {
                 categoryLore.set(
                     categoryLore.size() - 1, ChatColors.color("&6ID: " + id)); // Replaces the "Click to Open" line
                 categoryLore.add(ChatColors.color("&6class: " + className));
-                categoryLore.add(ChatColors.color("&a点击复制到聊天栏"));
+                categoryLore.add(ChatColors.color("&aClick to copy details to chat"));
                 catMeta.setLore(categoryLore);
                 catItem.setItemMeta(catMeta);
                 menu.replaceExistingItem(i, catItem);
                 menu.addMenuClickHandler(
                     i, (p1, s1, i1, a1) -> {
-                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&d点击复制: " + id, "&d点击复制", id);
-                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&d点击复制: " + className, "&d点击复制", className);
+                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&dClick to copy: " + id, "&dClick to copy", id);
+                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&dClick to copy: " + className, "&dClick to copy", className);
                         return false;
                     }
                 );
@@ -291,7 +299,7 @@ public class JEGCommands extends BaseCommand {
         }
 
         if (page > 1) {
-            menu.replaceExistingItem(46, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&a上一页"));
+            menu.replaceExistingItem(46, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&aPrevious Page"));
             menu.addMenuClickHandler(
                 46, (pl, s, is, action) -> {
                     populateCategoryMenu(menu, groups, page - 1, p);
@@ -301,7 +309,7 @@ public class JEGCommands extends BaseCommand {
         }
 
         if (getItemGroupOrNull(groups, 45 * page + 1) != null) {
-            menu.replaceExistingItem(52, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&a下一页"));
+            menu.replaceExistingItem(52, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&aNext Page"));
             menu.addMenuClickHandler(
                 52, (pl, s, is, action) -> {
                     populateCategoryMenu(menu, groups, page + 1, p);
