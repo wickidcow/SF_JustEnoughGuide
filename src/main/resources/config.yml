@@ -94,11 +94,11 @@ custom-format:
 
   # Slimefun recipe display.
   # r = ingredient, w = wiki, t = recipe type, i = output
-  # E = large recipe, K = SlimeFunRecipe editor integration, m = value/EMC.
+  # E = large recipe, K = SlimeFunRecipe editor integration, M = Legacy machine recipes, m = value/EMC.
   recipe:
     - "bK rrr  w"
     - " t rrr i "
-    - "m  rrr  E"
+    - "m  rrr ME"
 
   # Vanilla recipe display.
   recipe-vanilla:
