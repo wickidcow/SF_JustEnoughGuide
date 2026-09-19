@@ -52,7 +52,7 @@ public class OpenBigRecipeMenuWhenPossibleGuideOption extends AbstractBooleanGui
             "&7automatically open their large",
             "&7recipe menu when viewed.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Auto-Open Large Recipe Menu"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Auto-Open Large Recipe Menu"
         );
     }
 
