@@ -23,7 +23,7 @@ SF_JustEnoughGuide2.1.55.jar
 ## Requirements
 
 - Slimefun
-- Java 21 or newer
+- Java 21 or newer at runtime (builds use JDK 25 while emitting Java 21 bytecode)
 
 **GuizhanLibPlugin is not required.**
 
