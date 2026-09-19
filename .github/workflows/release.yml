@@ -51,15 +51,15 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
-          test -s "build/libs/SF_JEGuide2.0.60.jar"
-          jar tf "build/libs/SF_JEGuide2.0.60.jar" >/dev/null
+          test -s "build/libs/SF_JustEnoughGuide2.1.61.jar"
+          jar tf "build/libs/SF_JustEnoughGuide2.1.61.jar" >/dev/null
 
       - name: Upload Actions artifact
         if: steps.tag_check.outputs.exists == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JEGuide2.0.60.jar
-          path: build/libs/SF_JEGuide2.0.60.jar
+          name: SF_JustEnoughGuide2.1.61.jar
+          path: build/libs/SF_JustEnoughGuide2.1.61.jar
           if-no-files-found: error
 
       - name: Create Release
@@ -67,8 +67,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
-          name: SF_JEGuide ${{ steps.version.outputs.version }}
+          name: JustEnoughGuide ${{ steps.version.outputs.version }}
           generate_release_notes: true
-          files: build/libs/SF_JEGuide2.0.60.jar
+          files: build/libs/SF_JustEnoughGuide2.1.61.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
