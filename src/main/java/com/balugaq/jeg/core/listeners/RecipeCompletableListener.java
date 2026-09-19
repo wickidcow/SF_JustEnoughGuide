@@ -340,7 +340,7 @@ public class RecipeCompletableListener implements ItemPatchListener {
 
                 String itemName = ItemStackHelper.getDisplayName(clickedItemStack);
                 lore.add("");
-                lore.add(ChatColors.color("&6上次补全物品: " + itemName));
+                lore.add(ChatColors.color("&6Last completed item: " + itemName));
 
                 if (!applied) {
                     meta.getPersistentDataContainer().set(LAST_RECIPE_COMPLETE_KEY, PersistentDataType.BOOLEAN, true);
@@ -564,7 +564,7 @@ public class RecipeCompletableListener implements ItemPatchListener {
 
             // Patch start
             old.setType(Material.RED_STAINED_GLASS_PANE);
-            lore.add(ChatColors.color("&a你正在进行配方补全，如果是误触进入，请点击这里"));
+            lore.add(ChatColors.color("&aRecipe completion is active. Click here to cancel and return."));
             meta.getPersistentDataContainer().set(RECIPE_COMPLETE_EXIT_KEY, PersistentDataType.BOOLEAN, true);
             // Patch end
 
