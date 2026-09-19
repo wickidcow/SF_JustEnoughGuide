@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.54"
+version = "2.1.55"
 
 repositories {
     mavenCentral()
@@ -128,8 +128,9 @@ tasks {
 
     shadowJar {
         archiveBaseName.set("SF_JustEnoughGuide")
-        archiveVersion.set(project.version.toString())
+        archiveVersion.set("")
         archiveClassifier.set("")
+        archiveFileName.set("SF_JustEnoughGuide${project.version}.jar")
 
         // Relocations
         relocate("net.Zrips.CMILib", "com.balugaq.jeg.libraries.cmilib")
@@ -177,7 +178,7 @@ tasks {
             pl.mkdirs()
             copy {
                 from(projectDir.resolve("build/libs")) {
-                    include("${name}-${version}.jar")
+                    include("SF_JustEnoughGuide${version}.jar")
                 }
                 into(pl)
             }
