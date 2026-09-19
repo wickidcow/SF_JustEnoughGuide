@@ -77,7 +77,7 @@ public class HiddenItemsGroup extends BaseGroup<HiddenItemsGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("隐藏物品");
+        ChestMenu chestMenu = new ChestMenu("Hidden Items");
 
         Format format = Formats.sub;
         int maxPage = (this.slimefunItemList.size() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;
