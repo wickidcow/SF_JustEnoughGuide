@@ -28,14 +28,34 @@ jobs:
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
 
+      - name: Verify English EMC integration labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEW=src/main/java/com/balugaq/jeg/core/integrations/finaltechs/finalTECHCommon/FinalTECHItemPatchListener.java
+          OLD=src/main/java/com/balugaq/jeg/core/integrations/finaltechs/finaltechv1/FinalTechItemPatchListener.java
+          EMC=src/main/java/com/balugaq/jeg/core/integrations/emctech/EMCItemPatchListener.java
+
+          grep -Fq 'Input EMC (New)' "$NEW"
+          grep -Fq 'Output EMC (New)' "$NEW"
+          grep -Fq 'Input EMC (Legacy)' "$OLD"
+          grep -Fq 'Output EMC (Legacy)' "$OLD"
+          grep -Fq 'Input EMC:' "$EMC"
+          grep -Fq 'Output EMC:' "$EMC"
+
+          if grep -Eq '新乱序|旧乱序|输入EMC|输出EMC' "$NEW" "$OLD" "$EMC"; then
+            echo 'Chinese EMC integration lore remains in the English fork.' >&2
+            exit 1
+          fi
+
       - name: Verify canonical addon JAR
         run: |
-          test -s build/libs/SF_JustEnoughGuide2.1.58.jar
-          jar tf build/libs/SF_JustEnoughGuide2.1.58.jar >/dev/null
+          test -s build/libs/SF_JustEnoughGuide2.1.59.jar
+          jar tf build/libs/SF_JustEnoughGuide2.1.59.jar >/dev/null
 
       - name: Upload addon JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JustEnoughGuide2.1.58
-          path: build/libs/SF_JustEnoughGuide2.1.58.jar
+          name: SF_JustEnoughGuide2.1.59
+          path: build/libs/SF_JustEnoughGuide2.1.59.jar
           if-no-files-found: error
