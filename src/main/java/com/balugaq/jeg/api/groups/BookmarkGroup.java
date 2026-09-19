@@ -63,7 +63,7 @@ public class BookmarkGroup extends BaseGroup<BookmarkGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("收藏页 - JEG");
+        ChestMenu chestMenu = new ChestMenu("Bookmarks - JEG");
 
         Format format = Formats.sub;
         int maxPage = (this.bookmarks.size() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;

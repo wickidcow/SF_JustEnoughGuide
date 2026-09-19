@@ -55,8 +55,8 @@ import java.util.Optional;
 public abstract class AbstractItemSettingsGuideOption implements PrioritySlimefunGuideOption<Boolean> {
     public static final ItemStack DEFAULT_ICON = Converter.getItem(
         Material.BARRIER,
-        "&c未设置物品",
-        "&c手持物品点击设置"
+        "&cNo item configured",
+        "&cHold an item and click to configure"
     );
 
     private static NamespacedKey getKey(NamespacedKey key, int index) {
@@ -89,12 +89,12 @@ public abstract class AbstractItemSettingsGuideOption implements PrioritySlimefu
 
         ItemStack item = ri.clone();
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) return Converter.getItem(item, "&f空气");
+        if (meta == null) return Converter.getItem(item, "&fAir");
 
         List<String> lore = meta.getLore();
         if (lore == null) lore = new ArrayList<>();
         lore.add("");
-        lore.add(ChatColors.color("&c已设置物品"));
+        lore.add(ChatColors.color("&cConfigured item"));
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;

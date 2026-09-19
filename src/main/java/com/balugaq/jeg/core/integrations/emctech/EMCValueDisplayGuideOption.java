@@ -72,15 +72,15 @@ public class EMCValueDisplayGuideOption implements PrioritySlimefunGuideOption<B
         boolean enabled = getSelectedOption(p, guide).orElse(true);
         ItemStack item = Converter.getItem(
             isEnabled(p) ? Material.CARTOGRAPHY_TABLE : Material.CRAFTING_TABLE,
-            "&bEMC值显示: &" + (enabled ? "a启用" : "4禁用"),
+            "&bEMC Value Display: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个新物品的时候",
-            "&7显示它的EMC数值",
+            "&7Choose whether item pages show",
+            "&7the item's EMC value",
+            "&7from EMCTech.",
             "",
-            "&7注: 此EMC数值为EMCTech中的数值",
-            "&7不等同于乱序等附属的数值",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " EMC值显示"
+            "&7Note: this value comes from EMCTech.",
+            "&7Other addons may use different value systems.",
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " EMC Value Display"
         );
         return Optional.of(item);
     }

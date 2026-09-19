@@ -57,7 +57,7 @@ public class MomotechQuantityItemRecipeSettingsGuideOption extends AbstractItemS
     public Optional<ItemStack> getDisplayItem(Player p, ItemStack guide) {
         ItemStack item = Converter.getItem(
             Material.PURPLE_DYE,
-            "&a单击打开量化插件配方补全配置界面"
+            "&aClick to configure quantity-item recipe completion"
         );
         return Optional.of(item);
     }
@@ -69,7 +69,7 @@ public class MomotechQuantityItemRecipeSettingsGuideOption extends AbstractItemS
 
     @Override
     public String getTitle() {
-        return "&a量化插件配方补全配置";
+        return "&aQuantity Item Recipe Completion Settings";
     }
 
     @Override

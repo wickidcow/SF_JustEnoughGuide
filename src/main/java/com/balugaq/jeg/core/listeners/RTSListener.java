@@ -40,7 +40,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.skins.PlayerHead;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.skins.PlayerSkin;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import lombok.Getter;
-import net.guizhanss.minecraft.guizhanlib.gugu.minecraft.helpers.inventory.ItemStackHelper;
+import com.balugaq.jeg.utils.ItemStackHelper;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -535,7 +535,7 @@ public class RTSListener implements Listener {
                         meta.getPersistentDataContainer()
                             .set(CHEAT_AMOUNT_KEY, PersistentDataType.INTEGER, totalAmount);
                         meta.setDisplayName(ChatColors.color(
-                            ItemStackHelper.getDisplayName(clonedItem) + " &c已拿取物品 x" + totalAmount));
+                            ItemStackHelper.getDisplayName(clonedItem) + " &cItems taken x" + totalAmount));
                         itemStack.setItemMeta(meta);
                     } else {
                         Slimefun.getLocalization().sendMessage(player, "messages.no-permission", true);

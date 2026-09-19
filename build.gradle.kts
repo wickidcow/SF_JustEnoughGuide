@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.54"
+version = "2.1.55"
 
 repositories {
     mavenCentral()
@@ -51,11 +51,11 @@ repositories {
 }
 
 dependencies {
-    // Paper & Slimefun 编译仅依赖
+    // Paper and Slimefun compile-only dependencies
     compileOnly(libs.paper.api)
     compileOnly(libs.slimefun4)
 
-    // 需内嵌打包的依赖
+    // Dependencies shaded into the distributable JAR
     implementation(libs.bstats.bukkit)
     implementation(libs.more.persistent.data.types)
     implementation(libs.anvilgui)
@@ -63,20 +63,19 @@ dependencies {
     implementation(libs.libby.bukkit)
     implementation(libs.jetbrains.annotations)
     implementation(libs.jspecify)
-    // 命令框架 ACF（注解驱动命令系统，shade 进 fat jar）
+    // ACF command framework, shaded into the distributable JAR
     implementation(libs.acf.paper)
 
     compileOnly(libs.findbugs.annotations)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    // LibraryManager动态加载依赖
+    // Dependencies loaded dynamically by LibraryManager
     compileOnly(libs.houbb.pinyin)
     compileOnly(libs.houbb.opencc4j)
     compileOnly(libs.houbb.heaven)
     compileOnly(libs.houbb.nlp.common)
 
-    compileOnly(libs.guizhan.lib)
     compileOnly(libs.slimefun.translation)
     compileOnly(libs.placeholderapi)
 
@@ -90,7 +89,7 @@ dependencies {
     compileOnly(libs.ryken.slime.customizer)
     compileOnly(libs.logi.tech)
 
-    // System-scoped local JARs
+    // Optional local compile-only JARs
     compileOnly(fileTree(mapOf("dir" to "lib", "include" to listOf("*.jar"))))
 }
 
@@ -110,8 +109,7 @@ tasks.withType<Javadoc>().configureEach {
     }
 }
 
-// 给所有 JavaExec 类任务（test / runServer / 以及其他 fork JVM 的任务）统一设置 UTF-8 编码，
-// 避免因本地系统默认编码（如 GBK）导致乱码。
+// Keep forked JVM tasks on UTF-8 so logs and generated resources remain portable.
 tasks.withType<JavaExec>().configureEach {
     systemProperty("file.encoding", "UTF-8")
     systemProperty("sun.stdout.encoding", "UTF-8")
@@ -121,16 +119,17 @@ tasks.withType<JavaExec>().configureEach {
 tasks {
     compileJava {
         options.compilerArgs.add("-Xlint:-removal")
-        // ACF 需要 -parameters 才能用参数名自动生成 Syntax 提示
+        // ACF uses -parameters for parameter-name based syntax hints
         options.compilerArgs.add("-parameters")
         options.encoding = "UTF-8"
         options.release = 21
     }
 
     shadowJar {
-        archiveBaseName.set("JustEnoughGuide")
-        archiveVersion.set(project.version.toString())
+        archiveBaseName.set("SF_JustEnoughGuide")
+        archiveVersion.set("")
         archiveClassifier.set("")
+        archiveFileName.set("SF_JustEnoughGuide${project.version}.jar")
 
         // Relocations
         relocate("net.Zrips.CMILib", "com.balugaq.jeg.libraries.cmilib")
@@ -178,7 +177,7 @@ tasks {
             pl.mkdirs()
             copy {
                 from(projectDir.resolve("build/libs")) {
-                    include("${name}-${version}.jar")
+                    include("SF_JustEnoughGuide${version}.jar")
                 }
                 into(pl)
             }
@@ -215,7 +214,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             artifact(tasks.named("shadowJar"))
-            // Maven Central 发布硬性要求：附带 sources / javadoc 构件
+            // Maven Central requires sources and javadoc artifacts.
             artifact(sourcesJar)
             artifact(javadocJar)
 
@@ -246,10 +245,9 @@ publishing {
     }
 }
 
-// 签名配置
+// Signing configuration
 signing {
-    // 从环境变量或 gradle.properties 读取敏感信息；
-    // 仅在提供了签名密钥时才启用签名，避免本地 build/无密钥时配置失败
+    // Read signing material from Gradle properties or environment variables only when supplied.
     val signingKey = providers.gradleProperty("signingKey")
         .orElse(providers.systemProperty("signingKey"))
         .orElse(providers.environmentVariable("SIGNING_KEY"))
@@ -263,6 +261,6 @@ signing {
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications["mavenJava"])
     } else {
-        // 未提供签名密钥（例如本地开发构建），跳过签名
+        // No signing key was supplied; local/development builds remain unsigned.
     }
 }

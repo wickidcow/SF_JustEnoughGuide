@@ -78,7 +78,7 @@ public class Formats {
         Set<String> keys = configuration.getKeys(false);
         for (String key : keys) {
             if (key.length() > 1) {
-                JustEnoughGuide.getInstance().getLogger().warning(FILE_NAME + " 中发现无效的 Icon 自定义字符: " + key);
+                JustEnoughGuide.getInstance().getLogger().warning("Invalid custom icon character in " + FILE_NAME + ": " + key);
                 continue;
             }
 
@@ -112,6 +112,8 @@ public class Formats {
         BIG_RECIPE = 'E',
         ITEM_WIKI_PAGE = 'w',
         SETTINGS_PANEL_BUTTON = 'T',
+        DOCTOR = 'D',
+        MACHINE_RECIPES = 'M',
         SEARCH = 'S',
         RTS = 'R',
         CONTENT = 'i',

@@ -72,16 +72,16 @@ public class FinalTechValueDisplayGuideOption implements PrioritySlimefunGuideOp
         boolean enabled = getSelectedOption(p, guide).orElse(true);
         ItemStack item = Converter.getItem(
             isEnabled(p) ? Material.RESPAWN_ANCHOR : Material.REDSTONE_LAMP,
-            "&b旧乱序EMC值显示: &" + (enabled ? "a启用" : "4禁用"),
+            "&bLegacy FinalTech EMC Value Display: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个新物品的时候",
-            "&7显示它的旧乱序EMC数值",
+            "&7Choose whether item pages show",
+            "&7the item's legacy FinalTech EMC value.",
+            "&7",
             "",
-            "&7注: 此EMC数值为",
-            "&7旧乱序中的数值",
-            "&7不等同于新乱序, EMCTech等附属的数值",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 旧乱序EMC值显示"
+            "&7Note: this value comes from",
+            "&7legacy FinalTech and is separate from",
+            "&7current FinalTECH or EMCTech values.",
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Legacy FinalTech EMC Value Display"
         );
         return Optional.of(item);
     }

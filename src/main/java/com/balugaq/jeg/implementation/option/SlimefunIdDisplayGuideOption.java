@@ -46,13 +46,13 @@ public class SlimefunIdDisplayGuideOption extends AbstractBooleanGuideOption {
     public ItemStack getDisplayItem(Player p, ItemStack guide, boolean enabled) {
         return Converter.getItem(
             isEnabled(p) ? Material.GLOWSTONE : Material.REDSTONE_LAMP,
-            "&b粘液物品ID显示: &" + (enabled ? "a启用" : "4禁用"),
+            "&bSlimefun Item ID Display: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个物品的时候",
-            "&7显示它的粘液ID",
+            "&7Choose whether Slimefun item IDs",
+            "&7are shown while viewing items",
+            "&7in the guide.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 粘液物品ID显示"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Slimefun Item ID Display"
         );
     }
 

@@ -201,7 +201,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
     default void openBookMarkGroup(Player player, PlayerProfile profile) {
         List<Bookmark> items = JustEnoughGuide.getBookmarkManager().getBookmarkedItems(player);
         if (items == null || items.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "你还没有收藏任何物品!");
+            player.sendMessage(ChatColor.RED + "You have not bookmarked any items yet!");
             return;
         }
         new BookmarkGroup(this, items).open(player, profile, getMode());
@@ -264,11 +264,11 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
                                 ItemGroup selected = GroupResorter.getSelectedGroup(pl);
                                 if (selected == null) {
                                     GroupResorter.setSelectedGroup(pl, subGroup);
-                                    pl.sendMessage(ChatColors.color("&a已选择物品组: &e" + subGroup.getDisplayName(pl)));
+                                    pl.sendMessage(ChatColors.color("&aSelected item group: &e" + subGroup.getDisplayName(pl)));
                                 } else {
                                     GroupResorter.swap(selected, subGroup);
                                     GroupResorter.setSelectedGroup(pl, null);
-                                    pl.sendMessage(ChatColors.color("&a已交换物品组排序: &e" + selected.getDisplayName(pl)
+                                    pl.sendMessage(ChatColors.color("&aSwapped item group order: &e" + selected.getDisplayName(pl)
                                         + " &7<-> &e" + subGroup.getDisplayName(pl)));
                                     openMainMenu(profile, page);
                                 }
@@ -346,7 +346,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         } else {
             recipeItems = new @Nullable ItemStack[]{
                 null, null, null,
-                null, Converter.getItem(Material.BARRIER, "&4我们不知道如何展示该配方 :/"), null,
+                null, Converter.getItem(Material.BARRIER, "&4This recipe cannot be displayed safely :/"), null,
                 null, null, null
             };
         }
@@ -434,6 +434,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         GuideUtil.addBigRecipeButton(menu, format, profile, p, item);
         GuideUtil.addCerButton(menu, format, profile, p, item);
         GuideUtil.addSlimefunRecipeEditButton(menu, p, profile, item, format);
+        LegacyMachineRecipeBridge.addMachineRecipeButton(menu, format, profile, p, item);
 
         menu.open(p);
 
@@ -469,7 +470,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
             menu.addItem(
                 slot,
                 PatchScope.Back.patch(
-                    p, ChestMenuUtils.getBackButton(p, "", "&f左键: &7返回上一页", "&fShift + 左键: &7返回主菜单"))
+                    p, ChestMenuUtils.getBackButton(p, "", "&fLeft Click: &7Return to the previous page", "&fShift + Left Click: &7Return to the main menu"))
             );
 
             menu.addMenuClickHandler(
@@ -579,9 +580,9 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
 
     default void printErrorMessage0(Player p, Throwable x) {
         Debug.trace(x);
-        p.sendMessage(ChatColor.DARK_RED + "服务器发生了一个内部错误. 请联系管理员处理.");
-        Debug.info(Level.SEVERE, "在打开指南书里的 Slimefun 物品时发生了意外!", x);
-        Debug.warn("我们正在尝试恢复玩家 \"" + p.getName() + "\" 的指南...");
+        p.sendMessage(ChatColor.DARK_RED + "An internal server error occurred. Please contact an administrator.");
+        Debug.info(Level.SEVERE, "An unexpected error occurred while opening a Slimefun item in the guide!", x);
+        Debug.warn("Attempting to recover the guide for player \"" + p.getName() + "\"...");
         PlayerProfile profile = PlayerProfile.find(p).orElse(null);
         if (profile == null) return;
         GuideUtil.removeLastEntry(profile);

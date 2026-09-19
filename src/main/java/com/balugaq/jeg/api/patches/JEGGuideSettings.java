@@ -24,6 +24,7 @@ import com.balugaq.jeg.implementation.option.delegate.GuideModeOption;
 import com.balugaq.jeg.implementation.option.delegate.LearningAnimationOption;
 import com.balugaq.jeg.implementation.option.delegate.PlayerLanguageOption;
 import com.balugaq.jeg.utils.GuideUtil;
+import com.balugaq.jeg.utils.LegacyDoctorMenu;
 import com.balugaq.jeg.utils.ReflectionUtil;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.balugaq.jeg.utils.formatter.Formats;
@@ -97,6 +98,7 @@ public class JEGGuideSettings {
             menu, Formats.settings.getChars(Formats.Char.BACKGROUND).stream().mapToInt(i -> i).toArray());
 
         addHeader(p, menu);
+        LegacyDoctorMenu.renderButton(menu, Formats.settings, p);
         addConfigurableOptions(p, menu, guide, page);
 
         Formats.settings.renderCustom(menu);
@@ -162,11 +164,11 @@ public class JEGGuideSettings {
                         ChatColor.GREEN + locale.getMessage(p, "guide.title.versions"),
                         "&7&o" + locale.getMessage(p, "guide.tooltips.versions-notice"),
                         "",
-                        "&f汉化 By StarWishsama",
-                        "&c请不要将此版本信息截图到 Discord/GitHub 反馈 Bug",
-                        "&c而是优先到汉化页面反馈",
+                        "&fMaintained for Slimefun Legacy by wickidcow",
+                        "&7Include this version information when reporting a compatibility issue.",
+                        "&7Report Legacy-specific issues to the maintained repositories.",
                         "",
-                        "&cTHIS BUILD IS UNOFFICIAL BUILD, DO NOT REPORT TO SLIMEFUN DEV",
+                        "&eThis is a community-maintained Slimefun Legacy build.",
                         "",
                         "&fMinecraft: &a" + Bukkit.getBukkitVersion(),
                         "&fSlimefun: &a" + Slimefun.getVersion()));
@@ -182,20 +184,20 @@ public class JEGGuideSettings {
                         Material.COMPARATOR,
                         "&e" + locale.getMessage(p, "guide.title.source"),
                         "",
-                        "&7最近活动于: &a" + NumberUtils.getElapsedTime(github.getLastUpdate()) + " 前",
+                        "&7Last activity: &a" + NumberUtils.getElapsedTime(github.getLastUpdate()) + " ago",
                         "&7Forks: &e" + github.getForks(),
                         "&7Stars: &e" + github.getStars(),
                         "",
-                        "&7&oSlimefun 4 是一个由社区参与的项目,",
-                        "&7&o源代码可以在 GitHub 上找到",
-                        "&7&o如果你想让这个项目持续下去",
-                        "&7&o你可以考虑对项目做出贡献",
+                        "&7&oSlimefun is a community-driven project.",
+                        "&7&oSource code is available on GitHub.",
+                        "&7&oContributions and bug reports help keep",
+                        "&7&othe maintained Legacy ecosystem healthy.",
                         "",
-                        "&7\u21E8 &e点击前往汉化版 GitHub 仓库"));
+                        "&7\u21E8 &eClick to open the maintained GitHub repository"));
         for (int ss : Formats.settings.getChars(Formats.Char.SOURCE_CODE)) {
             menu.addItem(ss, u, (pl, slot, item, action) -> {
                 pl.closeInventory();
-                ChatUtils.sendURL(pl, "https://github.com/SlimefunGuguProject/Slimefun4");
+                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy");
                 return false;
             });
         }
@@ -208,16 +210,16 @@ public class JEGGuideSettings {
                         Material.KNOWLEDGE_BOOK,
                         "&3" + locale.getMessage(p, "guide.title.wiki"),
                         "",
-                        "&7你需要对物品或机器方面的帮助吗?",
-                        "&7你不知道要干什么?",
-                        "&7查看我们的由社区维护的维基",
-                        "&7并考虑成为一名编辑者!",
+                        "&7Need help with an item or machine?",
+                        "&7Not sure what to build next?",
+                        "&7Use the project documentation and addon resources,",
+                        "&7and contribute improvements when you can.",
                         "",
-                        "&7\u21E8 &e点击前往非官方中文 Wiki"));
+                        "&7\u21E8 &eClick to open the Slimefun Legacy wiki"));
         for (int ss : Formats.settings.getChars(Formats.Char.SLIMEFUN_WIKI_PAGE)) {
             menu.addItem(ss, W, (pl, slot, item, action) -> {
                 pl.closeInventory();
-                ChatUtils.sendURL(pl, "https://slimefun-wiki.guizhanss.cn/");
+                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/wiki");
                 return false;
             });
         }
@@ -230,17 +232,17 @@ public class JEGGuideSettings {
                         Material.BOOKSHELF,
                         "&3" + locale.getMessage(p, "guide.title.addons"),
                         "",
-                        "&7Slimefun 是一个大型项目，但附属插件的存在",
-                        "&7能让 Slimefun 真正的发光发亮",
-                        "&7看一看它们，也许你要寻找的附属插件就在那里!",
+                        "&7Slimefun becomes much more capable with addons.",
+                        "&7This server can use maintained Legacy-compatible",
+                        "&7addons alongside the core plugin.",
                         "",
-                        "&7该服务器已安装附属插件: &b" + Slimefun.getInstalledAddons().size(),
+                        "&7Installed addons on this server: &b" + Slimefun.getInstalledAddons().size(),
                         "",
-                        "&7\u21E8 &e点击查看 Slimefun4 可用的附属插件"));
+                        "&7\u21E8 &eClick to view Slimefun Legacy-compatible addons"));
         for (int ss : Formats.settings.getChars(Formats.Char.ADDONS)) {
             menu.addItem(ss, l, (pl, slot, item, action) -> {
                 pl.closeInventory();
-                ChatUtils.sendURL(pl, "https://slimefun-wiki.guizhanss.cn/Addons");
+                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/wikiAddons");
                 return false;
             });
         }
@@ -257,7 +259,7 @@ public class JEGGuideSettings {
                                         Material.REDSTONE_TORCH,
                                         "&4" + locale.getMessage(p, "guide.title.bugs"),
                                         "",
-                                        "&7&oBug reports have to be made in English!",
+                                        "&7&oPlease include logs and Doctor output with bug reports.",
                                         "",
                                         "&7Open Issues: &a" + github.getOpenIssues(),
                                         "&7Pending Pull Requests: &a" + github.getPendingPullRequests(),
@@ -268,7 +270,7 @@ public class JEGGuideSettings {
                 menu.addMenuClickHandler(
                     ss, (pl, slot, item, action) -> {
                         pl.closeInventory();
-                        ChatUtils.sendURL(pl, "https://github.com/SlimefunGuguProject/Slimefun4/issues");
+                        ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/issues");
                         return false;
                     }
                 );

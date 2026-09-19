@@ -113,17 +113,17 @@ public class GuideUtil {
     private static final ItemStack BOOK_MARK_MENU_BUTTON =
         Converter.getItem(new SlimefunItemStack(
             "JEG_BOOK_MARK_BUTTON",
-            Material.NETHER_STAR, "&e&l收藏物列表"
+            Material.NETHER_STAR, "&e&lBookmarks"
         ));
     private static final ItemStack ITEM_MARK_MENU_BUTTON =
         Converter.getItem(new SlimefunItemStack(
             "JEG_ITEM_MARK_BUTTON",
-            Material.WRITABLE_BOOK, "&e&l收藏物品"
+            Material.WRITABLE_BOOK, "&e&lBookmark Item"
         ));
     private static final ItemStack CER_MENU_BUTTON =
         Converter.getItem(new SlimefunItemStack(
             "JEG_CER_BUTTON", Material.EMERALD,
-            "&e&l性价比界面（仅供参考）"
+            "&e&lValue Comparison (Reference Only)"
         ));
     private static boolean rtsLoad = false;
 
@@ -216,12 +216,12 @@ public class GuideUtil {
                 } else {
                     maxVersion = MinecraftVersion.UNKNOWN;
                 }
-                pl.sendMessage(ChatColors.color("&c实时搜索在当前服务器版本 " + MinecraftVersion.current().humanize() + " 无法使用，实时搜索支持库最高支持版本为 " + maxVersion.humanize()));
+                pl.sendMessage(ChatColors.color("&cReal-time search is unavailable on server version " + MinecraftVersion.current().humanize() + ". The search library currently supports up to " + maxVersion.humanize()));
                 return false;
             }
         } catch (Exception e) {
             Debug.trace(e);
-            pl.sendMessage(ChatColors.color("&c无法检查实时搜索，相关功能已禁用"));
+            pl.sendMessage(ChatColors.color("&cUnable to verify real-time search compatibility; the feature has been disabled."));
             return false;
         }
 
@@ -331,7 +331,7 @@ public class GuideUtil {
                 null
             );
         } catch (Exception ignored) {
-            pl.sendMessage(ChatColor.RED + "不兼容的版本! 无法使用实时搜索");
+            pl.sendMessage(ChatColor.RED + "Incompatible server version. Real-time search is unavailable.");
         }
     }
 
@@ -608,7 +608,7 @@ public class GuideUtil {
     public static ItemStack getLeftActionIcon(BaseAction action) {
         return Converter.getItem(
             action.material(),
-            ChatColors.color("&7按下 " + action.getKey().getKey() + " 时 (" + action.name() + ")")
+            ChatColors.color("&7When pressing " + action.getKey().getKey() + " (" + action.name() + ")")
         );
     }
 
@@ -915,8 +915,8 @@ public class GuideUtil {
             backIcon = ChestMenuUtils.getBackButton(
                 player,
                 "",
-                "&f左键: &7返回上一页",
-                "&fShift + 左键: &7返回主菜单"
+                "&fLeft Click: &7Return to the previous page",
+                "&fShift + Left Click: &7Return to the main menu"
             );
         }
         for (int ss : slots) {
@@ -1006,7 +1006,7 @@ public class GuideUtil {
             menu.addItem(s, PatchScope.Settings.patch(profile, ChestMenuUtils.getMenuButton(player)));
             menu.addMenuClickHandler(s, (pl, slot, item, action) -> EventUtil.callEvent(new GuideEvents.SettingsButtonClickEvent(pl, item, slot, action, menu, getLastGuide(pl))).ifSuccess(() -> {
                 if (GroupResorter.isSelecting(pl)) {
-                    pl.sendMessage(ChatColors.color("&c当前模式下不能打开设置界面!"));
+                    pl.sendMessage(ChatColors.color("&cSettings cannot be opened in the current guide mode."));
                     return false;
                 }
 
@@ -1021,6 +1021,7 @@ public class GuideUtil {
         addBackgroundItems(menu, format, profile);
         addBackButton(menu, format, profile, player);
         addSettingsPanelButton(menu, format, profile, player);
+        LegacyDoctorMenu.renderButton(menu, format, player);
         addSearchButton(menu, format, profile, player);
         addRTSButton(menu, format, profile, player);
         format.renderCustom(menu);
@@ -1061,6 +1062,7 @@ public class GuideUtil {
         addBackgroundItems(menu, format, profile);
         addBackButton(menu, format, profile, player);
         addSettingsPanelButton(menu, format, profile, player);
+        LegacyDoctorMenu.renderButton(menu, format, player);
         addSearchButton(menu, format, profile, player);
         if (currentPage != 0 && maxPage != 0) {
             addPageButtons(menu, format, profile, player, group, currentPage, maxPage, pageOpener);

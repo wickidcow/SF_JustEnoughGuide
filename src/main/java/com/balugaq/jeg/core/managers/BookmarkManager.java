@@ -29,6 +29,7 @@ import io.github.thebusybiscuit.slimefun4.core.config.SlimefunDatabaseManager;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -39,6 +40,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -62,11 +64,19 @@ public class BookmarkManager extends AbstractManager {
     private static final @Nullable ProfileDataController controller =
         Slimefun.getDatabaseManager().getProfileDataController();
     private final NamespacedKey BOOKMARKS_KEY;
+    private final NamespacedKey LEGACY_MIGRATION_KEY;
     private final Plugin plugin;
+    private final File legacyBookmarksFile;
 
     public BookmarkManager(Plugin plugin) {
         this.plugin = plugin;
         this.BOOKMARKS_KEY = new NamespacedKey(plugin, "bookmarks");
+        this.LEGACY_MIGRATION_KEY = new NamespacedKey(plugin, "legacy_bookmarks_imported");
+        File pluginsFolder = plugin.getDataFolder().getParentFile();
+        this.legacyBookmarksFile =
+            pluginsFolder == null
+                ? new File("plugins/Slimefun/guide-bookmarks.yml")
+                : new File(pluginsFolder, "Slimefun/guide-bookmarks.yml");
     }
 
     public void addBookmark(Player player, SlimefunItem slimefunItem) {
@@ -83,6 +93,9 @@ public class BookmarkManager extends AbstractManager {
         PlayerBackpack backpack = getBookmarkBackpack(player);
         if (backpack == null) {
             backpack = createBackpack(player);
+            if (backpack != null) {
+                backpack = migrateLegacyBookmarks(player, backpack);
+            }
         }
 
         return backpack;
@@ -153,11 +166,79 @@ public class BookmarkManager extends AbstractManager {
                     }
                 }
 
+                migrateLegacyBookmarks(player, backpack);
                 return backpack;
             }
         }
 
-        return null;
+        return migrateLegacyBookmarks(player, null);
+    }
+
+    @Nullable
+    private PlayerBackpack migrateLegacyBookmarks(Player player, @Nullable PlayerBackpack existingBackpack) {
+        if (existingBackpack != null && hasLegacyMigrationMarker(existingBackpack)) {
+            return existingBackpack;
+        }
+
+        List<String> legacyIds = List.of();
+        if (legacyBookmarksFile.isFile()) {
+            YamlConfiguration legacy = YamlConfiguration.loadConfiguration(legacyBookmarksFile);
+            legacyIds = legacy.getStringList(player.getUniqueId().toString());
+        }
+
+        if (existingBackpack == null && legacyIds.isEmpty()) {
+            return null;
+        }
+
+        PlayerBackpack backpack = existingBackpack == null ? createBackpack(player) : existingBackpack;
+        if (backpack == null) {
+            return null;
+        }
+
+        ItemStack bookmarksItem = backpack.getInventory().getItem(DATA_ITEM_SLOT);
+        if (bookmarksItem == null || bookmarksItem.getType() == Material.AIR) {
+            bookmarksItem = markItemAsBookmarksItem(new ItemStack(Material.DIRT), player);
+        }
+
+        List<String> importedIds = legacyIds;
+        ItemStack migratedItem = Converter.getItem(bookmarksItem, itemMeta -> {
+            List<String> lore = itemMeta.getLore();
+            if (lore == null) {
+                lore = new ArrayList<>();
+            }
+
+            for (String id : importedIds) {
+                if (id != null && !id.isBlank() && !lore.contains(id)) {
+                    lore.add(id);
+                }
+            }
+
+            itemMeta.setLore(lore);
+            itemMeta.getPersistentDataContainer()
+                .set(LEGACY_MIGRATION_KEY, PersistentDataType.BOOLEAN, true);
+        });
+
+        backpack.getInventory().setItem(DATA_ITEM_SLOT, migratedItem);
+        operateController((Consumer<ProfileDataController>) controller -> {
+            controller.saveBackpackInventory(backpack, DATA_ITEM_SLOT);
+        });
+
+        if (!legacyIds.isEmpty()) {
+            plugin.getLogger().info(
+                "Imported " + legacyIds.size() + " Slimefun Legacy guide bookmark entries for " + player.getName() + "."
+            );
+        }
+        return backpack;
+    }
+
+    private boolean hasLegacyMigrationMarker(PlayerBackpack backpack) {
+        ItemStack bookmarksItem = backpack.getInventory().getItem(DATA_ITEM_SLOT);
+        if (bookmarksItem == null || !bookmarksItem.hasItemMeta()) {
+            return false;
+        }
+        return bookmarksItem.getItemMeta()
+            .getPersistentDataContainer()
+            .has(LEGACY_MIGRATION_KEY, PersistentDataType.BOOLEAN);
     }
 
     @Nullable

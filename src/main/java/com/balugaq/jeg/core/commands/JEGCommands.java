@@ -42,7 +42,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import net.guizhanss.minecraft.guizhanlib.gugu.minecraft.helpers.inventory.ItemStackHelper;
+import com.balugaq.jeg.utils.ItemStackHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -184,7 +184,7 @@ public class JEGCommands extends BaseCommand {
     @CommandPermission("jeg.categories")
     @Description("View all Slimefun item groups")
     public void onCategories(Player player) {
-        ChestMenu menu = new ChestMenu("&6物品组大全");
+        ChestMenu menu = new ChestMenu("&6All Item Groups");
         menu.setSize(54);
         populateCategoryMenu(menu, new ArrayList<>(Slimefun.getRegistry().getAllItemGroups()), 1, player);
         menu.setPlayerInventoryClickable(false);
@@ -201,7 +201,7 @@ public class JEGCommands extends BaseCommand {
                 stack = player.getInventory().getItemInOffHand();
             }
             if (stack == null || stack.getType().isAir()) {
-                player.sendMessage(ChatColor.RED + "你必须手持一个物品在手上");
+                player.sendMessage(ChatColor.RED + "You must hold an item in your hand.");
                 return;
             }
 
@@ -223,7 +223,7 @@ public class JEGCommands extends BaseCommand {
             item = player.getInventory().getItemInOffHand();
         }
         if (item == null || item.getType().isAir()) {
-            player.sendMessage(ChatColors.color("&c请将物品放在手上"));
+            player.sendMessage(ChatColors.color("&cPlease hold an item in your hand."));
             return;
         }
         OnClick.share(player, ItemStackHelper.getDisplayName(item).trim());
@@ -235,7 +235,7 @@ public class JEGCommands extends BaseCommand {
     public void onViewItem(Player player, @Single String id) {
         SlimefunItem slimefunItem = SlimefunItem.getById(id.toUpperCase(Locale.ROOT));
         if (slimefunItem == null || (!player.isOp() && slimefunItem.isDisabledIn(player.getWorld()))) {
-            player.sendMessage(ChatColors.color("&c无法查看 ID 为 " + id + "物品"));
+            player.sendMessage(ChatColors.color("&cUnable to view the item with ID " + id + " item"));
             return;
         }
         PlayerProfile profile = PlayerProfile.find(player).orElse(null);
@@ -274,14 +274,14 @@ public class JEGCommands extends BaseCommand {
                 categoryLore.set(
                     categoryLore.size() - 1, ChatColors.color("&6ID: " + id)); // Replaces the "Click to Open" line
                 categoryLore.add(ChatColors.color("&6class: " + className));
-                categoryLore.add(ChatColors.color("&a点击复制到聊天栏"));
+                categoryLore.add(ChatColors.color("&aClick to copy to chat"));
                 catMeta.setLore(categoryLore);
                 catItem.setItemMeta(catMeta);
                 menu.replaceExistingItem(i, catItem);
                 menu.addMenuClickHandler(
                     i, (p1, s1, i1, a1) -> {
-                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&d点击复制: " + id, "&d点击复制", id);
-                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&d点击复制: " + className, "&d点击复制", className);
+                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&dClick to copy: " + id, "&dClick to copy", id);
+                        com.balugaq.jeg.utils.ClipboardUtil.send(p1, "&dClick to copy: " + className, "&dClick to copy", className);
                         return false;
                     }
                 );
@@ -291,7 +291,7 @@ public class JEGCommands extends BaseCommand {
         }
 
         if (page > 1) {
-            menu.replaceExistingItem(46, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&a上一页"));
+            menu.replaceExistingItem(46, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&aPrevious Page"));
             menu.addMenuClickHandler(
                 46, (pl, s, is, action) -> {
                     populateCategoryMenu(menu, groups, page - 1, p);
@@ -301,7 +301,7 @@ public class JEGCommands extends BaseCommand {
         }
 
         if (getItemGroupOrNull(groups, 45 * page + 1) != null) {
-            menu.replaceExistingItem(52, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&a下一页"));
+            menu.replaceExistingItem(52, Converter.getItem(Material.LIME_STAINED_GLASS_PANE, "&aNext Page"));
             menu.addMenuClickHandler(
                 52, (pl, s, is, action) -> {
                     populateCategoryMenu(menu, groups, page + 1, p);

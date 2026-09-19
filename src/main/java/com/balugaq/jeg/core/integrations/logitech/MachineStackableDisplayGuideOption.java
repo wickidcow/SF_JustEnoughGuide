@@ -67,13 +67,13 @@ public class MachineStackableDisplayGuideOption implements PrioritySlimefunGuide
         boolean enabled = getSelectedOption(p, guide).orElse(true);
         ItemStack item = Converter.getItem(
             isEnabled(p) ? Material.BLAST_FURNACE : Material.FURNACE,
-            "&b逻辑工艺-堆叠显示: &" + (enabled ? "a启用" : "4禁用"),
+            "&bLogiTech Stackability Display: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在查阅一个物品的时候",
-            "&7显示它是否能被逻辑工艺的堆叠机器堆叠",
+            "&7Choose whether item pages show",
+            "&7whether the item can be stacked",
+            "&7by LogiTech stacking machines.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 逻辑工艺-堆叠显示"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " LogiTech Stackability Display"
         );
         return Optional.of(item);
     }

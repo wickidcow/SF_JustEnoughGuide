@@ -73,16 +73,16 @@ public class NoticeMissingMaterialGuideOption implements PrioritySlimefunGuideOp
         boolean enabled = getSelectedOption(p, guide).orElse(false);
         ItemStack item = Converter.getItem(
             isEnabled(p) ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK,
-            "&b告知缺失的材料: &" + (enabled ? "a启用" : "4禁用"),
+            "&bReport Missing Materials: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择",
-            "&7当你使用配方补全时",
-            "&7如果材料不足",
-            "&7是否告知缺失的材料",
-            "&e&l此功能为实验性功能，谨慎使用",
-            "&c&l此功能容易误报",
+            "&7Choose whether JEG should",
+            "&7report missing ingredients",
+            "&7when recipe completion cannot",
+            "&7find enough materials.",
+            "&e&lExperimental feature; use with care.",
+            "&c&lSome integrations may report false positives.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 告知缺失的材料"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " missing-material notices"
         );
         return Optional.of(item);
     }

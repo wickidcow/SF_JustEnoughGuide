@@ -61,7 +61,7 @@ public class FinalTechDustRecipeSettingsGuideOption extends AbstractItemSettings
     public Optional<ItemStack> getDisplayItem(Player p, ItemStack guide) {
         ItemStack item = Converter.getItem(
             Material.SLIME_BALL,
-            "&a单击打开无序/有序尘埃配方补全配置界面"
+            "&aClick to configure unordered/ordered dust recipe completion"
         );
         return Optional.of(item);
     }
@@ -73,7 +73,7 @@ public class FinalTechDustRecipeSettingsGuideOption extends AbstractItemSettings
 
     @Override
     public String getTitle() {
-        return "&a无序/有序尘埃配方补全配置";
+        return "&aUnordered/Ordered Dust Recipe Completion";
     }
 
     @Override

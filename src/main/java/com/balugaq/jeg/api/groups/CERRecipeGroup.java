@@ -32,7 +32,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import lombok.Data;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import net.guizhanss.minecraft.guizhanlib.gugu.minecraft.helpers.inventory.ItemStackHelper;
+import com.balugaq.jeg.utils.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,10 +82,10 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
                     PatchScope.CerRecipe.patch(
                         p, Converter.getItem(
                             Material.GREEN_STAINED_GLASS_PANE,
-                            "&a配方#" + (i + 1),
-                            "&a机器制作难度: " + ValueTable.getValue(machine),
-                            "&a耗时: " + recipe.getTicks(),
-                            "&a" + (e == 0 ? "耗电: 无" : e > 0 ? "耗电: " + e : "产电: " + (-e))
+                            "&aRecipe #" + (i + 1),
+                            "&aMachine difficulty: " + ValueTable.getValue(machine),
+                            "&aTime: " + recipe.getTicks(),
+                            "&a" + (e == 0 ? "Power use: None" : e > 0 ? "Power use: " + e : "Power generation: " + (-e))
                         )
                     ),
                     ChestMenuUtils.getEmptyClickHandler()
@@ -96,7 +96,7 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
                         PatchScope.CerRecipeBorderInput.patch(
                             p, Converter.getItem(
                                 Material.BLUE_STAINED_GLASS_PANE,
-                                "&a输入 →"
+                                "&aInputs →"
                             )
                         ),
                         ChestMenuUtils.getEmptyClickHandler()
@@ -119,8 +119,8 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
                             PatchScope.CerRecipeBorderInputOutput.patch(
                                 p, Converter.getItem(
                                     Material.ORANGE_STAINED_GLASS_PANE,
-                                    "&a← 输入",
-                                    "&6输出 →"
+                                    "&a← Inputs",
+                                    "&6Outputs →"
                                 )
                             ),
                             ChestMenuUtils.getEmptyClickHandler()
@@ -132,7 +132,7 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
                             PatchScope.CerRecipeBorderOutput.patch(
                                 p, Converter.getItem(
                                     Material.ORANGE_STAINED_GLASS_PANE,
-                                    "&6输出 →"
+                                    "&6Outputs →"
                                 )
                             ),
                             ChestMenuUtils.getEmptyClickHandler()
@@ -152,7 +152,7 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
 
                             double cer = CERCalculator.getCER(machine, ItemStackHelper.getDisplayName(output));
                             lore.add(" ");
-                            lore.add(ChatColors.color("&a性价比: " + FORMAT.format(cer)));
+                            lore.add(ChatColors.color("&aValue ratio: " + FORMAT.format(cer)));
                             meta.setLore(lore);
                             display.setItemMeta(meta);
                             list.add(new Pair<>(
@@ -182,7 +182,7 @@ public class CERRecipeGroup extends BaseGroup<CERRecipeGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("&a性价比预览（仅供参考）");
+        ChestMenu chestMenu = new ChestMenu("&aValue Comparison (Reference Only)");
 
         Format format = Formats.sub;
         int maxPage = (iconsLength() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;

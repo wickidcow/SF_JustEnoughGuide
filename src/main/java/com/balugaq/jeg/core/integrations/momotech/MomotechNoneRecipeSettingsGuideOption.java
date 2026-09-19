@@ -62,10 +62,10 @@ public class MomotechNoneRecipeSettingsGuideOption extends AbstractItemSettingsG
         var sf = SlimefunItem.getById("MOMOTECH_NONE");
         ItemStack item = sf != null ? Converter.getItem(
             sf.getItem(),
-            "&a单击打开" + getTitle()
+            "&aClick to open " + getTitle()
         ) : Converter.getItem(
             Material.BLACK_WOOL,
-            "&a单击打开" + getTitle()
+            "&aClick to open " + getTitle()
         );
         return Optional.of(item);
     }
@@ -77,7 +77,7 @@ public class MomotechNoneRecipeSettingsGuideOption extends AbstractItemSettingsG
 
     @Override
     public String getTitle() {
-        return "&aNONE配方补全配置";
+        return "&aNONE Recipe Completion Settings";
     }
 
     @Override

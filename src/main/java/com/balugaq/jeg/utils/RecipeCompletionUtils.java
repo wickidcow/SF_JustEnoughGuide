@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
-import net.guizhanss.minecraft.guizhanlib.gugu.minecraft.helpers.inventory.ItemStackHelper;
+import com.balugaq.jeg.utils.ItemStackHelper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -285,9 +285,9 @@ public class RecipeCompletionUtils {
         long left = amount - stacks * Math.max(1, itemStack.getMaxStackSize());
         String amountString = "" + amount;
         if (amount > itemStack.getMaxStackSize()) {
-            amountString += " ( " + stacks + " 组";
+            amountString += " (" + stacks + " stacks";
             if (left > 0) {
-                amountString += " + " + left + " 个";
+                amountString += " + " + left + " items";
             }
             amountString += ")";
         }
@@ -321,12 +321,12 @@ public class RecipeCompletionUtils {
         for (var entry : v.entrySet()) {
             ItemStack itemStack = entry.getKey();
             String amountString = getAmountString(itemStack, entry.getValue());
-            var builder = Component.text().color(NamedTextColor.RED).append(Component.text("缺少 "));
+            var builder = Component.text().color(NamedTextColor.RED).append(Component.text("Missing "));
             var itemBuilder = Component.text(ItemStackHelper.getDisplayName(itemStack));
             SlimefunItem sf = SlimefunItem.getByItem(itemStack);
             if (sf != null) {
                 itemBuilder = itemBuilder
-                    .hoverEvent(HoverEvent.showText(Component.text().color(NamedTextColor.YELLOW).append(Component.text("点击查看"))))
+                    .hoverEvent(HoverEvent.showText(Component.text().color(NamedTextColor.YELLOW).append(Component.text("Click to view"))))
                     .clickEvent(ClickEvent.runCommand("/jeg viewitem " + sf.getId()));
             }
             builder.color(NamedTextColor.GRAY).append(itemBuilder);

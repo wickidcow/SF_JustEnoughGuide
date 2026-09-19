@@ -34,7 +34,7 @@ import org.jspecify.annotations.NullMarked;
 public class KeybindsSettingsGuideOption extends AbstractCustomActionGuideOption {
     public static final ItemStack DEFAULT_ICON = Converter.getItem(
         Material.COMPASS,
-        "&a单击打开指南书按键控制界面"
+        "&aClick to open the guide keybind settings"
     );
 
     @Override
