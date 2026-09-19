@@ -219,7 +219,9 @@ public class BookmarkManager extends AbstractManager {
         });
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, migratedItem);
-        operateController(controller -> controller.saveBackpackInventory(backpack, DATA_ITEM_SLOT));
+        operateController((Consumer<ProfileDataController>) controller -> {
+            controller.saveBackpackInventory(backpack, DATA_ITEM_SLOT);
+        });
 
         if (!legacyIds.isEmpty()) {
             plugin.getLogger().info(
