@@ -86,7 +86,7 @@ public class FinalTECHValueDisplayGuideOption implements PrioritySlimefunGuideOp
             "&7Note: this value comes from",
             "&7FinalTECH and is separate from",
             "&7older FinalTech or EMCTech values.",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " FinalTECH EMC Value Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " FinalTECH EMC Value Display"
         );
         return Optional.of(item);
     }
