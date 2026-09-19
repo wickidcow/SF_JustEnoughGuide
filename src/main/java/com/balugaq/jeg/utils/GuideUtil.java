@@ -751,7 +751,11 @@ public class GuideUtil {
         }
 
         groups = new ArrayList<>(groups.stream().distinct().toList());
-        GroupResorter.sort(groups);
+        if (guideTierMode) {
+            GroupResorter.sort(groups);
+        } else {
+            GroupResorter.sortForGuide(groups);
+        }
         groups.addAll(specialGroups);
 
         return groups;
@@ -797,7 +801,11 @@ public class GuideUtil {
                 }
             }
         }
-        GroupResorter.sort(groups);
+        if (guideTierMode) {
+            GroupResorter.sort(groups);
+        } else {
+            GroupResorter.sortForGuide(groups);
+        }
 
         return groups;
     }
