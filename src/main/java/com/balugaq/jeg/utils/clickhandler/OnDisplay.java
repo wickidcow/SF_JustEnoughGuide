@@ -184,7 +184,7 @@ public interface OnDisplay {
                         itemGroup.getAddon(),
                         itemGroup.getItems().getFirst().getId()
                     )),
-                    ChatColors.color("&e右键以取消收藏物品组")
+                    ChatColors.color("&eRight-click to remove this item group bookmark")
                 );
 
                 ItemStack icon = Converter.getItem(itemGroup.getItem(player));
@@ -470,12 +470,12 @@ public interface OnDisplay {
                     "&7" + item.getId(),
                     "&4&l" + Slimefun.getLocalization().getMessage(player, "guide.locked"),
                     "",
-                    "&a> 单击解锁",
+                    "&a> Click to unlock",
                     "",
-                    "&7需要 &b",
+                    "&7Requires &b",
                     VaultIntegration.isEnabled()
-                        ? String.format("%.2f", research.getCurrencyCost()) + " 游戏币"
-                        : research.getLevelCost() + " 级经验"
+                        ? String.format("%.2f", research.getCurrencyCost()) + " currency"
+                        : research.getLevelCost() + " experience levels"
                 );
 
                 ItemMeta meta = icon.getItemMeta();
@@ -568,7 +568,7 @@ public interface OnDisplay {
                         )
                         , LocalHelper.getDisplayName(itemGroup, player)
                     )),
-                    ChatColors.color("&e右键以取消收藏物品")
+                    ChatColors.color("&eRight-click to remove this bookmark")
                 );
 
                 ItemStack icon = Converter.getItem(item instanceof CustomIconDisplay cid ?
@@ -621,7 +621,7 @@ public interface OnDisplay {
                         )
                         , LocalHelper.getDisplayName(itemGroup, player)
                     )),
-                    ChatColors.color("&e左键点击以收藏物品")
+                    ChatColors.color("&eLeft-click to bookmark this item")
                 );
 
                 ItemStack icon = Converter.getItem(item instanceof CustomIconDisplay cid ?
