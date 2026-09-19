@@ -1021,7 +1021,7 @@ public class GuideUtil {
         addBackgroundItems(menu, format, profile);
         addBackButton(menu, format, profile, player);
         addSettingsPanelButton(menu, format, profile, player);
-        LegacyDoctorMenu.renderButton(menu, format, profile, player);
+        LegacyDoctorMenu.renderButton(menu, format, player);
         addSearchButton(menu, format, profile, player);
         addRTSButton(menu, format, profile, player);
         format.renderCustom(menu);
