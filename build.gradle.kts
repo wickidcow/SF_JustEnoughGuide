@@ -76,7 +76,6 @@ dependencies {
     compileOnly(libs.houbb.heaven)
     compileOnly(libs.houbb.nlp.common)
 
-    compileOnly(libs.guizhan.lib)
     compileOnly(libs.slimefun.translation)
     compileOnly(libs.placeholderapi)
 
