@@ -42,6 +42,7 @@ import com.balugaq.jeg.implementation.items.ItemsSetup;
 import com.balugaq.jeg.implementation.items.ReplacementCardAdapter;
 import com.balugaq.jeg.utils.Debug;
 import com.balugaq.jeg.utils.GuideUtil;
+import com.balugaq.jeg.utils.LegacyConfigMigration;
 import com.balugaq.jeg.utils.MinecraftVersion;
 import com.balugaq.jeg.utils.ReflectionUtil;
 import com.balugaq.jeg.utils.SlimefunRegistryUtil;
@@ -324,7 +325,12 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         loadLibraries();
 
         getLogger().info("Loading configuration...");
+        boolean freshConfig = !new File(getDataFolder(), "config.yml").isFile();
         saveDefaultConfig();
+        if (freshConfig) {
+            LegacyConfigMigration.importFreshInstall(this);
+            reloadConfig();
+        }
         this.configManager = new ConfigManager(this);
         this.configManager.load();
         Formats.load();
