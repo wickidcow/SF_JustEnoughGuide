@@ -65,7 +65,6 @@ import lombok.Getter;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
 import net.byteflux.libby.LibraryManager;
-import net.guizhanss.minecraft.guizhanlib.updater.GuizhanUpdater;
 import net.kyori.adventure.internal.properties.AdventureProperties;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -381,9 +380,6 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         this.integrationManager = new IntegrationManager(this);
         this.integrationManager.load();
 
-        getLogger().info("Checking for updates...");
-        tryUpdate();
-
         getLogger().info("Loading metrics...");
         metrics = new JEGMetrics();
 
@@ -513,28 +509,7 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
             getLogger().warning("Java version is too old. Use Java " + RECOMMENDED_JAVA_VERSION + " or newer!");
         }
 
-        if (!Bukkit.getServer().getPluginManager().isPluginEnabled("GuizhanLibPlugin")) {
-            getLogger().log(Level.SEVERE, "GuizhanLibPlugin is required for this plugin to run!");
-            getLogger().log(Level.SEVERE, "Download GuizhanLibPlugin from its official distribution source.");
-            getLogger().log(Level.SEVERE, "The plugin cannot continue until the required dependency is installed and enabled.");
-            return false;
-        }
-
         return true;
-    }
-
-    /**
-     * Attempts to update the plugin if auto-update is enabled.
-     */
-    private void tryUpdate() {
-        try {
-            if (configManager.isAutoUpdate() && getDescription().getVersion().startsWith("Build")) {
-                GuizhanUpdater.start(this, getFile(), author, repo, branch);
-            }
-        } catch (NoClassDefFoundError | NullPointerException | UnsupportedClassVersionError e) {
-            getLogger().info("Automatic update check failed: " + e.getMessage());
-            Debug.trace(e);
-        }
     }
 
     private void installGuides(Map<SlimefunGuideMode, SlimefunGuideImplementation> newGuides) {
