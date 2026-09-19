@@ -60,7 +60,7 @@ public class ShareInGuideOption extends AbstractBooleanGuideOption {
             "&7guide notifications when another",
             "&7player shares an item with you.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Receive Shared Items"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Receive Shared Items"
         );
     }
 }
