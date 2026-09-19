@@ -45,7 +45,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
-import net.guizhanss.minecraft.guizhanlib.gugu.minecraft.helpers.inventory.ItemStackHelper;
+import com.balugaq.jeg.utils.ItemStackHelper;
 import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
