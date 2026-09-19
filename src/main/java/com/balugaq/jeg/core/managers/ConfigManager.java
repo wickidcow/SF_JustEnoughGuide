@@ -100,15 +100,15 @@ public class ConfigManager extends AbstractManager {
 
         this.AUTO_UPDATE = cfg.getBoolean("auto-update", false);
         this.DEBUG = cfg.getBoolean("debug", false);
-        this.RECIPE_COMPLETE = cfg.getBoolean("guide.recipe-complete", true);
+        this.RECIPE_COMPLETE = cfg.getBoolean("recipe-complete", true);
         this.PINYIN_SEARCH = cfg.getBoolean("improvements.pinyin-search", true);
         this.BOOKMARK = cfg.getBoolean("improvements.bookmark", true);
         this.SURVIVAL_GUIDE_TITLE = cfg
-            .getString("guide.survival-guide-title", "&2&lSlimefun 指南 (生存模式)         &e&l爱来自 JustEnoughGuide");
+            .getString("guide.survival-guide-title", "&2&lSlimefun Guide &7(Enhanced)");
         this.CHEAT_GUIDE_TITLE = cfg
-            .getString("guide.cheat-guide-title", "&c&lSlimefun 指南 (作弊模式)         &e&l爱来自 JustEnoughGuide");
-        this.SETTINGS_GUIDE_TITLE = cfg.getString("guide.settings-guide-title", "设置 & 详情");
-        this.CREDITS_GUIDE_TITLE = cfg.getString("guide.credits-guide-title", "Slimefun4 贡献者");
+            .getString("guide.cheat-guide-title", "&c&lSlimefun Guide &4(Cheat Mode)");
+        this.SETTINGS_GUIDE_TITLE = cfg.getString("guide.settings-guide-title", "Settings & Details");
+        this.CREDITS_GUIDE_TITLE = cfg.getString("guide.credits-guide-title", "Slimefun4 Contributors");
         this.RTS_SEARCH = cfg.getBoolean("improvements.rts-search", true);
 
         this.BEGINNER_OPTION = cfg.getBoolean("improvements.beginner-option", true);
@@ -117,7 +117,6 @@ public class ConfigManager extends AbstractManager {
         List<String> rawBlacklist = cfg.getStringList("blacklist");
         if (rawBlacklist == null || rawBlacklist.isEmpty()) {
             this.BLACKLIST = new ArrayList<>();
-            this.BLACKLIST.add("快捷");
         } else {
             this.BLACKLIST = rawBlacklist;
         }
@@ -139,7 +138,7 @@ public class ConfigManager extends AbstractManager {
         List<String> rawMainFormat = cfg.getStringList("custom-format.main");
         if (rawMainFormat == null || rawMainFormat.isEmpty()) {
             this.MAIN_FORMAT = new ArrayList<>();
-            this.MAIN_FORMAT.add("BTBBBBRSB");
+            this.MAIN_FORMAT.add("BTBBDBRSB");
             this.MAIN_FORMAT.add("GGGGGGGGG");
             this.MAIN_FORMAT.add("GGGGGGGGG");
             this.MAIN_FORMAT.add("GGGGGGGGG");
@@ -180,7 +179,7 @@ public class ConfigManager extends AbstractManager {
             this.RECIPE_FORMAT = new ArrayList<>();
             this.RECIPE_FORMAT.add("b  rrr  w");
             this.RECIPE_FORMAT.add(" t rrr i ");
-            this.RECIPE_FORMAT.add("m  rrr  E");
+            this.RECIPE_FORMAT.add("m  rrr ME");
         } else {
             List<String> old = new ArrayList<>();
             old.add("b  rrr  w");
@@ -227,7 +226,7 @@ public class ConfigManager extends AbstractManager {
             this.RECIPE_DISPLAY_FORMAT = new ArrayList<>();
             this.RECIPE_DISPLAY_FORMAT.add("b  rrr  w");
             this.RECIPE_DISPLAY_FORMAT.add(" t rrr i ");
-            this.RECIPE_DISPLAY_FORMAT.add("m  rrr  E");
+            this.RECIPE_DISPLAY_FORMAT.add("m  rrr ME");
             this.RECIPE_DISPLAY_FORMAT.add("BPBBBBBNB");
             this.RECIPE_DISPLAY_FORMAT.add("ddddddddd");
             this.RECIPE_DISPLAY_FORMAT.add("ddddddddd");
@@ -257,7 +256,7 @@ public class ConfigManager extends AbstractManager {
         List<String> rawSettingsFormat = cfg.getStringList("custom-format.settings");
         if (rawSettingsFormat == null || rawSettingsFormat.isEmpty()) {
             this.SETTINGS_FORMAT = new ArrayList<>();
-            this.SETTINGS_FORMAT.add("bBsBvBuBW");
+            this.SETTINGS_FORMAT.add("bBsBvBuDW");
             this.SETTINGS_FORMAT.add("BBBBBBBBB");
             this.SETTINGS_FORMAT.add("BoooooooB");
             this.SETTINGS_FORMAT.add("BoooooooB");
@@ -340,8 +339,8 @@ public class ConfigManager extends AbstractManager {
         this.AUTO_ADD_RECIPE_COMPLETE_BUTTON = cfg.getBoolean("auto-add-recipe-complete-button", true);
         this.NO_REPLACEMENT_CARD_COMPANION_ITEM_IDS = cfg.getStringList("no-replacement-card-companion-item-ids");
         this.NO_REPLACEMENT_CARD_COMPANION_ADDONS = cfg.getStringList("no-replacement-card-companion-addons");
-        this.NO_AUTO_ADD_RECIPE_COMPLETE_BLOCKS = cfg.getStringList("no-replacement-card-companion-blocks");
-        this.NO_AUTO_ADD_RECIPE_COMPLETE_ADDONS = cfg.getStringList("no-replacement-card-companion-addons");
+        this.NO_AUTO_ADD_RECIPE_COMPLETE_BLOCKS = cfg.getStringList("no-auto-add-recipe-complete-blocks");
+        this.NO_AUTO_ADD_RECIPE_COMPLETE_ADDONS = cfg.getStringList("no-auto-add-recipe-complete-addons");
         this.CLICK_PRINT_WARNING = cfg.getBoolean("click-print-warning", true);
         this.CONFIG_VERSION = cfg.getInt("data.config-version", 0);
 
