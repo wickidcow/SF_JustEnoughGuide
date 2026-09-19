@@ -155,6 +155,11 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
     @Getter
     private int javaVersion = 0;
 
+    private final Map<SlimefunGuideMode, SlimefunGuideImplementation> previousGuides =
+        new EnumMap<>(SlimefunGuideMode.class);
+    private final Map<SlimefunGuideMode, SlimefunGuideImplementation> installedGuides =
+        new EnumMap<>(SlimefunGuideMode.class);
+
     public JustEnoughGuide() {
         this.author = "balugaq";
         this.repo = "JustEnoughGuide";
@@ -336,12 +341,7 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         Map<SlimefunGuideMode, SlimefunGuideImplementation> newGuides = new EnumMap<>(SlimefunGuideMode.class);
         newGuides.put(SlimefunGuideMode.SURVIVAL_MODE, new SurvivalGuideImplementation());
         newGuides.put(SlimefunGuideMode.CHEAT_MODE, new CheatGuideImplementation());
-
-        try {
-            ReflectionUtil.setValue(Slimefun.getRegistry(), "guides", newGuides);
-        } catch (Exception e) {
-            Debug.trace(e);
-        }
+        installGuides(newGuides);
 
         getLogger().info("Loading bookmarks...");
         this.bookmarkManager = new BookmarkManager(this);
@@ -413,14 +413,7 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         } catch (Exception ignored) {
         }
 
-        try {
-            Map<SlimefunGuideMode, SlimefunGuideImplementation> newGuides = new EnumMap<>(SlimefunGuideMode.class);
-            newGuides.put(SlimefunGuideMode.SURVIVAL_MODE, new SurvivalSlimefunGuide());
-            newGuides.put(SlimefunGuideMode.CHEAT_MODE, new CheatSheetSlimefunGuide());
-            ReflectionUtil.setValue(Slimefun.getRegistry(), "guides", newGuides);
-        } catch (Exception e) {
-            Debug.trace(e);
-        }
+        restoreGuides();
 
         // Managers
         if (this.bookmarkManager != null) {
@@ -536,6 +529,88 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
             getLogger().info("Automatic update check failed: " + e.getMessage());
             Debug.trace(e);
         }
+    }
+
+    private void installGuides(Map<SlimefunGuideMode, SlimefunGuideImplementation> newGuides) {
+        previousGuides.clear();
+        installedGuides.clear();
+
+        for (SlimefunGuideMode mode : SlimefunGuideMode.values()) {
+            try {
+                previousGuides.put(mode, Slimefun.getRegistry().getSlimefunGuide(mode));
+            } catch (RuntimeException ignored) {
+                // A missing mode will simply have nothing to restore.
+            }
+        }
+
+        try {
+            var method = Slimefun.getRegistry()
+                .getClass()
+                .getMethod("registerSlimefunGuide", SlimefunGuideMode.class, SlimefunGuideImplementation.class);
+            for (var entry : newGuides.entrySet()) {
+                method.invoke(Slimefun.getRegistry(), entry.getKey(), entry.getValue());
+                installedGuides.put(entry.getKey(), entry.getValue());
+            }
+            getLogger().info("Installed JEG through Slimefun's public guide registration API.");
+            return;
+        } catch (NoSuchMethodException ignored) {
+            // Upstream/older Slimefun fallback below.
+        } catch (ReflectiveOperationException | LinkageError e) {
+            Debug.trace(e);
+        }
+
+        try {
+            ReflectionUtil.setValue(Slimefun.getRegistry(), "guides", new EnumMap<>(newGuides));
+            installedGuides.putAll(newGuides);
+            getLogger().info("Installed JEG using the compatibility guide-registry fallback.");
+        } catch (Exception e) {
+            Debug.trace(e);
+        }
+    }
+
+    private void restoreGuides() {
+        if (previousGuides.isEmpty()) {
+            return;
+        }
+
+        boolean restoredWithApi = false;
+        try {
+            var method = Slimefun.getRegistry()
+                .getClass()
+                .getMethod(
+                    "compareAndSetSlimefunGuide",
+                    SlimefunGuideMode.class,
+                    SlimefunGuideImplementation.class,
+                    SlimefunGuideImplementation.class
+                );
+
+            restoredWithApi = true;
+            for (var entry : previousGuides.entrySet()) {
+                SlimefunGuideImplementation installed = installedGuides.get(entry.getKey());
+                if (installed == null) {
+                    continue;
+                }
+                method.invoke(Slimefun.getRegistry(), entry.getKey(), installed, entry.getValue());
+            }
+        } catch (NoSuchMethodException ignored) {
+            // Upstream/older Slimefun fallback below.
+        } catch (ReflectiveOperationException | LinkageError e) {
+            Debug.trace(e);
+        }
+
+        if (!restoredWithApi) {
+            try {
+                Map<SlimefunGuideMode, SlimefunGuideImplementation> restored =
+                    new EnumMap<>(SlimefunGuideMode.class);
+                restored.putAll(previousGuides);
+                ReflectionUtil.setValue(Slimefun.getRegistry(), "guides", restored);
+            } catch (Exception e) {
+                Debug.trace(e);
+            }
+        }
+
+        installedGuides.clear();
+        previousGuides.clear();
     }
 
     private void setupServerUUID() {
