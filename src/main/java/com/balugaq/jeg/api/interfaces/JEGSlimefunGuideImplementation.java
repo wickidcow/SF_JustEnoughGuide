@@ -582,7 +582,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         Debug.trace(x);
         p.sendMessage(ChatColor.DARK_RED + "An internal server error occurred. Please contact an administrator.");
         Debug.info(Level.SEVERE, "An unexpected error occurred while opening a Slimefun item in the guide!", x);
-        Debug.warn("Attempting to recover the guide for player \"" + p.getName() + "\" 的指南...");
+        Debug.warn("Attempting to recover the guide for player \"" + p.getName() + "\"...");
         PlayerProfile profile = PlayerProfile.find(p).orElse(null);
         if (profile == null) return;
         GuideUtil.removeLastEntry(profile);
