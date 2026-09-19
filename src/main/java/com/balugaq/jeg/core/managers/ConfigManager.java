@@ -47,7 +47,6 @@ import java.util.Set;
 @SuppressWarnings({"ConstantValue", "unused"})
 @NullMarked
 public class ConfigManager extends AbstractManager {
-    private final boolean AUTO_UPDATE;
     private final boolean DEBUG;
     private final boolean RECIPE_COMPLETE;
     private final boolean PINYIN_SEARCH;
@@ -98,7 +97,6 @@ public class ConfigManager extends AbstractManager {
         setupDefaultConfig();
         FileConfiguration cfg = plugin.getConfig();
 
-        this.AUTO_UPDATE = cfg.getBoolean("auto-update", false);
         this.DEBUG = cfg.getBoolean("debug", false);
         this.RECIPE_COMPLETE = cfg.getBoolean("recipe-complete", true);
         this.PINYIN_SEARCH = cfg.getBoolean("improvements.pinyin-search", true);
@@ -421,10 +419,6 @@ public class ConfigManager extends AbstractManager {
                 ));
             }
         }
-    }
-
-    public boolean isAutoUpdate() {
-        return AUTO_UPDATE;
     }
 
     public boolean isDebug() {
