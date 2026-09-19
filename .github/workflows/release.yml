@@ -5,8 +5,6 @@ on:
     branches:
       - master
     paths:
-      - 'gradle.properties'
-      - 'build.gradle'
       - 'build.gradle.kts'
   workflow_dispatch:
 
@@ -21,46 +19,55 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Extract version
         id: version
+        shell: bash
         run: |
-          if [ -f "gradle.properties" ]; then
-            VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
-          elif [ -f "build.gradle" ]; then
-            VERSION=$(grep "^version" build.gradle | grep -o "'.*'" | tr -d "'")
-          elif [ -f "build.gradle.kts" ]; then
-            VERSION=$(grep "^version" build.gradle.kts | grep -o "\".*\"" | tr -d '"')
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(grep '^version = ' build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\\1/')
+          test -n "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Check if tag exists
         id: tag_check
+        shell: bash
         run: |
           if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build with Gradle
+      - name: Build canonical addon JAR
         if: steps.tag_check.outputs.exists == 'false'
         run: |
           chmod +x gradlew
-          ./gradlew build
+          ./gradlew clean shadowJar --no-daemon
+          test -s "build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar"
+
+      - name: Upload Actions artifact
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SF_JustEnoughGuide${{ steps.version.outputs.version }}
+          path: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
+          if-no-files-found: error
 
       - name: Create Release
         if: steps.tag_check.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
+          name: SF_JustEnoughGuide ${{ steps.version.outputs.version }}
           generate_release_notes: true
-          files: build/libs/*.jar
+          files: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
