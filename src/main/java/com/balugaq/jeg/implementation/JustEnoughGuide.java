@@ -161,8 +161,8 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         new EnumMap<>(SlimefunGuideMode.class);
 
     public JustEnoughGuide() {
-        this.author = "balugaq";
-        this.repo = "JustEnoughGuide";
+        this.author = "wickidcow";
+        this.repo = "SF_JustEnoughGuide";
         this.branch = "master";
     }
 
