@@ -182,7 +182,7 @@ public abstract class GuideGroup extends BaseGroup<GuideGroup> {
         SlimefunGuideImplementation guide = GuideUtil.getGuide(player, slimefunGuideMode);
         GuideUtil.getProfile(profile).getGuideHistory().add(this, page);
         if (!(guide instanceof JEGSlimefunGuideImplementation jeg)) {
-            player.sendMessage("§cJEG 模块未启用。你不能打开 JEG 使用指南。");
+            player.sendMessage("§cThe JEG guide module is not enabled. This guide page cannot be opened.");
             return null;
         }
 
