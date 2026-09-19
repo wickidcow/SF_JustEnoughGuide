@@ -193,7 +193,7 @@ public class JEGGuideSettings {
                         "&7&oContributions and bug reports help keep",
                         "&7&othe maintained Legacy ecosystem healthy.",
                         "",
-                        "&7\u21E8 &e点击前往汉化版 GitHub 仓库"));
+                        "&7\u21E8 &eClick to open the maintained GitHub repository"));
         for (int ss : Formats.settings.getChars(Formats.Char.SOURCE_CODE)) {
             menu.addItem(ss, u, (pl, slot, item, action) -> {
                 pl.closeInventory();
@@ -215,7 +215,7 @@ public class JEGGuideSettings {
                         "&7Use the project documentation and addon resources,",
                         "&7and contribute improvements when you can.",
                         "",
-                        "&7\u21E8 &e点击前往非官方中文 Wiki"));
+                        "&7\u21E8 &eClick to open the Slimefun Legacy wiki"));
         for (int ss : Formats.settings.getChars(Formats.Char.SLIMEFUN_WIKI_PAGE)) {
             menu.addItem(ss, W, (pl, slot, item, action) -> {
                 pl.closeInventory();
@@ -238,7 +238,7 @@ public class JEGGuideSettings {
                         "",
                         "&7Installed addons on this server: &b" + Slimefun.getInstalledAddons().size(),
                         "",
-                        "&7\u21E8 &e点击查看 Slimefun4 可用的附属插件"));
+                        "&7\u21E8 &eClick to view Slimefun Legacy-compatible addons"));
         for (int ss : Formats.settings.getChars(Formats.Char.ADDONS)) {
             menu.addItem(ss, l, (pl, slot, item, action) -> {
                 pl.closeInventory();
