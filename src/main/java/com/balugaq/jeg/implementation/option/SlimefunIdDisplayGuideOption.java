@@ -52,7 +52,7 @@ public class SlimefunIdDisplayGuideOption extends AbstractBooleanGuideOption {
             "&7are shown while viewing items",
             "&7in the guide.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Slimefun Item ID Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Slimefun Item ID Display"
         );
     }
 
