@@ -80,7 +80,7 @@ public class EMCValueDisplayGuideOption implements PrioritySlimefunGuideOption<B
             "",
             "&7Note: this value comes from EMCTech.",
             "&7Other addons may use different value systems.",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " EMC Value Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " EMC Value Display"
         );
         return Optional.of(item);
     }
