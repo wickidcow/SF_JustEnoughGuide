@@ -62,10 +62,10 @@ public class LogiTechFalseRecipeSettingsGuideOption extends AbstractItemSettings
         var sf = SlimefunItem.getById("LOGITECH_FALSE_");
         ItemStack item = sf != null ? Converter.getItem(
             sf.getItem(),
-            "&a单击打开" + getTitle()
+            "&aClick to open " + getTitle()
         ) : Converter.getItem(
             Material.MUSIC_DISC_5,
-            "&a单击打开" + getTitle()
+            "&aClick to open " + getTitle()
         );
         return Optional.of(item);
     }
@@ -77,7 +77,7 @@ public class LogiTechFalseRecipeSettingsGuideOption extends AbstractItemSettings
 
     @Override
     public String getTitle() {
-        return "&aFALSE 配方补全配置";
+        return "&aFALSE Recipe Completion Settings";
     }
 
     @Override
