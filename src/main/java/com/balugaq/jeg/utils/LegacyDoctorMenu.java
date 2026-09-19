@@ -3,14 +3,18 @@
  */
 package com.balugaq.jeg.utils;
 
+import com.balugaq.jeg.api.patches.JEGGuideSettings;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.balugaq.jeg.utils.formatter.Format;
 import com.balugaq.jeg.utils.formatter.Formats;
+import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Slimefun Legacy Doctor shortcuts exposed through JEG.
@@ -31,6 +35,21 @@ public final class LegacyDoctorMenu {
         Format format,
         Player player
     ) {
+        renderButton(menu, format, player, GuideUtil.getLastGuideMode(player), null);
+    }
+
+    /**
+     * Renders a Doctor entry that retains the guide mode it was opened from.
+     * When {@code settingsGuide} is non-null, the Doctor back button returns
+     * to Settings & Info instead of the main guide.
+     */
+    public static void renderButton(
+        ChestMenu menu,
+        Format format,
+        Player player,
+        SlimefunGuideMode mode,
+        @Nullable ItemStack settingsGuide
+    ) {
         for (int slot : format.getChars(Formats.Char.DOCTOR)) {
             if (!LegacyMachineRecipeBridge.isLegacyAvailable() || !player.hasPermission(DOCTOR_PERMISSION)) {
                 menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
@@ -45,18 +64,28 @@ public final class LegacyDoctorMenu {
                     "",
                     "&7Open read-only health and compatibility",
                     "&7shortcuts for Slimefun Legacy.",
+                    mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
                     "",
                     "&eClick to open"
                 )
             );
+            ItemStack returnGuide = settingsGuide == null ? null : settingsGuide.clone();
             menu.addMenuClickHandler(slot, (pl, s, item, action) -> {
-                open(pl);
+                open(pl, mode, returnGuide);
                 return false;
             });
         }
     }
 
     public static void open(Player player) {
+        open(player, GuideUtil.getLastGuideMode(player), null);
+    }
+
+    public static void open(
+        Player player,
+        SlimefunGuideMode mode,
+        @Nullable ItemStack settingsGuide
+    ) {
         if (!player.hasPermission(DOCTOR_PERMISSION)) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use Slimefun Doctor.");
             return;
@@ -87,12 +116,24 @@ public final class LegacyDoctorMenu {
         addCommand(menu, 16, Material.SPYGLASS, "&bItem Scan", "doctor scan",
             "&7Read-only item/storage scan.", "&7No repairs are performed.");
 
+        boolean returnToSettings = settingsGuide != null;
         menu.addItem(
             18,
-            Converter.getItem(Material.ARROW, "&fBack to Guide", "", "&7Return to the Slimefun guide.")
+            Converter.getItem(
+                Material.ARROW,
+                returnToSettings ? "&fBack to Settings & Info" : "&fBack to Guide",
+                "",
+                returnToSettings
+                    ? "&7Return to the current guide's Settings & Info."
+                    : "&7Return to the Slimefun Legacy guide."
+            )
         );
         menu.addMenuClickHandler(18, (pl, slot, item, action) -> {
-            GuideUtil.openMainMenuAsync(pl, GuideUtil.getLastGuideMode(pl), 1);
+            if (returnToSettings) {
+                JEGGuideSettings.openSettings(pl, settingsGuide, mode);
+            } else {
+                GuideUtil.openMainMenuAsync(pl, mode, 1);
+            }
             return false;
         });
 
