@@ -17,7 +17,7 @@ SF_JustEnoughGuide<version>.jar
 Example:
 
 ```
-SF_JustEnoughGuide2.1.56.jar
+SF_JustEnoughGuide2.1.57.jar
 ```
 
 ## Requirements

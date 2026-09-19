@@ -23,6 +23,7 @@ import com.balugaq.jeg.implementation.option.delegate.FireworksOption;
 import com.balugaq.jeg.implementation.option.delegate.GuideModeOption;
 import com.balugaq.jeg.implementation.option.delegate.LearningAnimationOption;
 import com.balugaq.jeg.implementation.option.delegate.PlayerLanguageOption;
+import com.balugaq.jeg.utils.ClipboardUtil;
 import com.balugaq.jeg.utils.GuideUtil;
 import com.balugaq.jeg.utils.LegacyDoctorMenu;
 import com.balugaq.jeg.utils.ReflectionUtil;
@@ -242,7 +243,13 @@ public class JEGGuideSettings {
         for (int ss : Formats.settings.getChars(Formats.Char.ADDONS)) {
             menu.addItem(ss, l, (pl, slot, item, action) -> {
                 pl.closeInventory();
-                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/wiki/Addons");
+                String url = "https://github.com/wickidcow/Slimefun-Legacy/wiki/Addons";
+                ClipboardUtil.sendUrl(
+                    pl,
+                    "&bSlimefun Legacy Addons: &f" + url,
+                    "&eClick to open the Slimefun Legacy Addons page",
+                    url
+                );
                 return false;
             });
         }

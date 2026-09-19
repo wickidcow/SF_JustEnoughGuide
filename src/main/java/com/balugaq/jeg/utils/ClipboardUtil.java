@@ -53,6 +53,28 @@ public class ClipboardUtil {
         }
     }
 
+    /**
+     * Sends a real clickable web link. Paper uses Adventure OPEN_URL and
+     * Spigot-compatible servers use Bungee's OPEN_URL action.
+     */
+    public static void sendUrl(Player player, String display, String hover, String url) {
+        if (PlatformUtil.isPaper()) {
+            Component component = Component.text(ChatColors.color(display))
+                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
+                    Component.text(ChatColors.color(hover), NamedTextColor.YELLOW)))
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
+            player.sendMessage(component);
+        } else {
+            TextComponent component = new TextComponent(ChatColors.color(display));
+            component.setHoverEvent(new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                new Text(ChatColors.color(hover))
+            ));
+            component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+            player.spigot().sendMessage(component);
+        }
+    }
+
     public static Component makeComponentPaper(Component display, String text) {
         return makeComponentPaper(
             display,
