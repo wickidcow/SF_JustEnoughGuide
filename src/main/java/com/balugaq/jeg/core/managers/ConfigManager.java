@@ -186,9 +186,9 @@ public class ConfigManager extends AbstractManager {
             old.add(" t rrr i ");
             old.add("   rrr  E");
             List<String> n = new ArrayList<>();
-            n.add("b  rrr  w");
+            n.add("bK rrr  w");
             n.add(" t rrr i ");
-            n.add("m  rrr  E");
+            n.add("m  rrr ME");
             if (rawRecipeFormat.equals(old)) {
                 cfg.set("custom-format.recipe", n);
                 this.RECIPE_FORMAT = n;
@@ -239,9 +239,9 @@ public class ConfigManager extends AbstractManager {
             old.add("ddddddddd");
             old.add("ddddddddd");
             List<String> n = new ArrayList<>();
-            n.add("b  rrr  w");
+            n.add("bK rrr  w");
             n.add(" t rrr i ");
-            n.add("m  rrr  E");
+            n.add("m  rrr ME");
             n.add("BPBBBBBNB");
             n.add("ddddddddd");
             n.add("ddddddddd");
@@ -398,7 +398,7 @@ public class ConfigManager extends AbstractManager {
                 getRecipeFormat().addAll(List.of(
                     "bK rrr  w",
                     " t rrr i ",
-                    "m  rrr  E"
+                    "m  rrr ME"
                 ));
             }
 
@@ -414,7 +414,7 @@ public class ConfigManager extends AbstractManager {
                 getRecipeDisplayFormat().addAll(List.of(
                     "bK rrr  w",
                     " t rrr i ",
-                    "m  rrr  E",
+                    "m  rrr ME",
                     "BPBBBBBNB",
                     "ddddddddd",
                     "ddddddddd"
