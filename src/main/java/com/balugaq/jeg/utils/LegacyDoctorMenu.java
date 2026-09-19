@@ -6,7 +6,6 @@ package com.balugaq.jeg.utils;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.balugaq.jeg.utils.formatter.Format;
 import com.balugaq.jeg.utils.formatter.Formats;
-import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.ChatColor;
@@ -30,7 +29,6 @@ public final class LegacyDoctorMenu {
     public static void renderButton(
         ChestMenu menu,
         Format format,
-        PlayerProfile profile,
         Player player
     ) {
         for (int slot : format.getChars(Formats.Char.DOCTOR)) {
@@ -52,13 +50,13 @@ public final class LegacyDoctorMenu {
                 )
             );
             menu.addMenuClickHandler(slot, (pl, s, item, action) -> {
-                open(pl, profile);
+                open(pl);
                 return false;
             });
         }
     }
 
-    public static void open(Player player, PlayerProfile profile) {
+    public static void open(Player player) {
         if (!player.hasPermission(DOCTOR_PERMISSION)) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use Slimefun Doctor.");
             return;
