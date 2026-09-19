@@ -208,17 +208,17 @@ public class RTSSearchGroup extends FlexItemGroup {
         int @Nullable [] slots,
         @Nullable String presetSearchTerm) {
         if (!rtsAvailable) {
-            player.sendMessage(ChatColors.color("&c实时搜索在此版本不可用，请联系服主以寻求帮助。"));
+            player.sendMessage(ChatColors.color("&cReal-time search is unavailable on this server version. Contact a server administrator."));
             return null;
         }
         try {
             AnvilGUI.Builder builder = new AnvilGUI.Builder()
                 .plugin(JustEnoughGuide.getInstance())
-                .itemLeft(ChestMenuUtils.getBackButton(player, "", "&f左键: &7返回上一页", "&fShift + 左键: &7返回主菜单"))
+                .itemLeft(ChestMenuUtils.getBackButton(player, "", "&fLeft Click: &7Return to the previous page", "&fShift + Left Click: &7Return to the main menu"))
                 .itemRight(Models.INPUT_TEXT_ICON)
                 .itemOutput(ItemStackUtil.air())
                 .text("")
-                .title("在下方输入搜索内容")
+                .title("Enter a search term below")
                 .onClose((stateSnapshot) -> {
                     RTSEvents.CloseRTSEvent event = new RTSEvents.CloseRTSEvent(player, stateSnapshot);
                     Bukkit.getPluginManager().callEvent(event);
@@ -262,7 +262,7 @@ public class RTSSearchGroup extends FlexItemGroup {
         } catch (Exception | NoClassDefFoundError e) {
             rtsAvailable = false;
             Debug.trace(e);
-            player.sendMessage(ChatColors.color("&c实时搜索在此版本不可用，请联系服主以寻求帮助。"));
+            player.sendMessage(ChatColors.color("&cReal-time search is unavailable on this server version. Contact a server administrator."));
             return null;
         }
     }
