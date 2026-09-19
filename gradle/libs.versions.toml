@@ -18,7 +18,6 @@ libbyBukkit = "1.3.2"
 
 # Third-party plugin/library versions
 placeholderapi = "2.12.3"
-guizhanLibPlugin = "2.5.0"
 cmiLib = "1.5.9.6"
 
 # JitPack commit versions
@@ -62,7 +61,6 @@ houbb-opencc4j = { module = "com.github.houbb:opencc4j", version.ref = "houbbOpe
 houbb-heaven = { module = "com.github.houbb:heaven", version.ref = "houbbHeaven" }
 houbb-nlp-common = { module = "com.github.houbb:nlp-common", version.ref = "houbbNlpCommon" }
 # Plugin dependencies
-guizhan-lib = { module = "net.guizhanss:GuizhanLibPlugin", version.ref = "guizhanLibPlugin" }
 slimefun-translation = { module = "net.guizhanss:SlimefunTranslation", version.ref = "slimefunTranslation" }
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 networks-expansion = { module = "com.github.ytdd9527:NetworksExpansion", version.ref = "networksExpansion" }
