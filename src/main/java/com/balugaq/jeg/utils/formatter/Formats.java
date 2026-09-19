@@ -113,6 +113,7 @@ public class Formats {
         ITEM_WIKI_PAGE = 'w',
         SETTINGS_PANEL_BUTTON = 'T',
         DOCTOR = 'D',
+        MACHINE_RECIPES = 'M',
         SEARCH = 'S',
         RTS = 'R',
         CONTENT = 'i',
