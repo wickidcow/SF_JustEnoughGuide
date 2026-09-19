@@ -72,13 +72,13 @@ public class VanillaBlockHUDDisplayGuideOption implements PrioritySlimefunGuideO
         boolean enabled = getSelectedOption(p, guide).orElse(false);
         ItemStack item = Converter.getItem(
             isEnabled(p) ? Material.GRASS_BLOCK : Material.DIRT,
-            "&b原版方块HUD显示: &" + (enabled ? "a启用" : "4禁用"),
+            "&bVanilla Block HUD Display: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择是否",
-            "&7在使用SlimeHUD显示方块信息时",
-            "&7允许显示原版方块的信息",
+            "&7Choose whether SlimeHUD may",
+            "&7display information for",
+            "&7vanilla Minecraft blocks.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 原版方块HUD显示"
+            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Vanilla Block HUD Display"
         );
         return Optional.of(item);
     }
