@@ -69,10 +69,18 @@ jobs:
           grep -Fq "TICK_TOP = 'Q'" "$FORMATS"
           grep -Fq 'bQsBvBuDW' "$CONFIG"
 
-      - name: Verify canonical addon JAR
+      - name: Verify canonical shaded addon JAR
+        shell: bash
         run: |
-          test -s build/libs/SF_JustEnoughGuide2.1.61.jar
-          jar tf build/libs/SF_JustEnoughGuide2.1.61.jar >/dev/null
+          set -euo pipefail
+          JAR=build/libs/SF_JustEnoughGuide2.1.61.jar
+          test -s "$JAR"
+          jar tf "$JAR" >/dev/null
+          jar tf "$JAR" | grep -Fq 'com/balugaq/jeg/libraries/libby/LibraryManager.class'
+          if jar tf "$JAR" | grep -Fq 'net/byteflux/libby/LibraryManager.class'; then
+            echo 'Unrelocated Libby class found in distributable JAR.' >&2
+            exit 1
+          fi
 
       - name: Upload addon JAR
         uses: actions/upload-artifact@v4
