@@ -54,13 +54,13 @@ public class ShareInGuideOption extends AbstractBooleanGuideOption {
                 Material.WRITTEN_BOOK,
                 meta -> meta.addItemFlags(JEGVersionedItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             ),
-            "&b接收分享的物品: &" + (enabled ? "a启用" : "4禁用"),
+            "&bReceive Shared Items: &" + (enabled ? "aEnabled" : "4Disabled"),
             "",
-            "&7你现在可以选择",
-            "&7当他人分享一个物品时",
-            "&7是否接收那个玩家发送的推送消息",
+            "&7Choose whether to receive",
+            "&7guide notifications when another",
+            "&7player shares an item with you.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "禁用" : "启用") + " 接收分享的物品"
+            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Receive Shared Items"
         );
     }
 }
