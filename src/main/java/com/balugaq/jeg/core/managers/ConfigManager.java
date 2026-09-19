@@ -257,7 +257,7 @@ public class ConfigManager extends AbstractManager {
         List<String> rawSettingsFormat = cfg.getStringList("custom-format.settings");
         if (rawSettingsFormat == null || rawSettingsFormat.isEmpty()) {
             this.SETTINGS_FORMAT = new ArrayList<>();
-            this.SETTINGS_FORMAT.add("bBsBvBuDW");
+            this.SETTINGS_FORMAT.add("bQsBvBuDW");
             this.SETTINGS_FORMAT.add("BBBBBBBBB");
             this.SETTINGS_FORMAT.add("BoooooooB");
             this.SETTINGS_FORMAT.add("BoooooooB");

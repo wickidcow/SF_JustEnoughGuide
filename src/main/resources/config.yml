@@ -130,9 +130,9 @@ custom-format:
   # Settings screen.
   # s = contributors, v = version, u = source, W = wiki
   # o = guide option, l = addons, z = unofficial-build notice
-  # U = unavailable feature, D = Slimefun Legacy Doctor
+  # U = unavailable feature, D = Slimefun Legacy Doctor, Q = Slimefun Tick Top
   settings:
-    - "bBsBvBuDW"
+    - "bQsBvBuDW"
     - "BBBBBBBBB"
     - "BoooooooB"
     - "BoooooooB"
