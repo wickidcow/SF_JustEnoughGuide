@@ -24,6 +24,7 @@ import com.balugaq.jeg.implementation.option.delegate.GuideModeOption;
 import com.balugaq.jeg.implementation.option.delegate.LearningAnimationOption;
 import com.balugaq.jeg.implementation.option.delegate.PlayerLanguageOption;
 import com.balugaq.jeg.utils.GuideUtil;
+import com.balugaq.jeg.utils.LegacyDoctorMenu;
 import com.balugaq.jeg.utils.ReflectionUtil;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.balugaq.jeg.utils.formatter.Formats;
@@ -97,6 +98,7 @@ public class JEGGuideSettings {
             menu, Formats.settings.getChars(Formats.Char.BACKGROUND).stream().mapToInt(i -> i).toArray());
 
         addHeader(p, menu);
+        LegacyDoctorMenu.renderButton(menu, Formats.settings, p);
         addConfigurableOptions(p, menu, guide, page);
 
         Formats.settings.renderCustom(menu);
