@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @NullMarked
 public class JEGGuideGroup extends ClassicGuideGroup {
     public static final ItemStack HEADER = Converter.getItem(
-        Material.BEACON, "&bJEG 使用指南", "&b作者: 大香蕉", "&7Legacy fork maintained by wickidcow", "&bBrowse the entries below to learn JEG's enhanced guide features.");
+        Material.BEACON, "&bJEG User Guide", "&bOriginal author: balugaq", "&7Legacy fork maintained by wickidcow", "&bBrowse the entries below to learn JEG's enhanced guide features.");
     public static final int[] GUIDE_SLOTS =
         Formats.helper.getChars('h').stream().mapToInt(i -> i).toArray();
 
