@@ -34,7 +34,7 @@ public final class LegacyDoctorMenu {
         Player player
     ) {
         for (int slot : format.getChars(Formats.Char.DOCTOR)) {
-            if (!player.hasPermission(DOCTOR_PERMISSION)) {
+            if (!LegacyMachineRecipeBridge.isLegacyAvailable() || !player.hasPermission(DOCTOR_PERMISSION)) {
                 menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
                 continue;
             }
