@@ -56,7 +56,7 @@ public class ShareOutGuideOption extends AbstractBooleanGuideOption {
             "&7an item in the guide shares",
             "&7that item with other players.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Share Items with Others"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Share Items with Others"
         );
     }
 }
