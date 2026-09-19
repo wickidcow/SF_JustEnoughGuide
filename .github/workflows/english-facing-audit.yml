@@ -1,0 +1,22 @@
+name: English Facing Text Audit
+
+on:
+  push:
+    branches:
+      - master
+      - legacy-addon-reintegration
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Verify English-facing resources and runtime strings
+        run: python3 scripts/check_english_facing_text.py
