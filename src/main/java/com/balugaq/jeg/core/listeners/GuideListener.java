@@ -67,7 +67,7 @@ public class GuideListener implements Listener {
     @Internal
     public static void openGuide(Player player, SlimefunGuideMode mode) {
         if (!player.isOp() && !Slimefun.getWorldSettingsService().isWorldEnabled(player.getWorld())) {
-            player.sendMessage(ChatColors.color("&c你没有权限打开粘液科技指南书"));
+            player.sendMessage(ChatColors.color("&cYou do not have permission to open the Slimefun guide in this world."));
             return;
         }
 
@@ -129,7 +129,7 @@ public class GuideListener implements Listener {
 
         if (tryOpenGuide(p, e, SlimefunGuideMode.SURVIVAL_MODE) == Event.Result.ALLOW) {
             if (p.isSneaking()) {
-                JEGGuideSettings.openSettings(p, e.getItem());
+                JEGGuideSettings.openSettings(p, e.getItem(), SlimefunGuideMode.SURVIVAL_MODE);
             } else {
                 SlimefunGuideOpenEvent event = new SlimefunGuideOpenEvent(
                     p, e.getItem(),
@@ -139,11 +139,16 @@ public class GuideListener implements Listener {
             }
         } else if (tryOpenGuide(p, e, SlimefunGuideMode.CHEAT_MODE) == Event.Result.ALLOW) {
             if (p.isSneaking()) {
+                SlimefunGuideMode settingsMode =
+                    p.isOp() || p.hasPermission("slimefun.cheat.items")
+                        ? SlimefunGuideMode.CHEAT_MODE
+                        : SlimefunGuideMode.SURVIVAL_MODE;
                 JEGGuideSettings.openSettings(
                     p,
-                    p.isOp() || p.hasPermission("slimefun.cheat.items")
+                    settingsMode == SlimefunGuideMode.CHEAT_MODE
                         ? e.getItem()
-                        : SlimefunGuide.getItem(SlimefunGuideMode.SURVIVAL_MODE)
+                        : SlimefunGuide.getItem(SlimefunGuideMode.SURVIVAL_MODE),
+                    settingsMode
                 );
             } else {
                 p.chat("/sf cheat");
