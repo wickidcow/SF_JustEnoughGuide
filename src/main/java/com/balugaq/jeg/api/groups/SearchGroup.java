@@ -376,7 +376,7 @@ public class SearchGroup extends BaseGroup<SearchGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu chestMenu = new ChestMenu("你正在搜索: " + ChatUtils.crop(ChatColor.WHITE, searchTerm));
+        ChestMenu chestMenu = new ChestMenu("Searching: " + ChatUtils.crop(ChatColor.WHITE, searchTerm));
 
         Format format = Formats.sub;
         int maxPage = (this.slimefunItemList.size() - 1) / format.getChars(Formats.Char.CONTENT).size() + 1;
