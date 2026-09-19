@@ -501,8 +501,8 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
             getLogger().warning("Unrecognized Minecraft version! (" + javaVersion + ")");
         } else if (!minecraftVersion.isAtLeast(LEAST_MC_VERSION)) {
             getLogger()
-                .warning("Minecraft version is below the supported minimum (" + minecraftVersion.humanize() + "), 请使用 Minecraft "
-                    + RECOMMENDED_MC_VERSION.humanize() + " 或以上版本!");
+                .warning("Minecraft version is below the supported minimum (" + minecraftVersion.humanize() + "). Please use Minecraft "
+                    + RECOMMENDED_MC_VERSION.humanize() + " or newer!");
         }
 
         if (javaVersion < LEAST_JAVA_VERSION) {
