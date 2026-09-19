@@ -69,7 +69,7 @@ public class KeybindItemsGroup extends BaseGroup<KeybindItemsGroup> {
         final Player player,
         final PlayerProfile profile,
         final SlimefunGuideMode slimefunGuideMode) {
-        ChestMenu menu = new ChestMenu("&6选择你要编辑的按键控制");
+        ChestMenu menu = new ChestMenu("&6Choose a Keybind to Edit");
 
         Format format = Formats.keybind;
         int max = Math.min(
