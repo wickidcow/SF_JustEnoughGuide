@@ -31,7 +31,6 @@ import io.github.thebusybiscuit.slimefun4.utils.itemstack.SlimefunGuideItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
@@ -47,12 +46,7 @@ public class CheatGuideImplementation extends CheatSheetSlimefunGuide implements
     public final ItemStack item;
 
     public CheatGuideImplementation() {
-        ItemMeta meta = SlimefunGuide.getItem(getMode()).getItemMeta();
-        String name = "";
-        if (meta != null) {
-            name = meta.getDisplayName();
-        }
-        item = new SlimefunGuideItem(this, name);
+        item = new SlimefunGuideItem(this, "&cSlimefun Legacy Guide &4(Cheat Mode)");
     }
 
     // fallback
