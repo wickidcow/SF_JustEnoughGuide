@@ -1,8 +1,10 @@
 name: JustEnoughGuide
-author: balugaq
-description: This is a Slimefun addon and improved the guide.
+authors:
+  - balugaq
+  - wickidcow
+description: Enhanced English-facing Slimefun guide maintained for Slimefun Legacy.
 main: com.balugaq.jeg.implementation.JustEnoughGuide
-website: https://github.com/balugaq/JustEnoughGuide
+website: https://github.com/wickidcow/SF_JustEnoughGuide
 version: ${version}
 api-version: 1.17
 depend:
