@@ -4,8 +4,6 @@
 # Upstream JEG features are retained while Slimefun Legacy-specific integrations
 # are added without bypassing Slimefun's safety and permission checks.
 
-auto-update: false
-
 guide:
   survival-guide-title: "&2&lSlimefun Guide &7(Enhanced)"
   cheat-guide-title: "&c&lSlimefun Guide &4(Cheat Mode)"
