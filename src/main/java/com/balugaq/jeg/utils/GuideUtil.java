@@ -1018,7 +1018,11 @@ public class GuideUtil {
                     return false;
                 }
 
-                JEGGuideSettings.openSettings(pl, pl.getInventory().getItemInMainHand());
+                JEGGuideSettings.openSettings(
+                    pl,
+                    pl.getInventory().getItemInMainHand(),
+                    getLastGuideMode(pl)
+                );
                 return false;
             }));
         }

@@ -17,7 +17,7 @@ SF_JustEnoughGuide<version>.jar
 Example:
 
 ```
-SF_JustEnoughGuide2.1.57.jar
+SF_JustEnoughGuide2.1.58.jar
 ```
 
 ## Requirements
@@ -39,7 +39,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 - Core Slimefun categories first, followed by addon categories alphabetically
 - Slimefun item ID display
 - Addon integrations
-- Slimefun Legacy Doctor shortcuts
+- Slimefun Legacy Doctor shortcuts in both survival and `/sf cheat` Settings & Info
 - Slimefun Legacy machine recipe provider support
 - Safe machine-input fill delegation to Slimefun Legacy
 - Migration from the former Slimefun Legacy native Enhanced Guide

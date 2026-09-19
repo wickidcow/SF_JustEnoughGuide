@@ -82,15 +82,34 @@ public class JEGGuideSettings {
     }
 
     public static void openSettings(final Player p, final ItemStack guide) {
-        openSettings(p, guide, getLastPage(p));
+        openSettings(p, guide, getLastPage(p), GuideUtil.getLastGuideMode(p));
+    }
+
+    public static void openSettings(
+        final Player p,
+        final ItemStack guide,
+        final SlimefunGuideMode mode) {
+        openSettings(p, guide, getLastPage(p), mode);
     }
 
     public static void openSettings(
         final Player p,
         final ItemStack guide,
         @Range(from = 1, to = Integer.MAX_VALUE) int page) {
+        openSettings(p, guide, page, GuideUtil.getLastGuideMode(p));
+    }
+
+    public static void openSettings(
+        final Player p,
+        final ItemStack guide,
+        @Range(from = 1, to = Integer.MAX_VALUE) int page,
+        final SlimefunGuideMode mode) {
         setLastPage(p, page);
-        ChestMenu menu = new ChestMenu(Slimefun.getLocalization().getMessage(p, "guide.title.settings"));
+        String title = Slimefun.getLocalization().getMessage(p, "guide.title.settings");
+        if (mode == SlimefunGuideMode.CHEAT_MODE) {
+            title += " - Cheat Mode";
+        }
+        ChestMenu menu = new ChestMenu(title);
 
         menu.setEmptySlotsClickable(false);
         menu.addMenuOpeningHandler(SoundEffect.GUIDE_OPEN_SETTING_SOUND::playFor);
@@ -98,30 +117,30 @@ public class JEGGuideSettings {
         ChestMenuUtils.drawBackground(
             menu, Formats.settings.getChars(Formats.Char.BACKGROUND).stream().mapToInt(i -> i).toArray());
 
-        addHeader(p, menu);
-        LegacyDoctorMenu.renderButton(menu, Formats.settings, p);
-        addConfigurableOptions(p, menu, guide, page);
+        addHeader(p, menu, mode);
+        LegacyDoctorMenu.renderButton(menu, Formats.settings, p, mode, guide);
+        addConfigurableOptions(p, menu, guide, page, mode);
 
         Formats.settings.renderCustom(menu);
         menu.open(p);
     }
 
     private static void addHeader(
-        final Player p, final ChestMenu menu) {
+        final Player p, final ChestMenu menu, final SlimefunGuideMode mode) {
         LocalizationService locale = Slimefun.getLocalization();
 
         // @formatter:off
         ItemStack b = PatchScope.Background.patch(
                 p,
                 Converter.getItem(
-                        SlimefunGuide.getItem(SlimefunGuideMode.SURVIVAL_MODE),
+                        SlimefunGuide.getItem(mode),
                         "&e\u21E6 " + locale.getMessage(p, "guide.back.title"),
                         "",
                         "&7" + locale.getMessage(p, "guide.back.guide")));
 
         for (int ss : Formats.settings.getChars(Formats.Char.BACK)) {
             menu.addItem(ss, b, (pl, slot, item, action) -> {
-                GuideUtil.openMainMenuAsync(pl);
+                GuideUtil.openMainMenuAsync(pl, mode);
                 return false;
             });
         }
@@ -308,7 +327,8 @@ public class JEGGuideSettings {
         final Player p,
         final ChestMenu menu,
         final ItemStack guide,
-        @Range(from = 1, to = Integer.MAX_VALUE) int page) {
+        @Range(from = 1, to = Integer.MAX_VALUE) int page,
+        final SlimefunGuideMode mode) {
         List<Integer> slots = Formats.settings.getChars('o');
         List<SlimefunGuideOption<?>> options = new ArrayList<>(getOptions());
         int maxPage = (int) Math.ceil(options.size() / (double) slots.size());
@@ -346,7 +366,7 @@ public class JEGGuideSettings {
             menu.addMenuClickHandler(
                 ss, (pl, slot, item, action) -> {
                     if (page > 1) {
-                        openSettings(pl, guide, page - 1);
+                        openSettings(pl, guide, page - 1, mode);
                     }
 
                     return false;
@@ -359,7 +379,7 @@ public class JEGGuideSettings {
             menu.addMenuClickHandler(
                 ss, (pl, slot, item, action) -> {
                     if (page + 1 <= maxPage) {
-                        openSettings(pl, guide, page + 1);
+                        openSettings(pl, guide, page + 1, mode);
                     }
 
                     return false;
