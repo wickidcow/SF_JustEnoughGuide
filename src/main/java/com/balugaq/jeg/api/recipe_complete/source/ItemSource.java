@@ -117,20 +117,20 @@ public interface ItemSource {
 
         if (maxTimes <= 0) {
             // 无法放置
-            player.sendMessage(ChatColors.color("&c[配方补全] 没有足够的材料！"));
+            player.sendMessage(ChatColors.color("&c[Recipe Completion] Not enough materials."));
             return false;
         }
 
         var craftResult = RecipeCompletionUtils.maxCraftable(maxTimes, unordered, ingredientSlots, interactor, choices);
         if (craftResult.leftInt() <= 0) {
             // 无法放置
-            player.sendMessage(ChatColors.color("&c[配方补全] 没有足够的位置放置材料！"));
+            player.sendMessage(ChatColors.color("&c[Recipe Completion] There is not enough input space for these materials."));
             return false;
         }
 
         if (craftResult.leftInt() < maxTimes) {
             // 可供放置的位置不足，这部分另外提醒
-            player.sendMessage(ChatColors.color("&e[配方补全] 可供放置材料的位置不足！至多放置 " + session.getTimes() + " -> " + craftResult.leftInt() + " 份材料！"));
+            player.sendMessage(ChatColors.color("&e[Recipe Completion] Input space is limited. Requested " + session.getTimes() + " -> " + craftResult.leftInt() + " recipe sets."));
         }
 
         maxTimes = craftResult.leftInt();
@@ -193,7 +193,7 @@ public interface ItemSource {
 
         if (!pushFailed.isEmpty()) {
             for (var e : pushFailed.entrySet()) {
-                player.sendMessage(ChatColors.color("&c[配方补全] 无法放置物品: " + RecipeCompletionUtils.getAmountString(e.getKey(), e.getValue())));
+                player.sendMessage(ChatColors.color("&c[Recipe Completion] Could not place: " + RecipeCompletionUtils.getAmountString(e.getKey(), e.getValue())));
                 player.getWorld().dropItemNaturally(player.getLocation(), StackUtils.getAsQuantity(e.getKey(), e.getValue()));
             }
         }
