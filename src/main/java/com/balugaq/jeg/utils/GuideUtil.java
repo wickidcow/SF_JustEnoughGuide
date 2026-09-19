@@ -1021,6 +1021,7 @@ public class GuideUtil {
         addBackgroundItems(menu, format, profile);
         addBackButton(menu, format, profile, player);
         addSettingsPanelButton(menu, format, profile, player);
+        LegacyDoctorMenu.renderButton(menu, format, profile, player);
         addSearchButton(menu, format, profile, player);
         addRTSButton(menu, format, profile, player);
         format.renderCustom(menu);
@@ -1061,6 +1062,7 @@ public class GuideUtil {
         addBackgroundItems(menu, format, profile);
         addBackButton(menu, format, profile, player);
         addSettingsPanelButton(menu, format, profile, player);
+        LegacyDoctorMenu.renderButton(menu, format, profile, player);
         addSearchButton(menu, format, profile, player);
         if (currentPage != 0 && maxPage != 0) {
             addPageButtons(menu, format, profile, player, group, currentPage, maxPage, pageOpener);
