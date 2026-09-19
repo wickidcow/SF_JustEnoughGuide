@@ -242,7 +242,7 @@ public class JEGGuideSettings {
         for (int ss : Formats.settings.getChars(Formats.Char.ADDONS)) {
             menu.addItem(ss, l, (pl, slot, item, action) -> {
                 pl.closeInventory();
-                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/wikiAddons");
+                ChatUtils.sendURL(pl, "https://github.com/wickidcow/Slimefun-Legacy/wiki/Addons");
                 return false;
             });
         }
