@@ -12,16 +12,9 @@ groups:
       name: "&aCustom Group"
     items:
       - COPPER_INGOT
-    # 物品分类
-    # B = 背景板
-    # b = 返回
-    # R = 实时搜索（功能未开启则为背景板显示）
-    # C = 收藏物列表（功能未开启则为背景板显示）
-    # c = 收藏物品（功能未开启则为背景板显示）
-    # S = 搜索
-    # i = 物品
-    # P = 上一页
-    # N = 下一页
+    # Item-group format:
+    # B background, b back, R real-time search, C bookmarks,
+    # c bookmark item, S search, i item, P previous, N next.
     formats:
       - "BbBBBBRSB"
       - "iiiiiiiii"
@@ -29,14 +22,15 @@ groups:
       - "iiiiiiiii"
       - "iiiiiiiii"
       - "BPBcCBBNB"
+
   group2:
     enabled: false
     tier: 2
     id: custom-group2
     mode: merge
     display:
-      material: grass
-      name: "&aCustom Group2"
+      material: grass_block
+      name: "&aCustom Group 2"
     groups:
       - slimefun:misc
     items:
@@ -48,16 +42,17 @@ groups:
       - "iiiiiiiii"
       - "iiiiiiiii"
       - "BPBcCBBNB"
+
   group3:
     enabled: false
     tier: 3
     id: custom-group3
-    mode: merge
+    mode: actions
     actions:
       # %player% = player name
-      - "command /say 1" # "command <command>" # run as console
-      - "commandp /say 1" # "commandp <command>" # run as player
-      - "link https://www.bilibili.com/video/BV1GJ411x7h7" # "link <link>" # open link for the player
-      - "sayp 101" # "sayp <message>" # chat the message
-      - "lookupitem TIN_CAN" # "lookupitem <id>" # lookup item
-      - "lookupgroup slimefun:misc" # "lookupgroup <group_id>" # lookup group
+      - "command /say Server action" # run as console
+      - "commandp /say Player action" # run as player
+      - "link https://github.com/wickidcow/SF_JustEnoughGuide"
+      - "sayp Hello"
+      - "lookupitem TIN_CAN"
+      - "lookupgroup slimefun:misc"
