@@ -5,8 +5,10 @@
 # are added without bypassing Slimefun's safety and permission checks.
 
 guide:
-  survival-guide-title: "&2&lSlimefun Guide &7(Enhanced)"
-  cheat-guide-title: "&c&lSlimefun Guide &4(Cheat Mode)"
+  survival-guide-title: "&2&lSlimefun Legacy Guide"
+  cheat-guide-title: "&c&lSlimefun Legacy Guide &4(Cheat Mode)"
+  # Keep built-in Slimefun categories first, then addon categories alphabetically.
+  core-first-addon-alphabetical: true
 
 improvements:
   # Pinyin search is disabled by default in the English-facing Legacy build.
@@ -181,6 +183,6 @@ debug: false
 
 data:
   # Internal configuration schema marker.
-  config-version: 20260729
+  config-version: 20260919
 
 click-print-warning: true
