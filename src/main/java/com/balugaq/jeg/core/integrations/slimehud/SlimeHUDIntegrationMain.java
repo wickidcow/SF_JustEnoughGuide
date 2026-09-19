@@ -68,62 +68,62 @@ public class SlimeHUDIntegrationMain implements Integration {
         String base = ItemStackHelper.getDisplayName(new ItemStack(block.getType()));
         BlockData data = block.getBlockData();
         if (data instanceof Openable d && !d.isOpen() && !(data instanceof Barrel)) {
-            name += "关上的";
+            name += "Closed ";
         }
         if (data instanceof Lightable d1 && d1.isLit()) {
             if (data instanceof Campfire d2 && d2.isSignalFire()) {
-                name += "点燃的";
+                name += "Signal-lit ";
             } else {
-                name += "点亮的";
+                name += "Lit ";
             }
         }
         if (data instanceof Waterlogged d && d.isWaterlogged()) {
-            name += "含水的";
+            name += "Waterlogged ";
         }
         if (data instanceof Snowable d && d.isSnowy()) {
-            name += "覆雪的";
+            name += "Snowy ";
         }
         if (data instanceof Farmland d && d.getMoisture() == d.getMaximumMoisture()) {
-            name += "湿润的";
+            name += "Moist ";
         }
         if (data instanceof Powerable d && d.isPowered() && (data instanceof Repeater || data instanceof Comparator)) {
-            name += "激活的";
+            name += "Powered ";
         }
         if (data instanceof DaylightDetector d && d.isInverted()) {
-            name += "夜间的";
+            name += "Inverted ";
         }
         if ((data instanceof Repeater d1 && d1.isLocked()) || (data instanceof Hopper d2 && !d2.isEnabled())) {
-            name += "锁定的";
+            name += "Locked ";
         }
         if (data instanceof Jukebox d && d.hasRecord()) {
-            name += "正在播放音乐的";
+            name += "Playing ";
         }
         if (data instanceof Piston d && d.isExtended()) {
-            name += "伸长的";
+            name += "Extended ";
         }
         if (data instanceof PistonHead d && d.isShort()) {
-            name += "短的";
+            name += "Short ";
         }
         if (data instanceof SculkShrieker d && d.isCanSummon()) {
-            name += "可召唤监守者的";
+            name += "Warden-capable ";
         }
         if (data instanceof SculkShrieker d && d.isShrieking()) {
-            name += "正在尖啸的";
+            name += "Shrieking ";
         }
         if (data instanceof TNT d && d.isUnstable()) {
-            name += "不稳定的";
+            name += "Unstable ";
         }
         if (data instanceof Tripwire d && d.isDisarmed()) {
-            name += "被触发的";
+            name += "Disarmed ";
         }
         if (MinecraftVersion.current().isAtLeast(MinecraftVersion.V1_21)) {
             if ((data instanceof TrialSpawner d1 && d1.isOminous()) || (data instanceof Vault d2 && d2.isOminous())) {
-                name += "不详的";
+                name += "Ominous ";
             }
         }
         name += base;
         if (data instanceof EndPortalFrame d && d.hasEye()) {
-            name += " (有眼睛)";
+            name += " (Eye inserted)";
         }
         return name;
     }
