@@ -78,7 +78,7 @@ public class VanillaBlockHUDDisplayGuideOption implements PrioritySlimefunGuideO
             "&7display information for",
             "&7vanilla Minecraft blocks.",
             "",
-            "&7\u21E8 &e点击 " + (enabled ? "disable" : "enable") + " Vanilla Block HUD Display"
+            "&7\u21E8 &eClick to " + (enabled ? "disable" : "enable") + " Vanilla Block HUD Display"
         );
         return Optional.of(item);
     }
