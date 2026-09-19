@@ -105,10 +105,10 @@ public class EMCItemPatchListener implements ItemPatchListener {
         }
 
         if (inputEmc > 0.0D) {
-            lore.add(ChatColors.color("&7输入EMC: &6" + EMCFormat.format(inputEmc)));
+            lore.add(ChatColors.color("&7Input EMC: &6" + EMCFormat.format(inputEmc)));
         }
         if (outputEmc > 0.0D) {
-            lore.add(ChatColors.color("&7输出EMC: &6" + EMCFormat.format(outputEmc)));
+            lore.add(ChatColors.color("&7Output EMC: &6" + EMCFormat.format(outputEmc)));
         }
         meta.setLore(lore);
         tagMeta(meta);
