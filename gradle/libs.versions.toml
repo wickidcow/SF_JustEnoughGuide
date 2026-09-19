@@ -6,9 +6,9 @@ findbugsAnnotations = "3.0.1u2"
 jetbrainsAnnotations = "26.1.0"
 jspecify = "1.0.1"
 
-# Paper & Slimefun Legacy
+# Paper & Slimefun
 paperApi = "1.21.11-R0.1-SNAPSHOT"
-slimefunLegacy = "v4.1.53"
+slimefun4 = "2025.1.2"
 
 # Shaded dependencies
 bstatsBukkit = "3.2.1"
@@ -44,7 +44,7 @@ houbbNlpCommon = "0.0.5"
 [libraries]
 # Compile-only dependencies
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paperApi" }
-slimefun4 = { module = "com.github.wickidcow:Slimefun-Legacy", version.ref = "slimefunLegacy" }
+slimefun4 = { module = "com.github.SlimefunGuguProject:Slimefun4", version.ref = "slimefun4" }
 findbugs-annotations = { module = "com.google.code.findbugs:annotations", version.ref = "findbugsAnnotations" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 # JitPack utility libraries
