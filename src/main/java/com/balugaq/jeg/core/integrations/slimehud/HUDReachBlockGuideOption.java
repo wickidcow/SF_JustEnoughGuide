@@ -85,7 +85,7 @@ public class HUDReachBlockGuideOption implements PrioritySlimefunGuideOption<Int
             "&aSlimeHUD Display Range",
             "",
             "&7Current range: " + value + " (allowed: 1-" + MAX_REACH_BLOCK + ")",
-            "&7\u21E8 &e点击设置距离"
+            "&7\u21E8 &eClick to set display range"
         );
         return Optional.of(item);
     }

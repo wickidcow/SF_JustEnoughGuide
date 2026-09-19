@@ -16,32 +16,50 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Slimefun Legacy Doctor shortcuts exposed through JEG.
  *
  * <p>The menu deliberately delegates to Slimefun Legacy's own commands instead of
- * duplicating Doctor or migration logic. This keeps all permission, safety,
- * fingerprint and confirmation checks in the Slimefun core that owns them.</p>
+ * duplicating Doctor or ticker logic. This keeps permission and safety checks in
+ * the Slimefun core that owns them.</p>
  */
 public final class LegacyDoctorMenu {
 
     private static final String DOCTOR_PERMISSION = "slimefun.command.doctor";
+    private static final String TICK_PERMISSION = "slimefun.command.tick";
 
     private LegacyDoctorMenu() {
     }
 
+    /**
+     * Renders the Doctor shortcut on normal JEG guide screens.
+     */
     public static void renderButton(
         ChestMenu menu,
         Format format,
         Player player
     ) {
-        renderButton(menu, format, player, GuideUtil.getLastGuideMode(player), null);
+        renderDoctorButton(
+            menu,
+            player,
+            GuideUtil.getLastGuideMode(player),
+            null,
+            resolveDoctorSlots(format)
+        );
     }
 
     /**
-     * Renders a Doctor entry that retains the guide mode it was opened from.
-     * When {@code settingsGuide} is non-null, the Doctor back button returns
-     * to Settings & Info instead of the main guide.
+     * Renders Slimefun Legacy diagnostics entries on Settings & Info.
+     *
+     * <p>Older saved JEG layouts may not contain the dedicated Doctor or Tick Top
+     * format characters. In that case, the maintained fork uses unused top-row
+     * background slots so server owners do not have to delete or regenerate
+     * their existing config.</p>
+     *
+     * <p>When {@code settingsGuide} is non-null, the Doctor back button returns
+     * to Settings & Info instead of the main guide.</p>
      */
     public static void renderButton(
         ChestMenu menu,
@@ -50,7 +68,22 @@ public final class LegacyDoctorMenu {
         SlimefunGuideMode mode,
         @Nullable ItemStack settingsGuide
     ) {
-        for (int slot : format.getChars(Formats.Char.DOCTOR)) {
+        List<Integer> doctorSlots = resolveDoctorSlots(format);
+        renderDoctorButton(menu, player, mode, settingsGuide, doctorSlots);
+
+        if (settingsGuide != null) {
+            renderTickTopButton(menu, player, mode, resolveTickTopSlots(format, doctorSlots));
+        }
+    }
+
+    private static void renderDoctorButton(
+        ChestMenu menu,
+        Player player,
+        SlimefunGuideMode mode,
+        @Nullable ItemStack settingsGuide,
+        List<Integer> slots
+    ) {
+        for (int slot : slots) {
             if (!LegacyMachineRecipeBridge.isLegacyAvailable() || !player.hasPermission(DOCTOR_PERMISSION)) {
                 menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
                 continue;
@@ -62,8 +95,8 @@ public final class LegacyDoctorMenu {
                     Material.HEART_OF_THE_SEA,
                     "&b&lSlimefun Legacy Doctor",
                     "",
-                    "&7Open read-only health and compatibility",
-                    "&7shortcuts for Slimefun Legacy.",
+                    "&7Open Slimefun Legacy health and",
+                    "&7compatibility diagnostics.",
                     mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
                     "",
                     "&eClick to open"
@@ -75,6 +108,77 @@ public final class LegacyDoctorMenu {
                 return false;
             });
         }
+    }
+
+    private static void renderTickTopButton(
+        ChestMenu menu,
+        Player player,
+        SlimefunGuideMode mode,
+        List<Integer> slots
+    ) {
+        for (int slot : slots) {
+            if (!LegacyMachineRecipeBridge.isLegacyAvailable() || !player.hasPermission(TICK_PERMISSION)) {
+                menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
+                continue;
+            }
+
+            menu.addItem(
+                slot,
+                Converter.getItem(
+                    Material.CLOCK,
+                    "&6&lSlimefun Tick Top",
+                    "",
+                    "&7Show the busiest Slimefun tickers",
+                    "&7using Slimefun Legacy's profiler.",
+                    mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
+                    "",
+                    "&eClick to run /sf tick top"
+                )
+            );
+            menu.addMenuClickHandler(slot, (pl, s, item, action) -> {
+                pl.closeInventory();
+                boolean handled = pl.performCommand("sf tick top");
+                if (!handled) {
+                    pl.sendMessage(ChatColor.RED + "Slimefun Legacy did not accept /sf tick top.");
+                }
+                return false;
+            });
+        }
+    }
+
+    private static List<Integer> resolveDoctorSlots(Format format) {
+        List<Integer> configured = format.getChars(Formats.Char.DOCTOR);
+        if (!configured.isEmpty()) {
+            return configured;
+        }
+
+        List<Integer> topRowBackgrounds = getTopRowBackgroundSlots(format);
+        if (!topRowBackgrounds.isEmpty()) {
+            return List.of(topRowBackgrounds.getLast());
+        }
+
+        return List.of();
+    }
+
+    private static List<Integer> resolveTickTopSlots(Format format, List<Integer> doctorSlots) {
+        List<Integer> configured = format.getChars(Formats.Char.TICK_TOP);
+        if (!configured.isEmpty()) {
+            return configured;
+        }
+
+        for (int slot : getTopRowBackgroundSlots(format)) {
+            if (!doctorSlots.contains(slot)) {
+                return List.of(slot);
+            }
+        }
+
+        return List.of();
+    }
+
+    private static List<Integer> getTopRowBackgroundSlots(Format format) {
+        return format.getChars(Formats.Char.BACKGROUND).stream()
+            .filter(slot -> slot >= 0 && slot < 9)
+            .toList();
     }
 
     public static void open(Player player) {

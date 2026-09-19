@@ -48,14 +48,35 @@ jobs:
             exit 1
           fi
 
+      - name: Verify maintained Legacy diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          HUD=src/main/java/com/balugaq/jeg/core/integrations/slimehud/HUDReachBlockGuideOption.java
+          DOCTOR=src/main/java/com/balugaq/jeg/utils/LegacyDoctorMenu.java
+          FORMATS=src/main/java/com/balugaq/jeg/utils/formatter/Formats.java
+          CONFIG=src/main/resources/config.yml
+
+          grep -Fq 'Click to set display range' "$HUD"
+          if grep -Fq '点击设置距离' "$HUD"; then
+            echo 'Chinese SlimeHUD range lore remains in the English fork.' >&2
+            exit 1
+          fi
+
+          grep -Fq 'slimefun.command.doctor' "$DOCTOR"
+          grep -Fq 'slimefun.command.tick' "$DOCTOR"
+          grep -Fq 'performCommand("sf tick top")' "$DOCTOR"
+          grep -Fq "TICK_TOP = 'Q'" "$FORMATS"
+          grep -Fq 'bQsBvBuDW' "$CONFIG"
+
       - name: Verify canonical addon JAR
         run: |
-          test -s build/libs/SF_JustEnoughGuide2.1.59.jar
-          jar tf build/libs/SF_JustEnoughGuide2.1.59.jar >/dev/null
+          test -s build/libs/SF_JEGuide2.0.60.jar
+          jar tf build/libs/SF_JEGuide2.0.60.jar >/dev/null
 
       - name: Upload addon JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JustEnoughGuide2.1.59
-          path: build/libs/SF_JustEnoughGuide2.1.59.jar
+          name: SF_JEGuide2.0.60.jar
+          path: build/libs/SF_JEGuide2.0.60.jar
           if-no-files-found: error

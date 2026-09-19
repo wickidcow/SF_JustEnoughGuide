@@ -8,17 +8,13 @@ It keeps the familiar JEG experience while integrating the hardened guide, diagn
 
 Use the latest GitHub release from this repository.
 
-Current release artifact naming:
+Current release artifact:
 
 ```
-SF_JustEnoughGuide<version>.jar
+SF_JEGuide2.0.60.jar
 ```
 
-Example:
-
-```
-SF_JustEnoughGuide2.1.59.jar
-```
+The plugin/release version is 2.1.60; the raw release JAR keeps the requested Legacy distribution filename above.
 
 ## Requirements
 
@@ -41,6 +37,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 - Addon integrations
 - English EMC labels for FinalTECH/FinalTech and EMC Tech integrations
 - Slimefun Legacy Doctor shortcuts in both survival and `/sf cheat` Settings & Info
+- `/sf tick top` shortcut in Settings & Info for quick ticker profiling
 - Slimefun Legacy machine recipe provider support
 - Safe machine-input fill delegation to Slimefun Legacy
 - Migration from the former Slimefun Legacy native Enhanced Guide
@@ -78,6 +75,7 @@ The generated `config.yml` is English-facing by default. Pinyin search is disabl
 The default guide title is **Slimefun Legacy Guide**. The `custom-format` section controls guide layouts. Legacy-specific markers include:
 
 - `D` — Slimefun Legacy Doctor
+- `Q` — Slimefun Legacy Tick Top
 - `M` — Slimefun Legacy machine recipes
 
 ## Compatibility target
