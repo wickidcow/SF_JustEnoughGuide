@@ -41,7 +41,7 @@ import java.util.Set;
 @SuppressWarnings({"deprecation", "ExtractMethodRecommender", "unused", "ConstantValue"})
 @NullMarked
 public class LocalHelper {
-    public static final String def = "未知附属";
+    public static final String def = "Unknown Addon";
     public static final Map<String, Map<String, SlimefunItemStack>> rscItems = new HashMap<>();
     // default language is zh-CN
     // support color symbol
