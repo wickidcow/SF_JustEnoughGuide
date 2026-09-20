@@ -51,7 +51,7 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
-          JAR="build/libs/SF_JustEnoughGuide2.1.61.jar"
+          JAR="build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar"
           test -s "$JAR"
           jar tf "$JAR" >/dev/null
           jar tf "$JAR" | grep -Fq 'com/balugaq/jeg/libraries/libby/LibraryManager.class'
@@ -64,8 +64,8 @@ jobs:
         if: steps.tag_check.outputs.exists == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JustEnoughGuide2.1.61.jar
-          path: build/libs/SF_JustEnoughGuide2.1.61.jar
+          name: SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
+          path: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
           if-no-files-found: error
 
       - name: Create Release
@@ -75,6 +75,6 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           name: JustEnoughGuide ${{ steps.version.outputs.version }}
           generate_release_notes: true
-          files: build/libs/SF_JustEnoughGuide2.1.61.jar
+          files: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
