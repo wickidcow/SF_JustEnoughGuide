@@ -32,7 +32,10 @@ import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -70,21 +73,18 @@ public final class JEGPlayerWAILA extends BukkitRunnable {
         this.nativeWaila = nativeWaila;
         this.nativeWasPaused = nativeWaila != null && nativeWaila.isPaused();
 
-        String bossbarColor = SlimeHUD.getInstance()
-            .getConfig()
+        FileConfiguration config = getSlimeHudConfig();
+        String bossbarColor = config
             .getString("waila.bossbar-color", "white")
             .trim()
             .toLowerCase(java.util.Locale.ROOT);
 
         this.useAutoBossBarColor = "inherit".equals(bossbarColor);
-        this.configuredLocation = SlimeHUD.getInstance()
-            .getConfig()
+        this.configuredLocation = config
             .getString("waila.location", "bossbar")
             .trim()
             .toLowerCase(java.util.Locale.ROOT);
-        this.keepTextColors = SlimeHUD.getInstance()
-            .getConfig()
-            .getBoolean("waila.use-original-colors", true);
+        this.keepTextColors = config.getBoolean("waila.use-original-colors", true);
 
         this.bossBar = Bukkit.createBossBar("", parseBarColor(bossbarColor), BarStyle.SOLID);
         this.bossBar.addPlayer(player);
@@ -114,7 +114,7 @@ public final class JEGPlayerWAILA extends BukkitRunnable {
         JEGPlayerWAILA controller = new JEGPlayerWAILA(player, nativeWaila);
         CONTROLLERS.put(player.getUniqueId(), controller);
 
-        long tickRate = Math.max(1L, SlimeHUD.getInstance().getConfig().getLong("waila.tick-rate", 5L));
+        long tickRate = Math.max(1L, getSlimeHudConfig().getLong("waila.tick-rate", 5L));
         controller.runTaskTimer(JustEnoughGuide.getInstance(), 0L, tickRate);
     }
 
@@ -189,14 +189,32 @@ public final class JEGPlayerWAILA extends BukkitRunnable {
     }
 
     private boolean isDisabledInCurrentWorld() {
-        if (SlimeHUD.getInstance().getConfig().getBoolean("waila.disabled", false)) {
+        FileConfiguration config = getSlimeHudConfig();
+        if (config.getBoolean("waila.disabled", false)) {
             return true;
         }
 
-        return SlimeHUD.getInstance()
-            .getConfig()
-            .getStringList("waila.disabled-in")
-            .contains(player.getWorld().getName());
+        String worldName = player.getWorld().getName();
+        String worldKey = player.getWorld().getKey().toString();
+        return config.getStringList("waila.disabled-in").stream()
+            .anyMatch(world -> world.equalsIgnoreCase(worldName) || world.equalsIgnoreCase(worldKey));
+    }
+
+    /**
+     * Reads SlimeHUD's Bukkit configuration without linking against the
+     * return type of SlimeHUD#getConfig(). Older SlimeHUD builds inherit an
+     * InfinityLib AddonConfig return descriptor while current standalone
+     * builds inherit JavaPlugin's FileConfiguration descriptor. Calling
+     * getConfig() through JavaPlugin keeps this integration binary-compatible
+     * with both layouts.
+     */
+    private static FileConfiguration getSlimeHudConfig() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("SlimeHUD");
+        if (plugin instanceof JavaPlugin javaPlugin) {
+            return javaPlugin.getConfig();
+        }
+
+        throw new IllegalStateException("SlimeHUD is not available as a Bukkit JavaPlugin");
     }
 
     private void updateFacing() {
