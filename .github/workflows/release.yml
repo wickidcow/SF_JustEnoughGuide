@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'build.gradle.kts'
+      - '.github/workflows/release.yml'
   workflow_dispatch:
 
 jobs:
