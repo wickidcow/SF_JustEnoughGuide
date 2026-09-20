@@ -28,6 +28,14 @@ jobs:
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
 
+      - name: Extract version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version = ' build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          test -n "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Verify English EMC integration labels
         shell: bash
         run: |
@@ -73,7 +81,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR=build/libs/SF_JustEnoughGuide2.1.61.jar
+          JAR=build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
           test -s "$JAR"
           jar tf "$JAR" >/dev/null
           jar tf "$JAR" | grep -Fq 'com/balugaq/jeg/libraries/libby/LibraryManager.class'
@@ -85,6 +93,6 @@ jobs:
       - name: Upload addon JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SF_JustEnoughGuide2.1.61.jar
-          path: build/libs/SF_JustEnoughGuide2.1.61.jar
+          name: SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
+          path: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
           if-no-files-found: error
