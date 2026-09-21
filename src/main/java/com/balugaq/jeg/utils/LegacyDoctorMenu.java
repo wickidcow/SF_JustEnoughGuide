@@ -95,8 +95,11 @@ public final class LegacyDoctorMenu {
                     Material.HEART_OF_THE_SEA,
                     "&b&lSlimefun Legacy Doctor",
                     "",
-                    "&7Open Slimefun Legacy health and",
-                    "&7compatibility diagnostics.",
+                    "&7Open Slimefun Legacy's native Doctor console.",
+                    "&7Includes admin-only resource-pack controls:",
+                    "&aEnable sender&7, &cdisable sender&7,",
+                    "&6upgrade texture-pack items&7 and",
+                    "&dremove Legacy resource-pack texture IDs&7.",
                     mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
                     "",
                     "&eClick to open"
