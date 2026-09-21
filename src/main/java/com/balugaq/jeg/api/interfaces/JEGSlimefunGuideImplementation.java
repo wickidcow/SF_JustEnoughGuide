@@ -164,7 +164,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         for (int i = 0; i < recipeSlots.size(); i++) {
             if (recipe.length <= i) break;
 
-            ItemStack recipeItem = recipe[i];
+            ItemStack recipeItem = refreshRecipeDisplayStack(recipe[i]);
             OnDisplay.Item.display(p, PatchScope.ItemRecipeIngredient.patch(p, recipeItem), OnDisplay.Item.Normal, this)
                 .at(menu, recipeSlots.get(i), 1);
 
@@ -182,10 +182,32 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
             OnDisplay.RecipeType.display(p, recipeType, PatchScope.ItemRecipeType.patch(p, recipeType.getItem(p)), this)
                 .at(menu, s, 1);
         }
+        ItemStack displayOutput = refreshRecipeDisplayStack(output);
         for (int s : format.getChars(Formats.Char.RECIPE_RESULT)) {
-            OnDisplay.Item.display(p, PatchScope.ItemRecipeOut.patch(p, output), OnDisplay.Item.Normal, this)
+            OnDisplay.Item.display(p, PatchScope.ItemRecipeOut.patch(p, displayOutput), OnDisplay.Item.Normal, this)
                 .at(menu, s, 1);
         }
+    }
+
+    /**
+     * Refreshes Slimefun texture/model metadata on recipe display copies.
+     *
+     * <p>Addons commonly cache recipe ItemStacks during registration. If a server's item-model
+     * mappings are loaded or changed later, those cached stacks can keep their raw fallback
+     * material appearance in the guide. Reapplying the current mapping to a clone keeps the
+     * recipe metadata and amount intact without mutating the addon's registered recipe.</p>
+     */
+    private static @Nullable ItemStack refreshRecipeDisplayStack(@Nullable ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+
+        ItemStack display = stack.clone();
+        SlimefunItem slimefunItem = SlimefunItem.getByItem(display);
+        if (slimefunItem != null) {
+            Slimefun.getItemTextureService().setTexture(display, slimefunItem.getId());
+        }
+        return display;
     }
 
     default ChestMenu create0(Player p) {
