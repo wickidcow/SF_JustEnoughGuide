@@ -104,7 +104,9 @@ public final class LegacyDoctorMenu {
             );
             ItemStack returnGuide = settingsGuide == null ? null : settingsGuide.clone();
             menu.addMenuClickHandler(slot, (pl, s, item, action) -> {
-                open(pl, mode, returnGuide);
+                if (!openNativeDoctorTools(pl, settingsGuide)) {
+                    open(pl, mode, returnGuide);
+                }
                 return false;
             });
         }
@@ -179,6 +181,24 @@ public final class LegacyDoctorMenu {
         return format.getChars(Formats.Char.BACKGROUND).stream()
             .filter(slot -> slot >= 0 && slot < 9)
             .toList();
+    }
+
+    private static boolean openNativeDoctorTools(Player player, @Nullable ItemStack guide) {
+        try {
+            var method = io.github.thebusybiscuit.slimefun4.core.guide.options.SlimefunGuideSettings.class
+                .getMethod("openDoctorTools", Player.class, ItemStack.class);
+            ItemStack returnGuide = guide == null
+                ? io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide.getItem(
+                    GuideUtil.getLastGuideMode(player))
+                : guide.clone();
+            method.invoke(null, player, returnGuide);
+            return true;
+        } catch (NoSuchMethodException ignored) {
+            return false;
+        } catch (ReflectiveOperationException exception) {
+            player.sendMessage(ChatColor.RED + "Could not open Slimefun Legacy's native Doctor console.");
+            return false;
+        }
     }
 
     public static void open(Player player) {
