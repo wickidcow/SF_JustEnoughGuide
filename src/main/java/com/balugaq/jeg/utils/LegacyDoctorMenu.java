@@ -95,11 +95,10 @@ public final class LegacyDoctorMenu {
                     Material.HEART_OF_THE_SEA,
                     "&b&lSlimefun Legacy Doctor",
                     "",
-                    "&7Open Slimefun Legacy's native Doctor console.",
-                    "&7Includes admin-only resource-pack controls:",
-                    "&aEnable sender&7, &cdisable sender&7,",
-                    "&6upgrade texture-pack items&7 and",
-                    "&dremove Legacy resource-pack texture IDs&7.",
+                    "&7Open the Slimefun Legacy diagnostics menu.",
+                    "&7Safe checks can be run by clicking.",
+                    "&7Repair commands are shown exactly as",
+                    "&7commands for the server owner to type.",
                     mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
                     "",
                     "&eClick to open"
@@ -107,9 +106,7 @@ public final class LegacyDoctorMenu {
             );
             ItemStack returnGuide = settingsGuide == null ? null : settingsGuide.clone();
             menu.addMenuClickHandler(slot, (pl, s, item, action) -> {
-                if (!openNativeDoctorTools(pl, settingsGuide)) {
-                    open(pl, mode, returnGuide);
-                }
+                open(pl, mode, returnGuide);
                 return false;
             });
         }
@@ -186,24 +183,6 @@ public final class LegacyDoctorMenu {
             .toList();
     }
 
-    private static boolean openNativeDoctorTools(Player player, @Nullable ItemStack guide) {
-        try {
-            var method = io.github.thebusybiscuit.slimefun4.core.guide.options.SlimefunGuideSettings.class
-                .getMethod("openDoctorTools", Player.class, ItemStack.class);
-            ItemStack returnGuide = guide == null
-                ? io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide.getItem(
-                    GuideUtil.getLastGuideMode(player))
-                : guide.clone();
-            method.invoke(null, player, returnGuide);
-            return true;
-        } catch (NoSuchMethodException ignored) {
-            return false;
-        } catch (ReflectiveOperationException exception) {
-            player.sendMessage(ChatColor.RED + "Could not open Slimefun Legacy's native Doctor console.");
-            return false;
-        }
-    }
-
     public static void open(Player player) {
         open(player, GuideUtil.getLastGuideMode(player), null);
     }
@@ -219,33 +198,114 @@ public final class LegacyDoctorMenu {
         }
 
         ChestMenu menu = new ChestMenu("&b&lSlimefun Legacy Doctor");
-        menu.setSize(27);
+        menu.setSize(36);
         menu.setEmptySlotsClickable(false);
 
-        for (int slot = 0; slot < 27; slot++) {
+        for (int slot = 0; slot < 36; slot++) {
             menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
         }
 
-        addCommand(menu, 9, Material.LIME_DYE, "&aStatus", "doctor status",
-            "&7Shutdown state, pending writes,", "&7paused circuits and repair state.");
-        addCommand(menu, 10, Material.NETHER_STAR, "&aCore", "doctor core",
-            "&7Core and platform health evidence.");
-        addCommand(menu, 11, Material.COMPARATOR, "&eCompatibility", "doctor compatibility",
-            "&7Addon compatibility declarations", "&7and runtime evidence.");
-        addCommand(menu, 12, Material.TRIPWIRE_HOOK, "&eDependencies", "doctor dependencies",
-            "&7Missing, disabled or aliased", "&7plugin dependencies.");
-        addCommand(menu, 13, Material.REDSTONE, "&6Runtime", "doctor runtime",
-            "&7Machine/runtime isolation", "&7and retry state.");
-        addCommand(menu, 14, Material.ENDER_EYE, "&6Integrations", "doctor integrations",
-            "&7Optional integration capabilities", "&7and failures.");
-        addCommand(menu, 15, Material.RECOVERY_COMPASS, "&bUpgrade", "doctor upgrade",
-            "&7Upgrade readiness and", "&7migration overview.");
-        addCommand(menu, 16, Material.SPYGLASS, "&bItem Scan", "doctor scan",
-            "&7Read-only item/storage scan.", "&7No repairs are performed.");
+        menu.addItem(
+            4,
+            Converter.getItem(
+                Material.WRITABLE_BOOK,
+                "&b&lDoctor Command Guide",
+                "",
+                "&7Green/yellow buttons below run safe",
+                "&7diagnostic commands and show output in chat.",
+                "",
+                "&cRepair, migration and texture-ID changes",
+                "&care never run silently from this menu.",
+                "&7Their exact commands are shown below."
+            ),
+            ChestMenuUtils.getEmptyClickHandler()
+        );
+
+        addCommand(menu, 9, Material.LIME_DYE, "&aDoctor Status", "doctor status",
+            "&7Check Doctor activity, database writes,", "&7shutdown state and current health.");
+        addCommand(menu, 10, Material.SPYGLASS, "&aFull Doctor Scan", "doctor scan",
+            "&7Read-only server-wide item/migration scan.", "&7Start here when something looks wrong.");
+        addCommand(menu, 11, Material.CLOCK, "&6Tick Top", "tick top",
+            "&7Show the busiest Slimefun tickers.", "&7Useful for lag/TPS investigations.");
+        addCommand(menu, 12, Material.COMPARATOR, "&eCompatibility", "doctor compatibility",
+            "&7Check addon compatibility declarations", "&7and runtime compatibility evidence.");
+        addCommand(menu, 13, Material.TRIPWIRE_HOOK, "&eDependencies", "doctor dependencies",
+            "&7Find missing, disabled or aliased", "&7plugin dependencies.");
+        addCommand(menu, 14, Material.REDSTONE, "&6Runtime", "doctor runtime",
+            "&7Inspect machine/runtime isolation", "&7and retry state.");
+        addCommand(menu, 15, Material.ENDER_EYE, "&6Integrations", "doctor integrations",
+            "&7Inspect optional integration state", "&7and failures.");
+        addCommand(menu, 16, Material.PAPER, "&fSupport Report", "doctor report",
+            "&7Print a compact support snapshot", "&7for troubleshooting or bug reports.");
+
+        addInfo(menu, 19, Material.ANVIL, "&aCore Item Presentation Repair",
+            "&7After reviewing &f/sf doctor scan&7:",
+            "",
+            "&eType:",
+            "&f/sf doctor repair confirm",
+            "",
+            "&8Repairs only core-safe names/lore that",
+            "&8Doctor can prove safe.");
+
+        addInfo(menu, 20, Material.SMITHING_TABLE, "&6Enable / Upgrade Resource-Pack Items",
+            "&7Audit first:",
+            "&f/sf doctor item-models enable-pack scan",
+            "",
+            "&eIf the audit is correct, type:",
+            "&f/sf doctor item-models enable-pack confirm",
+            "",
+            "&8Adds exact Legacy bundled model mappings",
+            "&8and updates eligible stored items.");
+
+        addInfo(menu, 21, Material.GRINDSTONE, "&dRemove Legacy Texture IDs",
+            "&7Audit the removal:",
+            "&f/sf doctor item-models remove-resourcepack-texture-ids",
+            "",
+            "&eTo confirm, type:",
+            "&f/sf doctor item-models remove-resourcepack-texture-ids confirm",
+            "",
+            "&cDo not use if your resource pack still",
+            "&cdepends on the Legacy model mappings.");
+
+        addInfo(menu, 22, Material.BOOKSHELF, "&bAddon Schema Repairs",
+            "&7Find addon-owned migration candidates:",
+            "",
+            "&eType:",
+            "&f/sf doctor migrations schemas scan",
+            "",
+            "&8Then run the exact fingerprinted",
+            "&8execute command printed by Doctor.");
+
+        addInfo(menu, 23, Material.NAME_TAG, "&eUnknown Slimefun IDs",
+            "&7Correlate unknown IDs with registered",
+            "&7addon migration providers.",
+            "",
+            "&eType:",
+            "&f/sf doctor migrations unknown",
+            "",
+            "&8Doctor will not guess unknown ownership.");
+
+        addInfo(menu, 24, Material.RECOVERY_COMPASS, "&bUpgrade / Legacy-ID Planning",
+            "&7Review upgrade and legacy-ID migration",
+            "&7readiness before changing stored data.",
+            "",
+            "&eType:",
+            "&f/sf doctor upgrade plan",
+            "&f/sf doctor migrations plan");
+
+        addInfo(menu, 25, Material.CHEST, "&6Item-Model Compatibility",
+            "&7Check for stale model metadata when",
+            "&7storage/machine matching is broken.",
+            "",
+            "&eType:",
+            "&f/sf doctor item-models scan",
+            "",
+            "&7If candidates are correct, type:",
+            "&f/sf doctor item-models repair confirm");
 
         boolean returnToSettings = settingsGuide != null;
         menu.addItem(
-            18,
+            27,
             Converter.getItem(
                 Material.ARROW,
                 returnToSettings ? "&fBack to Settings & Info" : "&fBack to Guide",
@@ -255,7 +315,7 @@ public final class LegacyDoctorMenu {
                     : "&7Return to the Slimefun Legacy guide."
             )
         );
-        menu.addMenuClickHandler(18, (pl, slot, item, action) -> {
+        menu.addMenuClickHandler(27, (pl, slot, item, action) -> {
             if (returnToSettings) {
                 JEGGuideSettings.openSettings(pl, settingsGuide, mode);
             } else {
@@ -265,22 +325,33 @@ public final class LegacyDoctorMenu {
         });
 
         menu.addItem(
-            22,
+            31,
             Converter.getItem(
-                Material.WRITABLE_BOOK,
-                "&fDoctor Safety",
+                Material.KNOWLEDGE_BOOK,
+                "&fRecommended Order",
                 "",
-                "&7These buttons call Slimefun Legacy's",
-                "&7own guarded Doctor commands.",
+                "&71. &f/sf doctor status",
+                "&72. &f/sf doctor scan",
+                "&73. Follow the &eSlimefun Doctor Next Steps",
+                "&74. Run only the specialist command it names",
+                "&75. Re-run &f/sf doctor scan &7after repairs",
                 "",
-                "&cRepair and migration actions still",
-                "&crequire their normal explicit",
-                "&cconfirmation/fingerprint workflow."
+                "&8Use /sf tick top separately for performance."
             ),
             ChestMenuUtils.getEmptyClickHandler()
         );
 
         menu.open(player);
+    }
+
+    private static void addInfo(
+        ChestMenu menu,
+        int slot,
+        Material material,
+        String name,
+        String... lore
+    ) {
+        menu.addItem(slot, Converter.getItem(material, name, lore), ChestMenuUtils.getEmptyClickHandler());
     }
 
     private static void addCommand(
@@ -291,7 +362,12 @@ public final class LegacyDoctorMenu {
         String command,
         String... lore
     ) {
-        menu.addItem(slot, Converter.getItem(material, name, lore));
+        String[] displayLore = new String[lore.length + 3];
+        System.arraycopy(lore, 0, displayLore, 0, lore.length);
+        displayLore[lore.length] = "";
+        displayLore[lore.length + 1] = "&8Command: &f/sf " + command;
+        displayLore[lore.length + 2] = "&eClick to run";
+        menu.addItem(slot, Converter.getItem(material, name, displayLore));
         menu.addMenuClickHandler(slot, (player, s, item, action) -> {
             player.closeInventory();
             boolean handled = player.performCommand("sf " + command);
