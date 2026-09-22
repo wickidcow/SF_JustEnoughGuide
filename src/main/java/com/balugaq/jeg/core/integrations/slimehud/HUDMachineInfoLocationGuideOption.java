@@ -78,6 +78,8 @@ public class HUDMachineInfoLocationGuideOption implements PrioritySlimefunGuideO
             "&7Choose where SlimeHUD displays",
             "&7machine information while",
             "&7you are looking at a machine.",
+            "&8When WIT owns the HUD, WIT's",
+            "&8display setting takes precedence.",
             "",
             "&7\u21E8 &eClick to switch to " + (bossbar ? "Action Bar" : actionbar ? "Default" : "Boss Bar") + ""
         );
