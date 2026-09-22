@@ -26,7 +26,7 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.64"
+version = "2.1.65"
 // Recovery Center release trigger: admin-only guide and resource-pack recovery UI.
 
 repositories {

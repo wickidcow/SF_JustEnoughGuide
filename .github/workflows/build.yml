@@ -66,7 +66,22 @@ jobs:
           FORMATS=src/main/java/com/balugaq/jeg/utils/formatter/Formats.java
           CONFIG=src/main/resources/config.yml
 
+          ADAPTER=src/main/java/com/balugaq/jeg/core/integrations/slimehud/JEGPlayerWAILA.java
+          PLUGIN=src/main/resources/plugin.yml
+
           grep -Fq 'Click to set display range' "$HUD"
+          grep -Fq 'setMaxDistanceOverride' "$ADAPTER"
+          grep -Fq 'setVanillaEnabledOverride' "$ADAPTER"
+          grep -Fq 'clearExternalOverrides' "$ADAPTER"
+          grep -Fq -- '- SlimeHUD' "$PLUGIN"
+          if grep -Fq 'setPaused(true)' "$ADAPTER"; then
+            echo 'JEG must not pause SlimeHUD native PlayerWAILA.' >&2
+            exit 1
+          fi
+          if grep -Fq 'extends BukkitRunnable' "$ADAPTER"; then
+            echo 'JEG must not replace SlimeHUD with a second scheduled HUD loop.' >&2
+            exit 1
+          fi
           if grep -Fq '点击设置距离' "$HUD"; then
             echo 'Chinese SlimeHUD range lore remains in the English fork.' >&2
             exit 1
