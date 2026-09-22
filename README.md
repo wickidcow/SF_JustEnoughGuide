@@ -36,7 +36,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 - Slimefun item ID display
 - Addon integrations
 - English EMC labels for FinalTECH/FinalTech and EMC Tech integrations
-- Slimefun Legacy Doctor shortcuts in both survival and `/sf cheat` Settings & Info
+- Slimefun Recovery Center shortcuts for OP/admin users in both survival and `/sf cheat` Settings & Info
 - `/sf tick top` shortcut in Settings & Info for quick ticker profiling
 - Slimefun Legacy machine recipe provider support
 - Safe machine-input fill delegation to Slimefun Legacy
@@ -46,7 +46,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 
 When used with Slimefun Legacy, JEG can expose:
 
-- Doctor status, core, compatibility, dependency, runtime, integration, upgrade, and scan shortcuts
+- Recovery Center access to Doctor status, compatibility, dependency, runtime, integration, upgrade, scan, and resource-pack repair tools
 - machine recipes registered through Slimefun Legacy's provider API
 - safe machine-input filling through Slimefun Legacy's transaction, protection, region-thread, and rollback checks
 
@@ -74,7 +74,8 @@ The generated `config.yml` is English-facing by default. Pinyin search is disabl
 
 The default guide title is **Slimefun Legacy Guide**. The `custom-format` section controls guide layouts. Legacy-specific markers include:
 
-- `D` — Slimefun Legacy Doctor
+- `D` — optional Slimefun Recovery/Doctor shortcut (admin-only when Legacy is present)
+- `U` — Slimefun Recovery Center (OP/admin only; used by the default Settings layout)
 - `Q` — Slimefun Legacy Tick Top
 - `M` — Slimefun Legacy machine recipes
 
