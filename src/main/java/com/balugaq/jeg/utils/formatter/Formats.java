@@ -135,7 +135,13 @@ public class Formats {
         SLIMEFUN_WIKI_PAGE = 'W',
         ADDONS = 'l',
         UNOFFICIAL_TIPS = 'z',
-        UNKNOWN_FEATURE = 'U',
+        RECOVERY_CENTER = 'U',
+        /**
+         * Legacy name for the U slot retained for source compatibility.
+         * The slot is now the Slimefun Recovery Center.
+         */
+        @Deprecated
+        UNKNOWN_FEATURE = RECOVERY_CENTER,
         ACTION_KEY = 'x',
         KEY_ACTION_GAP = 'y',
         ACTION = 'z'
