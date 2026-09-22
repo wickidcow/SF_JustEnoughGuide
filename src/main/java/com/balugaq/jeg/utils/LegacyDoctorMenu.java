@@ -114,6 +114,7 @@ public final class LegacyDoctorMenu {
                     "&7commands for the server owner to type.",
                     "",
                     "&8OP/Admin only",
+                    "&8Permission: slimefun.command.doctor",
                     mode == SlimefunGuideMode.CHEAT_MODE ? "&8Guide context: Cheat Mode" : "&8Guide context: Survival Mode",
                     "&eClick to open"
                 )
