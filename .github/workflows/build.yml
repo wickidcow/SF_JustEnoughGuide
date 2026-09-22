@@ -75,7 +75,10 @@ jobs:
           grep -Fq 'slimefun.command.tick' "$DOCTOR"
           grep -Fq 'performCommand("sf tick top")' "$DOCTOR"
           grep -Fq "TICK_TOP = 'Q'" "$FORMATS"
-          grep -Fq 'bQsBvBuDW' "$CONFIG"
+          grep -Fq 'bQsBvBuBW' "$CONFIG"
+          grep -Fq 'U = Slimefun Recovery Center (OP/admin only)' "$CONFIG"
+          grep -Fq 'canAccessRecoveryCenter' "$DOCTOR"
+          grep -Fq 'openDoctorTools' "$DOCTOR"
 
       - name: Verify canonical shaded addon JAR
         shell: bash
