@@ -7,7 +7,9 @@ import com.balugaq.jeg.api.patches.JEGGuideSettings;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.balugaq.jeg.utils.formatter.Format;
 import com.balugaq.jeg.utils.formatter.Formats;
+import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
+import io.github.thebusybiscuit.slimefun4.core.guide.options.SlimefunGuideSettings;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import org.bukkit.ChatColor;
@@ -16,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -31,6 +35,15 @@ public final class LegacyDoctorMenu {
     private static final String TICK_PERMISSION = "slimefun.command.tick";
 
     private LegacyDoctorMenu() {
+    }
+
+    /**
+     * Recovery Center access is intentionally limited to Slimefun operators/admins.
+     * The Slimefun permission defaults to OP and can also be granted explicitly by
+     * the server's permission plugin.
+     */
+    public static boolean canAccessRecoveryCenter(Player player) {
+        return LegacyMachineRecipeBridge.isLegacyAvailable() && player.hasPermission(DOCTOR_PERMISSION);
     }
 
     /**
@@ -84,7 +97,7 @@ public final class LegacyDoctorMenu {
         List<Integer> slots
     ) {
         for (int slot : slots) {
-            if (!LegacyMachineRecipeBridge.isLegacyAvailable() || !player.hasPermission(DOCTOR_PERMISSION)) {
+            if (!canAccessRecoveryCenter(player)) {
                 menu.addItem(slot, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
                 continue;
             }
@@ -99,8 +112,9 @@ public final class LegacyDoctorMenu {
                     "&7Safe checks can be run by clicking.",
                     "&7Repair commands are shown exactly as",
                     "&7commands for the server owner to type.",
-                    mode == SlimefunGuideMode.CHEAT_MODE ? "&cContext: Cheat Mode" : "&aContext: Survival Mode",
                     "",
+                    "&8OP/Admin only",
+                    mode == SlimefunGuideMode.CHEAT_MODE ? "&8Guide context: Cheat Mode" : "&8Guide context: Survival Mode",
                     "&eClick to open"
                 )
             );
@@ -192,8 +206,12 @@ public final class LegacyDoctorMenu {
         SlimefunGuideMode mode,
         @Nullable ItemStack settingsGuide
     ) {
-        if (!player.hasPermission(DOCTOR_PERMISSION)) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to use Slimefun Doctor.");
+        if (!canAccessRecoveryCenter(player)) {
+            player.sendMessage(ChatColor.RED + "The Slimefun Recovery Center is restricted to server operators/admins.");
+            return;
+        }
+
+        if (tryOpenNativeRecoveryCenter(player, mode, settingsGuide)) {
             return;
         }
 
@@ -343,6 +361,36 @@ public final class LegacyDoctorMenu {
         );
 
         menu.open(player);
+    }
+
+    /**
+     * Slimefun Legacy exposes its own richer Recovery Center. Prefer that native
+     * menu when present so JEG and the classic guide always show the same tools.
+     * Older/non-Legacy Slimefun builds fall back to JEG's compact command guide.
+     */
+    private static boolean tryOpenNativeRecoveryCenter(
+        Player player,
+        SlimefunGuideMode mode,
+        @Nullable ItemStack settingsGuide
+    ) {
+        try {
+            Method method = SlimefunGuideSettings.class.getMethod(
+                "openDoctorTools",
+                Player.class,
+                ItemStack.class
+            );
+            ItemStack returnGuide = settingsGuide == null
+                ? SlimefunGuide.getItem(mode)
+                : settingsGuide.clone();
+            method.invoke(null, player, returnGuide);
+            return true;
+        } catch (NoSuchMethodException | LinkageError ignored) {
+            return false;
+        } catch (IllegalAccessException | InvocationTargetException ex) {
+            player.sendMessage(ChatColor.YELLOW
+                + "Native Recovery Center could not be opened; using the JEG fallback menu.");
+            return false;
+        }
     }
 
     private static void addInfo(
