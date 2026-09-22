@@ -312,11 +312,20 @@ public class JEGGuideSettings {
                     p,
                     Converter.getItem(
                         Material.TOTEM_OF_UNDYING,
-                        ChatColor.RED + locale.getMessage(p, "guide.work-in-progress")
+                        "&6&lSlimefun Recovery Center",
+                        "",
+                        "&7Diagnostics, migration tools and recovery",
+                        "&7options for Slimefun Legacy and installed addons.",
+                        "",
+                        "&7Includes resource-pack item texture repairs,",
+                        "&7model removal, Doctor scans and performance tools.",
+                        "",
+                        "&8Server owner recovery hub",
+                        "&eClick to open"
                     )
                 ),
                 (pl, slot, item, action) -> {
-                    // Add something here
+                    LegacyDoctorMenu.open(pl, mode, guide.clone());
                     return false;
                 }
             );
