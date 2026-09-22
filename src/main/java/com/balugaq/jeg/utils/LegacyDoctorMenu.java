@@ -105,7 +105,7 @@ public final class LegacyDoctorMenu {
             menu.addItem(
                 slot,
                 Converter.getItem(
-                    Material.HEART_OF_THE_SEA,
+                    Material.TOTEM_OF_UNDYING,
                     "&6&lSlimefun Recovery Center",
                     "",
                     "&7Open the Slimefun Legacy recovery hub.",
@@ -276,7 +276,8 @@ public final class LegacyDoctorMenu {
             "&8and updates eligible stored items.");
 
         addInfo(menu, 21, Material.GRINDSTONE, "&dRemove Resource-Pack Item Models",
-            "&7Unregister Legacy's resource-pack enhanced item mappings.",
+            "&7Removes only Legacy's exact bundled texture mappings.",
+            "&8Does NOT unregister Slimefun items or machines.",
             "&7Audit the removal:",
             "&f/sf doctor item-models remove-resourcepack-texture-ids",
             "",
@@ -312,7 +313,7 @@ public final class LegacyDoctorMenu {
             "&f/sf doctor upgrade plan",
             "&f/sf doctor migrations plan");
 
-        addInfo(menu, 25, Material.CHEST, "&6Resource Pack Item Texture Repairs",
+        addInfo(menu, 25, Material.COMPARATOR, "&eResource Pack Item Texture Repairs",
             "&7Check for stale resource-pack item texture data when",
             "&7storage/machine matching or item textures are broken.",
             "",
