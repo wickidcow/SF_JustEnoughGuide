@@ -184,6 +184,6 @@ debug: false
 
 data:
   # Internal configuration schema marker.
-  config-version: 20260919
+  config-version: 20260922
 
 click-print-warning: true
