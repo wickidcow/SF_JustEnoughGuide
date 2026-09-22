@@ -27,6 +27,7 @@ plugins {
 
 group = "io.github.balugaq"
 version = "2.1.64"
+// Recovery Center release trigger: admin-only guide and resource-pack recovery UI.
 
 repositories {
     mavenCentral()
