@@ -130,9 +130,10 @@ custom-format:
   # Settings screen.
   # s = contributors, v = version, u = source, W = wiki
   # o = guide option, l = addons, z = unofficial-build notice
-  # U = Slimefun Recovery Center, D = Slimefun Legacy Doctor, Q = Slimefun Tick Top
+  # U = Slimefun Recovery Center (OP/admin only), Q = Slimefun Tick Top
+  # D = optional Doctor/Recovery shortcut for custom layouts; omitted here to avoid a duplicate button
   settings:
-    - "bQsBvBuDW"
+    - "bQsBvBuBW"
     - "BBBBBBBBB"
     - "BoooooooB"
     - "BoooooooB"
