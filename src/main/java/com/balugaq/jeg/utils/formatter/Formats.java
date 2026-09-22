@@ -136,15 +136,16 @@ public class Formats {
         ADDONS = 'l',
         UNOFFICIAL_TIPS = 'z',
         RECOVERY_CENTER = 'U',
+        ACTION_KEY = 'x',
+        KEY_ACTION_GAP = 'y',
+        ACTION = 'z'
+        ;
+
         /**
          * Legacy name for the U slot retained for source compatibility.
          * The slot is now the Slimefun Recovery Center.
          */
         @Deprecated
-        UNKNOWN_FEATURE = RECOVERY_CENTER,
-        ACTION_KEY = 'x',
-        KEY_ACTION_GAP = 'y',
-        ACTION = 'z'
-        ;
+        public static final char UNKNOWN_FEATURE = RECOVERY_CENTER;
     }
 }
