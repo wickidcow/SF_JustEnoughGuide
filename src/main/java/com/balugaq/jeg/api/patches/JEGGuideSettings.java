@@ -325,7 +325,7 @@ public class JEGGuideSettings {
                     )
                 ),
                 (pl, slot, item, action) -> {
-                    LegacyDoctorMenu.open(pl, mode, guide.clone());
+                    LegacyDoctorMenu.open(pl, mode, SlimefunGuide.getItem(mode));
                     return false;
                 }
             );
