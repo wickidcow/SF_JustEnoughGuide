@@ -305,7 +305,7 @@ public class JEGGuideSettings {
             }
         }
 
-        for (int ss : Formats.settings.getChars(Formats.Char.UNKNOWN_FEATURE)) {
+        for (int ss : Formats.settings.getChars(Formats.Char.RECOVERY_CENTER)) {
             if (LegacyDoctorMenu.canAccessRecoveryCenter(p)) {
                 menu.addItem(
                     ss,
