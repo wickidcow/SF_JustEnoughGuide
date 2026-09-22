@@ -107,7 +107,7 @@ public final class JEGPlayerWAILA {
             Class<?> displayModeClass = loader.loadClass("io.github.schntgaispock.slimehud.waila.DisplayMode");
             @SuppressWarnings({"unchecked", "rawtypes"})
             Object mode = Enum.valueOf(
-                (Class<? extends Enum>) displayModeClass.asSubclass(Enum.class),
+                (Class) displayModeClass.asSubclass(Enum.class),
                 location == HUDLocation.BOSSBAR ? "BOSSBAR" : "ACTIONBAR"
             );
             Method setter = nativeWaila.getClass().getMethod("setDisplayMode", displayModeClass);
