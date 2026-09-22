@@ -327,6 +327,7 @@ public class JEGGuideSettings {
                             "&7health, migrations and performance diagnostics.",
                             "",
                             "&8OP/Admin only",
+                            "&8Permission: slimefun.command.doctor",
                             "&eClick to open"
                         )
                     ),
