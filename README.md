@@ -11,10 +11,10 @@ Use the latest GitHub release from this repository.
 Current release artifact:
 
 ```
-SF_JEGuide2.0.60.jar
+SF_JustEnoughGuide2.1.64.jar
 ```
 
-The plugin/release version is 2.1.60; the raw release JAR keeps the requested Legacy distribution filename above.
+The plugin/release version is **2.1.64**. The canonical raw release JAR uses the same filename as the maintained Slimefun addon bundle.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 - Slimefun item ID display
 - Addon integrations
 - English EMC labels for FinalTECH/FinalTech and EMC Tech integrations
-- Slimefun Recovery Center shortcuts for OP/admin users in both survival and `/sf cheat` Settings & Info
+- Admin-only **Slimefun Recovery Center** entry in both survival and `/sf cheat` Settings & Info, hidden from normal players
 - `/sf tick top` shortcut in Settings & Info for quick ticker profiling
 - Slimefun Legacy machine recipe provider support
 - Safe machine-input fill delegation to Slimefun Legacy
@@ -46,7 +46,7 @@ On Slimefun Legacy, the addon uses the supported guide registration API when ava
 
 When used with Slimefun Legacy, JEG can expose:
 
-- Recovery Center access to Doctor status, compatibility, dependency, runtime, integration, upgrade, scan, and resource-pack repair tools
+- Recovery Center access to Doctor status, compatibility, dependency, runtime, integration, guided resource-pack recovery, item texture repair, upgrade, and scan tools
 - machine recipes registered through Slimefun Legacy's provider API
 - safe machine-input filling through Slimefun Legacy's transaction, protection, region-thread, and rollback checks
 
@@ -75,7 +75,7 @@ The generated `config.yml` is English-facing by default. Pinyin search is disabl
 The default guide title is **Slimefun Legacy Guide**. The `custom-format` section controls guide layouts. Legacy-specific markers include:
 
 - `D` — optional Slimefun Recovery/Doctor shortcut (admin-only when Legacy is present)
-- `U` — Slimefun Recovery Center (OP/admin only; used by the default Settings layout)
+- `U` — Slimefun Recovery Center (OP/admin only; internally named `RECOVERY_CENTER`, with the old placeholder alias retained for compatibility)
 - `Q` — Slimefun Legacy Tick Top
 - `M` — Slimefun Legacy machine recipes
 
