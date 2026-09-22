@@ -93,9 +93,9 @@ public final class LegacyDoctorMenu {
                 slot,
                 Converter.getItem(
                     Material.HEART_OF_THE_SEA,
-                    "&b&lSlimefun Legacy Doctor",
+                    "&6&lSlimefun Recovery Center",
                     "",
-                    "&7Open the Slimefun Legacy diagnostics menu.",
+                    "&7Open the Slimefun Legacy recovery hub.",
                     "&7Safe checks can be run by clicking.",
                     "&7Repair commands are shown exactly as",
                     "&7commands for the server owner to type.",
@@ -197,7 +197,7 @@ public final class LegacyDoctorMenu {
             return;
         }
 
-        ChestMenu menu = new ChestMenu("&b&lSlimefun Legacy Doctor");
+        ChestMenu menu = new ChestMenu("&6&lSlimefun Recovery Center");
         menu.setSize(36);
         menu.setEmptySlotsClickable(false);
 
@@ -209,7 +209,7 @@ public final class LegacyDoctorMenu {
             4,
             Converter.getItem(
                 Material.WRITABLE_BOOK,
-                "&b&lDoctor Command Guide",
+                "&6&lRecovery Command Guide",
                 "",
                 "&7Green/yellow buttons below run safe",
                 "&7diagnostic commands and show output in chat.",
@@ -257,7 +257,8 @@ public final class LegacyDoctorMenu {
             "&8Adds exact Legacy bundled model mappings",
             "&8and updates eligible stored items.");
 
-        addInfo(menu, 21, Material.GRINDSTONE, "&dRemove Legacy Texture IDs",
+        addInfo(menu, 21, Material.GRINDSTONE, "&dRemove Resource-Pack Item Models",
+            "&7Unregister Legacy's resource-pack enhanced item mappings.",
             "&7Audit the removal:",
             "&f/sf doctor item-models remove-resourcepack-texture-ids",
             "",
@@ -293,9 +294,9 @@ public final class LegacyDoctorMenu {
             "&f/sf doctor upgrade plan",
             "&f/sf doctor migrations plan");
 
-        addInfo(menu, 25, Material.CHEST, "&6Item-Model Compatibility",
-            "&7Check for stale model metadata when",
-            "&7storage/machine matching is broken.",
+        addInfo(menu, 25, Material.CHEST, "&6Resource Pack Item Texture Repairs",
+            "&7Check for stale resource-pack item texture data when",
+            "&7storage/machine matching or item textures are broken.",
             "",
             "&eType:",
             "&f/sf doctor item-models scan",
