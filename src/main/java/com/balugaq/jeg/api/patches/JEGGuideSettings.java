@@ -306,29 +306,38 @@ public class JEGGuideSettings {
         }
 
         for (int ss : Formats.settings.getChars(Formats.Char.UNKNOWN_FEATURE)) {
-            menu.addItem(
-                ss,
-                PatchScope.UnknownFeature.patch(
-                    p,
-                    Converter.getItem(
-                        Material.TOTEM_OF_UNDYING,
-                        "&6&lSlimefun Recovery Center",
-                        "",
-                        "&7Diagnostics, migration tools and recovery",
-                        "&7options for Slimefun Legacy and installed addons.",
-                        "",
-                        "&7Includes resource-pack item texture repairs,",
-                        "&7model removal, Doctor scans and performance tools.",
-                        "",
-                        "&8Server owner recovery hub",
-                        "&eClick to open"
-                    )
-                ),
-                (pl, slot, item, action) -> {
-                    LegacyDoctorMenu.open(pl, mode, SlimefunGuide.getItem(mode));
-                    return false;
-                }
-            );
+            if (LegacyDoctorMenu.canAccessRecoveryCenter(p)) {
+                menu.addItem(
+                    ss,
+                    PatchScope.UnknownFeature.patch(
+                        p,
+                        Converter.getItem(
+                            Material.TOTEM_OF_UNDYING,
+                            "&6&lSlimefun Recovery Center",
+                            "",
+                            "&7Server diagnostics, repair and migration tools.",
+                            "",
+                            "&fResource-pack recovery:",
+                            "&6• Upgrade items for pack textures",
+                            "&d• Remove Legacy resource-pack item models",
+                            "&e• Repair stale resource-pack item textures",
+                            "",
+                            "&fSystem recovery:",
+                            "&7Doctor scans, compatibility, storage/runtime",
+                            "&7health, migrations and performance diagnostics.",
+                            "",
+                            "&8OP/Admin only",
+                            "&eClick to open"
+                        )
+                    ),
+                    (pl, slot, item, action) -> {
+                        LegacyDoctorMenu.open(pl, mode, SlimefunGuide.getItem(mode));
+                        return false;
+                    }
+                );
+            } else {
+                menu.addItem(ss, ChestMenuUtils.getBackground(), ChestMenuUtils.getEmptyClickHandler());
+            }
         }
     }
 
