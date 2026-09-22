@@ -108,5 +108,6 @@ public class HUDMachineInfoLocationGuideOption implements PrioritySlimefunGuideO
     @Override
     public void setSelectedOption(Player p, ItemStack guide, HUDLocation value) {
         PersistentDataAPI.setByte(p, getKey(), (byte) value.ordinal());
+        JEGPlayerWAILA.wrap(p);
     }
 }
