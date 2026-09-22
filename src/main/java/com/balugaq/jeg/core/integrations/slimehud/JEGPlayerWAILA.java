@@ -10,292 +10,191 @@ package com.balugaq.jeg.core.integrations.slimehud;
 
 import com.balugaq.jeg.api.objects.enums.HUDLocation;
 import com.balugaq.jeg.implementation.JustEnoughGuide;
-import com.balugaq.jeg.utils.platform.PlatformUtil;
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
-import io.github.schntgaispock.slimehud.SlimeHUD;
-import io.github.schntgaispock.slimehud.util.Util;
-import io.github.schntgaispock.slimehud.waila.HudRequest;
 import io.github.schntgaispock.slimehud.waila.PlayerWAILA;
 import io.github.schntgaispock.slimehud.waila.WAILAManager;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
 /**
- * JEG's SlimeHUD controller.
+ * Adapts JEG's per-player SlimeHUD guide options to SlimeHUD's native HUD.
  *
- * <p>Do not subclass SlimeHUD's PlayerWAILA here. Newer SlimeHUD builds make
- * PlayerWAILA final, and subclassing it causes an IncompatibleClassChangeError
- * when a player joins. JEG instead pauses the native WAILA instance and runs
- * this independent controller. The native instance is restored on shutdown.</p>
+ * <p>JEG intentionally does not create a second BossBar, run a second target
+ * scanner, or pause SlimeHUD's PlayerWAILA. SlimeHUD remains the source of
+ * truth for rendering and lifecycle. Newer SF_SlimeHUD builds expose optional
+ * per-player controls that are invoked reflectively so JEG can still load with
+ * older SlimeHUD versions without a linkage error.</p>
  *
  * @author balugaq
  * @author wickidcow
  * @since 1.9
  */
-@SuppressWarnings("deprecation")
 @NullMarked
-public final class JEGPlayerWAILA extends BukkitRunnable {
+public final class JEGPlayerWAILA {
 
-    private static final Map<UUID, JEGPlayerWAILA> CONTROLLERS = new ConcurrentHashMap<>();
+    private static final Set<UUID> MANAGED_PLAYERS = ConcurrentHashMap.newKeySet();
+    private static volatile boolean warnedMissingNativeControls;
 
-    private final Player player;
-    private final @Nullable PlayerWAILA nativeWaila;
-    private final boolean nativeWasPaused;
-    private final BossBar bossBar;
-    private final boolean keepTextColors;
-    private final boolean useAutoBossBarColor;
-    private final String configuredLocation;
-
-    private String facing = "";
-
-    private JEGPlayerWAILA(Player player, @Nullable PlayerWAILA nativeWaila) {
-        this.player = player;
-        this.nativeWaila = nativeWaila;
-        this.nativeWasPaused = nativeWaila != null && nativeWaila.isPaused();
-
-        FileConfiguration config = getSlimeHudConfig();
-        String bossbarColor = config
-            .getString("waila.bossbar-color", "white")
-            .trim()
-            .toLowerCase(java.util.Locale.ROOT);
-
-        this.useAutoBossBarColor = "inherit".equals(bossbarColor);
-        this.configuredLocation = config
-            .getString("waila.location", "bossbar")
-            .trim()
-            .toLowerCase(java.util.Locale.ROOT);
-        this.keepTextColors = config.getBoolean("waila.use-original-colors", true);
-
-        this.bossBar = Bukkit.createBossBar("", parseBarColor(bossbarColor), BarStyle.SOLID);
-        this.bossBar.addPlayer(player);
-        this.bossBar.setVisible(false);
-
-        if (nativeWaila != null) {
-            nativeWaila.setPaused(true);
-        }
-    }
+    private JEGPlayerWAILA() {}
 
     /**
-     * Starts or refreshes JEG's controller after SlimeHUD has had a chance to
-     * create its native PlayerWAILA for the joining player.
+     * Refreshes SlimeHUD's native player controller and applies JEG's optional
+     * display preferences after SlimeHUD has processed the player event.
      */
     public static void wrap(Player player) {
-        Bukkit.getScheduler().runTaskLater(JustEnoughGuide.getInstance(), () -> startNow(player), 1L);
-    }
-
-    private static void startNow(Player player) {
         if (!player.isOnline()) {
             return;
         }
 
-        stop(player.getUniqueId(), false);
-
-        PlayerWAILA nativeWaila = getNativeWaila(player.getUniqueId());
-        JEGPlayerWAILA controller = new JEGPlayerWAILA(player, nativeWaila);
-        CONTROLLERS.put(player.getUniqueId(), controller);
-
-        long tickRate = Math.max(1L, getSlimeHudConfig().getLong("waila.tick-rate", 5L));
-        controller.runTaskTimer(JustEnoughGuide.getInstance(), 0L, tickRate);
+        player.getScheduler().runDelayed(
+            JustEnoughGuide.getInstance(),
+            task -> syncNow(player),
+            null,
+            1L
+        );
     }
 
-    private static @Nullable PlayerWAILA getNativeWaila(UUID uuid) {
-        try {
-            return WAILAManager.getInstance().getWailas().get(uuid);
-        } catch (RuntimeException | LinkageError error) {
-            JustEnoughGuide.getInstance().getLogger().log(
-                Level.WARNING,
-                "Could not access SlimeHUD's native WAILA for " + uuid
-                    + ". JEG will continue without replacing the native HUD.",
-                error
+    private static void syncNow(Player player) {
+        if (!player.isOnline()) {
+            return;
+        }
+
+        refreshNative(player);
+        PlayerWAILA nativeWaila = getNativeWaila(player);
+        if (nativeWaila == null) {
+            return;
+        }
+
+        MANAGED_PLAYERS.add(player.getUniqueId());
+
+        boolean rangeApplied = invokeOptional(
+            nativeWaila,
+            "setMaxDistanceOverride",
+            new Class<?>[] {Integer.class},
+            HUDReachBlockGuideOption.getReachBlock(player)
+        );
+        boolean vanillaApplied = invokeOptional(
+            nativeWaila,
+            "setVanillaEnabledOverride",
+            new Class<?>[] {Boolean.class},
+            VanillaBlockHUDDisplayGuideOption.isEnabled(player)
+        );
+
+        HUDLocation location = HUDMachineInfoLocationGuideOption.getSelectedOption(player);
+        if (location != HUDLocation.DEFAULT) {
+            applyDisplayMode(nativeWaila, location);
+        }
+
+        if ((!rangeApplied || !vanillaApplied) && !warnedMissingNativeControls) {
+            warnedMissingNativeControls = true;
+            JustEnoughGuide.getInstance().getLogger().warning(
+                "The installed SlimeHUD does not expose the native JEG integration controls. "
+                    + "The HUD will remain usable, but JEG's SlimeHUD range/vanilla overrides require SF_SlimeHUD 2.0.2 or newer."
             );
+        }
+    }
+
+    private static void applyDisplayMode(PlayerWAILA nativeWaila, HUDLocation location) {
+        try {
+            ClassLoader loader = nativeWaila.getClass().getClassLoader();
+            Class<?> displayModeClass = loader.loadClass("io.github.schntgaispock.slimehud.waila.DisplayMode");
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            Object mode = Enum.valueOf(
+                (Class<? extends Enum>) displayModeClass.asSubclass(Enum.class),
+                location == HUDLocation.BOSSBAR ? "BOSSBAR" : "ACTIONBAR"
+            );
+            Method setter = nativeWaila.getClass().getMethod("setDisplayMode", displayModeClass);
+            setter.invoke(nativeWaila, mode);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            warnOldSlimeHud();
+        } catch (IllegalAccessException | InvocationTargetException | RuntimeException | LinkageError error) {
+            logFine("Could not apply JEG's SlimeHUD display preference for " + nativeWaila.getPlayer().getName(), error);
+        }
+    }
+
+    private static boolean invokeOptional(
+        PlayerWAILA nativeWaila,
+        String methodName,
+        Class<?>[] parameterTypes,
+        Object... args
+    ) {
+        try {
+            Method method = nativeWaila.getClass().getMethod(methodName, parameterTypes);
+            method.invoke(nativeWaila, args);
+            return true;
+        } catch (NoSuchMethodException ignored) {
+            return false;
+        } catch (IllegalAccessException | InvocationTargetException | RuntimeException | LinkageError error) {
+            logFine("Could not invoke SlimeHUD native integration method " + methodName, error);
+            return false;
+        }
+    }
+
+    private static void refreshNative(Player player) {
+        try {
+            WAILAManager manager = WAILAManager.getInstance();
+            Method method = manager.getClass().getMethod("refreshPlayer", Player.class);
+            method.invoke(manager, player);
+        } catch (NoSuchMethodException ignored) {
+            // Older SlimeHUD versions create/refresh their PlayerWAILA through
+            // their own event listener. Do not take ownership of that lifecycle.
+        } catch (IllegalAccessException | InvocationTargetException | RuntimeException | LinkageError error) {
+            logFine("Could not ask SlimeHUD to refresh its native HUD for " + player.getName(), error);
+        }
+    }
+
+    private static @Nullable PlayerWAILA getNativeWaila(Player player) {
+        try {
+            return WAILAManager.getInstance().getWailas().get(player.getUniqueId());
+        } catch (RuntimeException | LinkageError error) {
+            logFine("Could not access SlimeHUD's native PlayerWAILA for " + player.getName(), error);
             return null;
         }
     }
 
     public static void remove(Player player) {
-        stop(player.getUniqueId(), false);
-    }
-
-    public static void onDisable() {
-        for (UUID uuid : CONTROLLERS.keySet().toArray(UUID[]::new)) {
-            stop(uuid, true);
-        }
-    }
-
-    private static void stop(UUID uuid, boolean restoreNative) {
-        JEGPlayerWAILA old = CONTROLLERS.remove(uuid);
-        if (old == null) {
-            return;
-        }
-
-        old.cancelController();
-        if (restoreNative && old.nativeWaila != null) {
-            try {
-                old.nativeWaila.setPaused(old.nativeWasPaused);
-            } catch (RuntimeException | LinkageError error) {
-                JustEnoughGuide.getInstance().getLogger().log(
-                    Level.FINE,
-                    "Could not restore SlimeHUD WAILA state for " + uuid,
-                    error
-                );
-            }
-        }
-    }
-
-    @Override
-    public void run() {
-        if (!player.isOnline()) {
-            remove(player);
-            return;
-        }
-
-        if (isDisabledInCurrentWorld()) {
-            clearDisplay();
-            return;
-        }
-
-        updateFacing();
-
-        HUDLocation hudLocation = HUDMachineInfoLocationGuideOption.getSelectedOption(player);
-        String location = hudLocation == HUDLocation.DEFAULT
-            ? configuredLocation
-            : hudLocation == HUDLocation.BOSSBAR ? "bossbar" : "actionbar";
-
-        switch (location) {
-            case "bossbar" -> showBossBar();
-            case "hotbar", "actionbar" -> showActionBar();
-            default -> clearDisplay();
-        }
-    }
-
-    private boolean isDisabledInCurrentWorld() {
-        FileConfiguration config = getSlimeHudConfig();
-        if (config.getBoolean("waila.disabled", false)) {
-            return true;
-        }
-
-        String worldName = player.getWorld().getName();
-        String worldKey = player.getWorld().getKey().toString();
-        return config.getStringList("waila.disabled-in").stream()
-            .anyMatch(world -> world.equalsIgnoreCase(worldName) || world.equalsIgnoreCase(worldKey));
+        MANAGED_PLAYERS.remove(player.getUniqueId());
     }
 
     /**
-     * Reads SlimeHUD's Bukkit configuration without linking against the
-     * return type of SlimeHUD#getConfig(). Older SlimeHUD builds inherit an
-     * InfinityLib AddonConfig return descriptor while current standalone
-     * builds inherit JavaPlugin's FileConfiguration descriptor. Calling
-     * getConfig() through JavaPlugin keeps this integration binary-compatible
-     * with both layouts.
+     * Clears only JEG-owned overrides. It never pauses or cancels SlimeHUD's
+     * native task.
      */
-    private static FileConfiguration getSlimeHudConfig() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("SlimeHUD");
-        if (plugin instanceof JavaPlugin javaPlugin) {
-            return javaPlugin.getConfig();
-        }
+    public static void onDisable() {
+        for (UUID uuid : MANAGED_PLAYERS.toArray(UUID[]::new)) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
 
-        throw new IllegalStateException("SlimeHUD is not available as a Bukkit JavaPlugin");
+            PlayerWAILA nativeWaila = getNativeWaila(player);
+            if (nativeWaila != null) {
+                invokeOptional(nativeWaila, "clearExternalOverrides", new Class<?>[0]);
+            }
+            refreshNative(player);
+        }
+        MANAGED_PLAYERS.clear();
     }
 
-    private void updateFacing() {
-        Block targetBlock = player.getTargetBlockExact(HUDReachBlockGuideOption.getReachBlock(player));
-        if (targetBlock == null || targetBlock.getType().isAir()) {
-            facing = "";
+    private static void warnOldSlimeHud() {
+        if (warnedMissingNativeControls) {
             return;
         }
-
-        SlimefunItem item = StorageCacheUtils.getSfItem(targetBlock.getLocation());
-        if (item == null) {
-            if (VanillaBlockHUDDisplayGuideOption.isEnabled(player)) {
-                facing = SlimeHUDIntegrationMain.getVanillaBlockName(player, targetBlock);
-            } else {
-                facing = "";
-            }
-            return;
-        }
-
-        Location target = targetBlock.getLocation();
-        HudRequest request = new HudRequest(item, target, player);
-        String facingBlock = SlimeHUD.getTranslationManager().getItemName(player, item);
-        String facingBlockInfo = SlimeHUD.getHudController().processRequest(request);
-
-        facing = ChatColor.translateAlternateColorCodes(
-            '&',
-            facingBlock + (facingBlockInfo.isEmpty() ? "" : " &7| " + facingBlockInfo)
+        warnedMissingNativeControls = true;
+        JustEnoughGuide.getInstance().getLogger().warning(
+            "The installed SlimeHUD is older than the native JEG adapter. "
+                + "Update to SF_SlimeHUD 2.0.2 or newer for JEG display/range controls."
         );
     }
 
-    private void showBossBar() {
-        if (facing.isEmpty()) {
-            bossBar.setVisible(false);
-            return;
-        }
-
-        bossBar.setTitle(keepTextColors ? facing : ChatColor.stripColor(facing));
-        if (useAutoBossBarColor) {
-            bossBar.setColor(Util.pickBarColorFromName(facing));
-        }
-        bossBar.setVisible(true);
-    }
-
-    private void showActionBar() {
-        bossBar.setVisible(false);
-        if (facing.isEmpty()) {
-            return;
-        }
-
-        if (PlatformUtil.isPaper()) {
-            player.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(facing));
-        } else {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(facing));
-        }
-    }
-
-    private void clearDisplay() {
-        facing = "";
-        bossBar.setVisible(false);
-    }
-
-    private void cancelController() {
-        try {
-            super.cancel();
-        } catch (IllegalStateException ignored) {
-            // The task may not have started yet.
-        }
-
-        bossBar.setVisible(false);
-        bossBar.removeAll();
-    }
-
-    private static BarColor parseBarColor(String value) {
-        if ("inherit".equals(value) || "default".equals(value)) {
-            return BarColor.WHITE;
-        }
-
-        try {
-            return BarColor.valueOf(value.toUpperCase(java.util.Locale.ROOT));
-        } catch (IllegalArgumentException error) {
-            return BarColor.WHITE;
-        }
+    private static void logFine(String message, Throwable error) {
+        JustEnoughGuide.getInstance().getLogger().log(Level.FINE, message, error);
     }
 }
