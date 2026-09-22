@@ -257,12 +257,12 @@ public class ConfigManager extends AbstractManager {
         List<String> rawSettingsFormat = cfg.getStringList("custom-format.settings");
         if (rawSettingsFormat == null || rawSettingsFormat.isEmpty()) {
             this.SETTINGS_FORMAT = new ArrayList<>();
-            this.SETTINGS_FORMAT.add("bQsBvBuDW");
+            this.SETTINGS_FORMAT.add("bQsBvBuBW");
             this.SETTINGS_FORMAT.add("BBBBBBBBB");
             this.SETTINGS_FORMAT.add("BoooooooB");
             this.SETTINGS_FORMAT.add("BoooooooB");
-            this.SETTINGS_FORMAT.add("BPBBBBBNB");
-            this.SETTINGS_FORMAT.add("BBlBBBUBB");
+            this.SETTINGS_FORMAT.add("BBBBBBBBB");
+            this.SETTINGS_FORMAT.add("BPlBzBUNB");
         } else {
             this.SETTINGS_FORMAT = rawSettingsFormat;
         }
@@ -365,6 +365,44 @@ public class ConfigManager extends AbstractManager {
 
         if (!cfg.contains("guide.core-first-addon-alphabetical")) {
             cfg.set("guide.core-first-addon-alphabetical", true);
+            changed = true;
+        }
+
+        int configVersion = cfg.getInt("data.config-version", 0);
+        if (configVersion < 20260922) {
+            List<String> currentSettings = cfg.getStringList("custom-format.settings");
+            List<String> previousMaintainedSettings = List.of(
+                "bQsBvBuDW",
+                "BBBBBBBBB",
+                "BoooooooB",
+                "BoooooooB",
+                "BBBBBBBBB",
+                "BPlBzBUNB"
+            );
+            List<String> previousFallbackSettings = List.of(
+                "bQsBvBuDW",
+                "BBBBBBBBB",
+                "BoooooooB",
+                "BoooooooB",
+                "BPBBBBBNB",
+                "BBlBBBUBB"
+            );
+            if (currentSettings.equals(previousMaintainedSettings)
+                    || currentSettings.equals(previousFallbackSettings)) {
+                cfg.set("custom-format.settings", List.of(
+                    "bQsBvBuBW",
+                    "BBBBBBBBB",
+                    "BoooooooB",
+                    "BoooooooB",
+                    "BBBBBBBBB",
+                    "BPlBzBUNB"
+                ));
+                changed = true;
+            }
+
+            // Version the migration even when the owner customized the layout.
+            // Custom settings are deliberately never overwritten.
+            cfg.set("data.config-version", 20260922);
             changed = true;
         }
 
