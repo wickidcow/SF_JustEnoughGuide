@@ -12,6 +12,9 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.core.guide.options.SlimefunGuideSettings;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,6 +36,8 @@ public final class LegacyDoctorMenu {
 
     private static final String DOCTOR_PERMISSION = "slimefun.command.doctor";
     private static final String TICK_PERMISSION = "slimefun.command.tick";
+    private static final String DOCTOR_WIKI_URL =
+        "https://github.com/wickidcow/Slimefun-Legacy/wiki/Slimefun-Doctor-Commands";
 
     private LegacyDoctorMenu() {
     }
@@ -324,6 +329,25 @@ public final class LegacyDoctorMenu {
             "&7If candidates are correct, type:",
             "&f/sf doctor item-models repair confirm");
 
+        menu.addItem(
+            29,
+            Converter.getItem(
+                Material.WRITTEN_BOOK,
+                "&bSlimefun Doctor Wiki",
+                "",
+                "&7Complete OP/admin command reference for",
+                "&7Doctor, resource-pack, storage, migration,",
+                "&7runtime, proxy and performance workflows.",
+                "",
+                "&eClick to post the wiki link in chat"
+            )
+        );
+        menu.addMenuClickHandler(29, (pl, slot, item, action) -> {
+            pl.closeInventory();
+            sendDoctorWikiLink(pl);
+            return false;
+        });
+
         boolean returnToSettings = settingsGuide != null;
         menu.addItem(
             27,
@@ -393,6 +417,16 @@ public final class LegacyDoctorMenu {
                 + "Native Recovery Center could not be opened; using the JEG fallback menu.");
             return false;
         }
+    }
+
+    private static void sendDoctorWikiLink(Player player) {
+        Component open = Component.text("Slimefun Doctor Wiki: ", NamedTextColor.GOLD)
+            .append(Component.text("Click here to open the full command reference", NamedTextColor.AQUA)
+                .clickEvent(ClickEvent.openUrl(DOCTOR_WIKI_URL)));
+        Component url = Component.text(DOCTOR_WIKI_URL, NamedTextColor.DARK_GRAY)
+            .clickEvent(ClickEvent.openUrl(DOCTOR_WIKI_URL));
+        player.sendMessage(open);
+        player.sendMessage(url);
     }
 
     private static void addInfo(
