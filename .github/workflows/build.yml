@@ -62,6 +62,7 @@ jobs:
           set -euo pipefail
           HUD=src/main/java/com/balugaq/jeg/core/integrations/slimehud/HUDReachBlockGuideOption.java
           DOCTOR=src/main/java/com/balugaq/jeg/utils/LegacyDoctorMenu.java
+          SETTINGS=src/main/java/com/balugaq/jeg/api/patches/JEGGuideSettings.java
           FORMATS=src/main/java/com/balugaq/jeg/utils/formatter/Formats.java
           CONFIG=src/main/resources/config.yml
 
@@ -79,6 +80,10 @@ jobs:
           grep -Fq 'U = Slimefun Recovery Center (OP/admin only)' "$CONFIG"
           grep -Fq 'canAccessRecoveryCenter' "$DOCTOR"
           grep -Fq 'openDoctorTools' "$DOCTOR"
+          grep -Fq 'LegacyDoctorMenu.canAccessRecoveryCenter(p)' "$SETTINGS"
+          grep -Fq 'Material.TOTEM_OF_UNDYING' "$SETTINGS"
+          grep -Fq 'Permission: slimefun.command.doctor' "$SETTINGS"
+          grep -Fq 'Permission: slimefun.command.doctor' "$DOCTOR"
 
       - name: Verify canonical shaded addon JAR
         shell: bash
