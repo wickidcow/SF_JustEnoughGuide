@@ -96,13 +96,12 @@ public class VanillaBlockHUDDisplayGuideOption implements PrioritySlimefunGuideO
 
     @Override
     public Optional<Boolean> getSelectedOption(Player p, ItemStack guide) {
-        NamespacedKey key = getKey();
-        boolean value = PersistentDataAPI.hasByte(p, key) && PersistentDataAPI.getByte(p, key) == (byte) 1;
-        return Optional.of(value);
+        return Optional.of(getSelectedOption(p));
     }
 
     @Override
     public void setSelectedOption(Player p, ItemStack guide, Boolean value) {
         PersistentDataAPI.setByte(p, getKey(), value ? (byte) 1 : (byte) 0);
+        JEGPlayerWAILA.wrap(p);
     }
 }
