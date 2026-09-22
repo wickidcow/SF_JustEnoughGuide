@@ -125,5 +125,6 @@ public class HUDReachBlockGuideOption implements PrioritySlimefunGuideOption<Int
     @Override
     public void setSelectedOption(Player p, ItemStack guide, Integer value) {
         PersistentDataAPI.setInt(p, getKey(), value);
+        JEGPlayerWAILA.wrap(p);
     }
 }
