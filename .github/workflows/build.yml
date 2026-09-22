@@ -101,6 +101,8 @@ jobs:
           grep -Fq 'Material.TOTEM_OF_UNDYING' "$SETTINGS"
           grep -Fq 'Permission: slimefun.command.doctor' "$SETTINGS"
           grep -Fq 'Permission: slimefun.command.doctor' "$DOCTOR"
+          grep -Fq 'Slimefun Doctor Wiki' "$DOCTOR"
+          grep -Fq 'Slimefun-Doctor-Commands' "$DOCTOR"
 
       - name: Verify canonical shaded addon JAR
         shell: bash
