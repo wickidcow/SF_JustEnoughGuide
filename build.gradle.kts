@@ -26,8 +26,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.65"
-// Recovery Center release trigger: admin-only guide and resource-pack recovery UI.
+version = "2.1.66"
+// 2.1.66: expose the maintained Slimefun Doctor wiki from the Recovery Center fallback.
 
 repositories {
     mavenCentral()
