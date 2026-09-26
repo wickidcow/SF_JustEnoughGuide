@@ -404,6 +404,47 @@ public class ConfigManager extends AbstractManager {
             // Custom settings are deliberately never overwritten.
             cfg.set("data.config-version", 20260922);
             changed = true;
+            configVersion = 20260922;
+        }
+
+        if (configVersion < 20260926) {
+            List<String> shiftedRecipe = List.of(
+                "bK Mrrr w",
+                " t rrr i ",
+                "m  rrr ME"
+            );
+            if (cfg.getStringList("custom-format.recipe").equals(shiftedRecipe)) {
+                cfg.set("custom-format.recipe", List.of(
+                    "bK rrr  w",
+                    " t rrr i ",
+                    "m  rrr ME"
+                ));
+                changed = true;
+            }
+
+            List<String> shiftedRecipeDisplay = List.of(
+                "bK Mrrr w",
+                " t rrr i ",
+                "m  rrr  E",
+                "BPBBBBBNB",
+                "ddddddddd",
+                "ddddddddd"
+            );
+            if (cfg.getStringList("custom-format.recipe-display").equals(shiftedRecipeDisplay)) {
+                cfg.set("custom-format.recipe-display", List.of(
+                    "bK rrr  w",
+                    " t rrr i ",
+                    "m  rrr  E",
+                    "BPBBBBBNB",
+                    "ddddddddd",
+                    "ddddddddd"
+                ));
+                changed = true;
+            }
+
+            // Only exact maintained defaults are migrated. Owner-customized layouts stay untouched.
+            cfg.set("data.config-version", 20260926);
+            changed = true;
         }
 
         if (changed) {

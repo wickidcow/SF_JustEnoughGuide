@@ -26,8 +26,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.66"
-// 2.1.66: expose the maintained Slimefun Doctor wiki from the Recovery Center fallback.
+version = "2.1.67"
+// 2.1.67: fix issue #264 recipe layout, first-join ownership, and Legacy usage browsing.
 
 repositories {
     mavenCentral()
