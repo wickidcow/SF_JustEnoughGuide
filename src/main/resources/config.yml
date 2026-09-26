@@ -95,8 +95,9 @@ custom-format:
   # Slimefun recipe display.
   # r = ingredient, w = wiki, t = recipe type, i = output
   # E = large recipe, K = SlimeFunRecipe editor integration, M = Legacy machine recipes, m = value/EMC.
+  # Keep the 3x3 ingredient grid centered in columns 4-6. There must be only one M slot.
   recipe:
-    - "bK Mrrr w"
+    - "bK rrr  w"
     - " t rrr i "
     - "m  rrr ME"
 
@@ -109,8 +110,9 @@ custom-format:
 
   # RecipeDisplayItem layout.
   # d = additional displayed recipe entries.
+  # Keep the 3x3 ingredient grid centered in columns 4-6. There must be only one M slot.
   recipe-display:
-    - "bK Mrrr w"
+    - "bK rrr  w"
     - " t rrr i "
     - "m  rrr  E"
     - "BPBBBBBNB"
@@ -184,6 +186,6 @@ debug: false
 
 data:
   # Internal configuration schema marker.
-  config-version: 20260922
+  config-version: 20260926
 
 click-print-warning: true
