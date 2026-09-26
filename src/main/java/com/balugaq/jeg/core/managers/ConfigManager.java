@@ -369,6 +369,44 @@ public class ConfigManager extends AbstractManager {
         }
 
         int configVersion = cfg.getInt("data.config-version", 0);
+        if (configVersion < 20260922) {
+            List<String> currentSettings = cfg.getStringList("custom-format.settings");
+            List<String> previousMaintainedSettings = List.of(
+                "bQsBvBuDW",
+                "BBBBBBBBB",
+                "BoooooooB",
+                "BoooooooB",
+                "BBBBBBBBB",
+                "BPlBzBUNB"
+            );
+            List<String> previousFallbackSettings = List.of(
+                "bQsBvBuDW",
+                "BBBBBBBBB",
+                "BoooooooB",
+                "BoooooooB",
+                "BPBBBBBNB",
+                "BBlBBBUBB"
+            );
+            if (currentSettings.equals(previousMaintainedSettings)
+                    || currentSettings.equals(previousFallbackSettings)) {
+                cfg.set("custom-format.settings", List.of(
+                    "bQsBvBuBW",
+                    "BBBBBBBBB",
+                    "BoooooooB",
+                    "BoooooooB",
+                    "BBBBBBBBB",
+                    "BPlBzBUNB"
+                ));
+                changed = true;
+            }
+
+            // Version the migration even when the owner customized the layout.
+            // Custom settings are deliberately never overwritten.
+            cfg.set("data.config-version", 20260922);
+            changed = true;
+            configVersion = 20260922;
+        }
+
         if (configVersion < 20260926) {
             List<String> shiftedRecipe = List.of(
                 "bK Mrrr w",
@@ -406,44 +444,6 @@ public class ConfigManager extends AbstractManager {
 
             // Only exact maintained defaults are migrated. Owner-customized layouts stay untouched.
             cfg.set("data.config-version", 20260926);
-            changed = true;
-            configVersion = 20260926;
-        }
-
-        if (configVersion < 20260922) {
-            List<String> currentSettings = cfg.getStringList("custom-format.settings");
-            List<String> previousMaintainedSettings = List.of(
-                "bQsBvBuDW",
-                "BBBBBBBBB",
-                "BoooooooB",
-                "BoooooooB",
-                "BBBBBBBBB",
-                "BPlBzBUNB"
-            );
-            List<String> previousFallbackSettings = List.of(
-                "bQsBvBuDW",
-                "BBBBBBBBB",
-                "BoooooooB",
-                "BoooooooB",
-                "BPBBBBBNB",
-                "BBlBBBUBB"
-            );
-            if (currentSettings.equals(previousMaintainedSettings)
-                    || currentSettings.equals(previousFallbackSettings)) {
-                cfg.set("custom-format.settings", List.of(
-                    "bQsBvBuBW",
-                    "BBBBBBBBB",
-                    "BoooooooB",
-                    "BoooooooB",
-                    "BBBBBBBBB",
-                    "BPlBzBUNB"
-                ));
-                changed = true;
-            }
-
-            // Version the migration even when the owner customized the layout.
-            // Custom settings are deliberately never overwritten.
-            cfg.set("data.config-version", 20260922);
             changed = true;
         }
 
