@@ -459,6 +459,7 @@ public interface JEGSlimefunGuideImplementation extends SlimefunGuideImplementat
         LegacyMachineRecipeBridge.addMachineRecipeButton(menu, format, profile, p, item);
 
         menu.open(p);
+        LegacyRecipeUsageBridge.decorate(p, profile, this, item);
 
         if (!task.isEmpty()) {
             task.start(menu.toInventory());
