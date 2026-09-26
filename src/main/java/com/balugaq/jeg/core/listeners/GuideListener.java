@@ -31,14 +31,12 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.listeners.SlimefunGuideListener;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jspecify.annotations.NullMarked;
@@ -54,15 +52,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author balugaq
  * @since 1.0
  */
-@Getter
 @NullMarked
 public class GuideListener implements Listener {
     public static final Map<Player, SlimefunGuideMode> guideModeMap = new ConcurrentHashMap<>();
-    public final boolean giveOnFirstJoin;
-
-    public GuideListener() {
-        this.giveOnFirstJoin = Slimefun.getConfigManager().getPluginConfig().getBoolean("guide.receive-on-first-join");
-    }
 
     @Internal
     public static void openGuide(Player player, SlimefunGuideMode mode) {
@@ -156,19 +148,9 @@ public class GuideListener implements Listener {
         }
     }
 
-    /**
-     * @see SlimefunGuideListener#onJoin(PlayerJoinEvent)
+    /*
+     * First-join guide delivery remains owned by Slimefun's SlimefunGuideListener.
+     * JEG only owns guide rendering/interaction; registering a second join handler would
+     * give new players duplicate guide books when both plugins are installed.
      */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        if (this.giveOnFirstJoin && !e.getPlayer().hasPlayedBefore()) {
-            Player p = e.getPlayer();
-            if (!Slimefun.getWorldSettingsService().isWorldEnabled(p.getWorld())) {
-                return;
-            }
-
-            SlimefunGuideMode type = SlimefunGuide.getDefaultMode();
-            p.getInventory().addItem(SlimefunGuide.getItem(type).clone());
-        }
-    }
 }
