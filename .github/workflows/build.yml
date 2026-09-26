@@ -104,6 +104,37 @@ jobs:
           grep -Fq 'Slimefun Doctor Wiki' "$DOCTOR"
           grep -Fq 'Slimefun-Doctor-Commands' "$DOCTOR"
 
+      - name: Verify issue 264 guide regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONFIG=src/main/resources/config.yml
+          MANAGER=src/main/java/com/balugaq/jeg/core/managers/ConfigManager.java
+          LISTENER=src/main/java/com/balugaq/jeg/core/listeners/GuideListener.java
+          GUIDE=src/main/java/com/balugaq/jeg/api/interfaces/JEGSlimefunGuideImplementation.java
+          BRIDGE=src/main/java/com/balugaq/jeg/utils/LegacyRecipeUsageBridge.java
+          PLUGIN=src/main/java/com/balugaq/jeg/implementation/JustEnoughGuide.java
+
+          test "$(grep -F '    - "bK rrr  w"' "$CONFIG" | wc -l)" -eq 2
+          if grep -Fq 'bK Mrrr w' "$CONFIG"; then
+            echo 'Duplicate machine-recipe slot shifted the centered 3x3 grid.' >&2
+            exit 1
+          fi
+          grep -Fq 'shiftedRecipe' "$MANAGER"
+          grep -Fq 'shiftedRecipeDisplay' "$MANAGER"
+          grep -Fq 'config-version", 20260926' "$MANAGER"
+          grep -Fq 'LegacyRecipeUsageBridge.decorate(p, profile, this, item);' "$GUIDE"
+          grep -Fq 'SlimefunGuideImplementation.class' "$BRIDGE"
+          grep -Fq 'LegacyRecipeUsageBrowser' "$BRIDGE"
+
+          if grep -Fq 'PlayerJoinEvent' "$LISTENER" || grep -Fq 'giveOnFirstJoin' "$LISTENER"; then
+            echo 'JEG must not duplicate Slimefun first-join guide delivery.' >&2
+            exit 1
+          fi
+
+          grep -Fq 'registerSlimefunGuide' "$PLUGIN"
+          grep -Fq 'compareAndSetSlimefunGuide' "$PLUGIN"
+
       - name: Verify canonical shaded addon JAR
         shell: bash
         run: |
