@@ -19,6 +19,7 @@ package com.balugaq.jeg.core.managers;
 
 import com.balugaq.jeg.api.managers.AbstractManager;
 import com.balugaq.jeg.api.objects.collection.data.Bookmark;
+import com.balugaq.jeg.utils.BackpackPersistenceCompat;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import com.xzavier0722.mc.plugin.slimefun4.storage.controller.ProfileDataController;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -123,7 +124,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, itemStack);
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
     }
 
@@ -220,7 +221,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, migratedItem);
         operateController((Consumer<ProfileDataController>) controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
 
         if (!legacyIds.isEmpty()) {
@@ -259,7 +260,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, markItemAsBookmarksItem(new ItemStack(Material.DIRT), player));
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
         return backpack;
     }
@@ -330,7 +331,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, itemStack);
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
     }
 
@@ -406,7 +407,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, itemStack);
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
     }
 
@@ -438,7 +439,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, itemStack);
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
     }
 
@@ -461,7 +462,7 @@ public class BookmarkManager extends AbstractManager {
 
         backpack.getInventory().setItem(DATA_ITEM_SLOT, itemStack);
         operateController(controller -> {
-            controller.saveBackpackInventory(backpack);
+            BackpackPersistenceCompat.save(controller, backpack, DATA_ITEM_SLOT);
         });
     }
 
