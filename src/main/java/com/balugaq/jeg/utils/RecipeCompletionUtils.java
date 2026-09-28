@@ -105,7 +105,7 @@ public class RecipeCompletionUtils {
         if (sf != null) {
             List<@Nullable RecipeChoice> raw = new ArrayList<>(
                 Arrays.stream(sf.getRecipe())
-                    .map(item -> item == null ? null : new RecipeChoice.ExactChoice(item))
+                    .map(item -> item == null ? null : RecipeChoiceCompat.exact(item))
                     .toList()
             );
             for (int i = raw.size(); i < 9; i++) {
