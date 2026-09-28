@@ -199,13 +199,24 @@ public enum FilterType {
     }
 
     @ApiStatus.Obsolete
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public String getFirstSymbol() {
-        return getSymbols().stream().findFirst().get();
+        return getCanonicalFlag().flag();
     }
 
     public String apply(String raw) {
-        return flags.stream().findFirst().get().apply(raw);
+        return getCanonicalFlag().apply(raw);
+    }
+
+    /**
+     * Prefix flags are the canonical generated form. Suffix flags remain accepted
+     * as legacy search aliases, but generated searches must not depend on Set order.
+     */
+    private Flag getCanonicalFlag() {
+        for (Flag flag : flags) {
+            if (flag.type() == Flag.Type.PREFIX) return flag;
+        }
+
+        return flags.iterator().next();
     }
 
     /**
@@ -270,7 +281,7 @@ public enum FilterType {
         record SuffixFlag(String flag) implements Flag {
             @Override
             public Type type() {
-                return Type.PREFIX;
+                return Type.SUFFIX;
             }
 
             @Override

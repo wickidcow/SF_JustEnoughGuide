@@ -26,8 +26,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.67"
-// 2.1.67: fix issue #264 recipe layout, first-join ownership, and Legacy usage browsing.
+version = "2.1.68"
+// 2.1.68: fix cheat-guide item clicks and deterministic English search flags.
 
 repositories {
     mavenCentral()
