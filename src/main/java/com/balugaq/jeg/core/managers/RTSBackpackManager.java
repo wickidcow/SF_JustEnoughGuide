@@ -121,7 +121,7 @@ public class RTSBackpackManager extends AbstractManager {
                 continue;
             }
             inventory.setItem(i, itemStack);
-            BackpackPersistenceCompat.save(Slimefun.getDatabaseManager().getProfileDataController(), b, IDENTIFIER_SLOT);
+            BackpackPersistenceCompat.save(Slimefun.getDatabaseManager().getProfileDataController(), b, i);
         }
         b.setInventory(inventory);
     }
