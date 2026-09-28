@@ -135,6 +135,24 @@ jobs:
           grep -Fq 'registerSlimefunGuide' "$PLUGIN"
           grep -Fq 'compareAndSetSlimefunGuide' "$PLUGIN"
 
+      - name: Verify 26.3 for-removal API cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -R -n -F 'new RecipeChoice.ExactChoice' src/main/java; then
+            echo 'Direct ExactChoice constructors are deprecated for removal on Paper 26.3.' >&2
+            exit 1
+          fi
+
+          grep -Fq 'RecipeChoice.class.getMethod("exactChoice", List.class)'             src/main/java/com/balugaq/jeg/utils/RecipeChoiceCompat.java
+          grep -Fq 'RecipeChoice.ExactChoice.class.getConstructor(List.class)'             src/main/java/com/balugaq/jeg/utils/RecipeChoiceCompat.java
+
+          if grep -E -n 'saveBackpackInventory\([^)]*,[^)]*\)'             src/main/java/com/balugaq/jeg/core/managers/BookmarkManager.java             src/main/java/com/balugaq/jeg/core/managers/RTSBackpackManager.java; then
+            echo 'Deprecated slot-argument backpack persistence call returned.' >&2
+            exit 1
+          fi
+
       - name: Verify cheat guide click and search regressions
         shell: bash
         run: |
