@@ -142,8 +142,10 @@ jobs:
           CLICK=src/main/java/com/balugaq/jeg/utils/clickhandler/OnClick.java
           FILTER=src/main/java/com/balugaq/jeg/api/objects/enums/FilterType.java
 
-          grep -Fq 'clickType == ClickType.RIGHT) return findAction(player, "take-stack");' "$CLICK"
-          grep -Fq 'clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click");' "$CLICK"
+          grep -Fq 'clickType == ClickType.LEFT) return findAction(player, "take-item", false);' "$CLICK"
+          grep -Fq 'clickType == ClickType.RIGHT) return findAction(player, "take-stack", false);' "$CLICK"
+          grep -Fq 'clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click", false);' "$CLICK"
+          grep -Fq 'default Action findAction(Player player, String key, boolean allowRedirect)' "$CLICK"
           grep -Fq 'OpAction.of("take-stack", "Cheat Mode - Take stack"' "$CLICK"
           grep -Fq 'return getCanonicalFlag().apply(raw);' "$FILTER"
           grep -Fq 'if (flag.type() == Flag.Type.PREFIX) return flag;' "$FILTER"
