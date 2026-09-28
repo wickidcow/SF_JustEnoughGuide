@@ -112,7 +112,7 @@ public class RTSBackpackManager extends AbstractManager {
         }
         Inventory inventory = b.getInventory();
         setIdentifier(player, inventory, IDENTIFIER_SLOT, true);
-        Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(b, IDENTIFIER_SLOT);
+        Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(b);
         ItemStack[] contents = getStorageContents(player.getInventory());
         for (int i = 0; i < contents.length; i++) {
             ItemStack itemStack = contents[i];
@@ -120,7 +120,7 @@ public class RTSBackpackManager extends AbstractManager {
                 continue;
             }
             inventory.setItem(i, itemStack);
-            Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(b, i);
+            Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(b);
         }
         b.setInventory(inventory);
     }
@@ -269,13 +269,13 @@ public class RTSBackpackManager extends AbstractManager {
                 for (int i = 0; i < contents.length; i++) {
                     if (i != IDENTIFIER_SLOT) {
                         backpack.getInventory().setItem(i, new ItemStack(Material.AIR));
-                        Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(backpack, i);
+                        Slimefun.getDatabaseManager().getProfileDataController().saveBackpackInventory(backpack);
                     }
                 }
                 setIdentifier(player, backpack.getInventory(), IDENTIFIER_SLOT, false);
                 Slimefun.getDatabaseManager()
                     .getProfileDataController()
-                    .saveBackpackInventory(backpack, IDENTIFIER_SLOT);
+                    .saveBackpackInventory(backpack);
 
                 break;
             }
