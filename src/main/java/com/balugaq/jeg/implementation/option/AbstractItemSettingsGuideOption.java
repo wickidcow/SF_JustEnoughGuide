@@ -25,6 +25,7 @@ import com.balugaq.jeg.implementation.JustEnoughGuide;
 import com.balugaq.jeg.utils.EventUtil;
 import com.balugaq.jeg.utils.GuideUtil;
 import com.balugaq.jeg.utils.KeyUtil;
+import com.balugaq.jeg.utils.RecipeChoiceCompat;
 import com.balugaq.jeg.utils.compatibility.Converter;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
@@ -110,7 +111,7 @@ public abstract class AbstractItemSettingsGuideOption implements PrioritySlimefu
         for (int amount : amounts) {
             var item = itemStacks[i % itemStacks.length];
             if (item == null) continue;
-            choices.add(new RecipeChoice.ExactChoice(Converter.getItem(item, amount)));
+            choices.add(RecipeChoiceCompat.exact(Converter.getItem(item, amount)));
             i++;
         }
         return choices;
