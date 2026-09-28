@@ -135,6 +135,25 @@ jobs:
           grep -Fq 'registerSlimefunGuide' "$PLUGIN"
           grep -Fq 'compareAndSetSlimefunGuide' "$PLUGIN"
 
+      - name: Verify cheat guide click and search regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          CLICK=src/main/java/com/balugaq/jeg/utils/clickhandler/OnClick.java
+          FILTER=src/main/java/com/balugaq/jeg/api/objects/enums/FilterType.java
+
+          grep -Fq 'clickType == ClickType.RIGHT) return findAction(player, "take-stack");' "$CLICK"
+          grep -Fq 'clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click");' "$CLICK"
+          grep -Fq 'OpAction.of("take-stack", "Cheat Mode - Take stack"' "$CLICK"
+          grep -Fq 'return getCanonicalFlag().apply(raw);' "$FILTER"
+          grep -Fq 'if (flag.type() == Flag.Type.PREFIX) return flag;' "$FILTER"
+          grep -Fq 'return Type.SUFFIX;' "$FILTER"
+
+          if grep -Fq 'flags.stream().findFirst().get().apply(raw)' "$FILTER"; then
+            echo 'Generated search flags must not depend on Set iteration order.' >&2
+            exit 1
+          fi
+
       - name: Verify canonical shaded addon JAR
         shell: bash
         run: |

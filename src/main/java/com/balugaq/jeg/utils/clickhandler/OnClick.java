@@ -971,12 +971,24 @@ public interface OnClick {
             if (clickType == ClickType.DROP || clickType == ClickType.CONTROL_DROP) {
                 return findAction(player, "q");
             }
+            boolean selectingRecipeItem = RecipeCompletableListener
+                .isSelectingItemStackToRecipeComplete(player.getUniqueId());
+            boolean canCheat = player.isOp() || player.hasPermission("slimefun.cheat.items");
+
+            // Cheat guide controls:
+            // left click = one item, right click = one full stack,
+            // shift + right click = search recipes that use this item.
+            if (!selectingRecipeItem && canCheat && guide.getMode() == SlimefunGuideMode.CHEAT_MODE) {
+                if (clickType == ClickType.RIGHT) return findAction(player, "take-stack");
+                if (clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click");
+            }
+
             // 右键
             if (clickType == ClickType.RIGHT) {
                 return findAction(player, "right-click");
             }
             // Shift+左键
-            if (clickType == ClickType.SHIFT_LEFT && !RecipeCompletableListener.isSelectingItemStackToRecipeComplete(player.getUniqueId())) {
+            if (clickType == ClickType.SHIFT_LEFT && !selectingRecipeItem) {
                 return findAction(player, "shift-left-click");
             }
             // Shift+右键
@@ -984,7 +996,7 @@ public interface OnClick {
                 return findAction(player, "shift-right-click");
             }
             // 有cheat权限
-            if (!RecipeCompletableListener.isSelectingItemStackToRecipeComplete(player.getUniqueId()) && (player.isOp() || player.hasPermission("slimefun.cheat.items"))) {
+            if (!selectingRecipeItem && canCheat) {
                 ItemStack cursor = event.getCursor();
                 if (event.getClick() == ClickType.MIDDLE && (cursor == null || cursor.getType() == Material.AIR)) {
                     return findAction(player, "clone-item");
@@ -1338,6 +1350,10 @@ public interface OnClick {
 
                         player.setItemOnCursor(StackUtils.getAsQuantity(itemStack, itemStack.getMaxStackSize()));
                     }
+                }),
+                OpAction.of("take-stack", "Cheat Mode - Take stack", Material.STRUCTURE_BLOCK, (guide, player, slot, slimefunItem, item, clickAction, menu, page) -> {
+                    ItemStack itemStack = MultiBlockBuilder.getItem(item);
+                    player.getInventory().addItem(StackUtils.getAsQuantity(itemStack, itemStack.getMaxStackSize()));
                 }),
                 OpAction.of("take-item", "Cheat Mode - Take item", Material.STRUCTURE_BLOCK, (guide, player, slot, slimefunItem, item, clickAction, menu, page) -> {
                     int amount = 1;
