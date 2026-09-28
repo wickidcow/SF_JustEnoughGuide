@@ -899,10 +899,14 @@ public interface OnClick {
         }
 
         default Action findAction(Player player, String key) {
+            return findAction(player, key, true);
+        }
+
+        default Action findAction(Player player, String key, boolean allowRedirect) {
             for (Action action : listActions()) {
                 String k = action.getKey().getKey();
                 if (k.equals(key)) {
-                    if (JustEnoughGuide.getConfigManager().isAllowActionRedirect()) {
+                    if (allowRedirect && JustEnoughGuide.getConfigManager().isAllowActionRedirect()) {
                         String remap = ACTION_KEY.get(player, k);
                         if (remap != null) {
                             for (Action act : listActions()) {
@@ -975,27 +979,28 @@ public interface OnClick {
                 .isSelectingItemStackToRecipeComplete(player.getUniqueId());
             boolean canCheat = player.isOp() || player.hasPermission("slimefun.cheat.items");
 
-            // Cheat guide controls:
+            // Cheat guide controls are fixed and intentionally bypass per-player action remaps:
             // left click = one item, right click = one full stack,
             // shift + right click = search recipes that use this item.
             if (!selectingRecipeItem && canCheat && guide.getMode() == SlimefunGuideMode.CHEAT_MODE) {
-                if (clickType == ClickType.RIGHT) return findAction(player, "take-stack");
-                if (clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click");
+                if (clickType == ClickType.LEFT) return findAction(player, "take-item", false);
+                if (clickType == ClickType.RIGHT) return findAction(player, "take-stack", false);
+                if (clickType == ClickType.SHIFT_RIGHT) return findAction(player, "right-click", false);
             }
 
-            // 右键
+            // Right click
             if (clickType == ClickType.RIGHT) {
                 return findAction(player, "right-click");
             }
-            // Shift+左键
+            // Shift + left click
             if (clickType == ClickType.SHIFT_LEFT && !selectingRecipeItem) {
                 return findAction(player, "shift-left-click");
             }
-            // Shift+右键
+            // Shift + right click
             if (clickType == ClickType.SHIFT_RIGHT) {
                 return findAction(player, "shift-right-click");
             }
-            // 有cheat权限
+            // Cheat permission
             if (!selectingRecipeItem && canCheat) {
                 ItemStack cursor = event.getCursor();
                 if (event.getClick() == ClickType.MIDDLE && (cursor == null || cursor.getType() == Material.AIR)) {
