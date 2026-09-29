@@ -28,6 +28,9 @@ jobs:
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
 
+      - name: Compatibility warning parser self-test
+        run: python3 scripts/test_summarize_deprecations.py
+
       - name: Compatibility warning gate
         shell: bash
         run: |
