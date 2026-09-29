@@ -28,6 +28,9 @@ jobs:
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
 
+      - name: Verify Legacy menu deprecation boundary
+        run: python3 scripts/verify_legacy_menu_deprecation_boundary.py
+
       - name: Compatibility warning parser self-test
         run: python3 scripts/test_summarize_deprecations.py
 
