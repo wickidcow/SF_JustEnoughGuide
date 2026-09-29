@@ -30,6 +30,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -174,7 +176,11 @@ public class GroupResorter {
             return item;
         }
         final ItemStack copy = item.clone();
-        copy.editMeta(meta -> meta.setDisplayName(StringUtil.translateHexColors(name)));
+        copy.editMeta(meta -> meta.displayName(
+            LegacyComponentSerializer.legacySection()
+                .deserialize(StringUtil.translateHexColors(name))
+                .decoration(TextDecoration.ITALIC, false)
+        ));
         return copy;
     }
 
