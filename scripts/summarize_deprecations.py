@@ -7,7 +7,7 @@ import argparse
 import re
 from pathlib import Path
 
-WARNING = re.compile(r"warning: \[(deprecation|removal)\] (.+)")
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def main() -> int:
@@ -18,11 +18,13 @@ def main() -> int:
 
     log = Path(args.log)
     text = log.read_text(encoding="utf-8", errors="replace") if log.is_file() else ""
-    findings = []
+    findings: list[tuple[str, str]] = []
+
     for raw_line in text.splitlines():
         line = ANSI.sub("", raw_line)
         if "warning:" not in line:
             continue
+
         if "[deprecation]" in line:
             findings.append(("deprecation", line.strip()))
         elif "[removal]" in line:
@@ -43,6 +45,7 @@ def main() -> int:
     if findings:
         lines.extend(["", "## Findings", ""])
         lines.extend(f"- `{line}`" for _, line in findings)
+
     report.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     print(
