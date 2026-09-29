@@ -392,10 +392,10 @@ public class CMIChatColor {
             }
         }
 
-        return translateAlternateColorCodes(text);
+        return translateLegacyCodes(text);
     }
 
-    private static String translateAlternateColorCodes(String text) {
+    private static String translateLegacyCodes(String text) {
         char[] characters = text.toCharArray();
         for (int i = 0; i < characters.length - 1; i++) {
             if (characters[i] == '&' && isLegacyCode(characters[i + 1])) {
