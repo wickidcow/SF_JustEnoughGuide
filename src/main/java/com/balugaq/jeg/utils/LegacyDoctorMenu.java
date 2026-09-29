@@ -31,6 +31,7 @@ import java.util.List;
  * duplicating Doctor or ticker logic. This keeps permission and safety checks in
  * the Slimefun core that owns them.</p>
  */
+@SuppressWarnings("deprecation") // Slimefun Legacy ChestMenu/ClickAction compatibility boundary.
 public final class LegacyDoctorMenu {
 
     private static final String DOCTOR_PERMISSION = "slimefun.command.doctor";
