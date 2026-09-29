@@ -122,6 +122,7 @@ public class CustomLagBlock extends JEGSlimefunItem {
         return Integer.parseInt(mss);
     }
 
+    @SuppressWarnings("deprecation") // Slimefun Legacy menu callback compatibility.
     public static ChestMenu.MenuClickHandler operate(Location location, int amt) {
         return (p, s, i, a) -> {
             StorageCacheUtils.setData(location, BS_MS, "" + Math.max(0, getCurrentStatus(location) + amt));
