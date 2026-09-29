@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build/reports
-          ./gradlew clean compileJava -PjegDeprecationReport=true --no-daemon 2>&1 | tee build/reports/deprecation-compile.log
+          ./gradlew compileJava -PjegDeprecationReport=true --rerun-tasks --no-daemon 2>&1 | tee build/reports/deprecation-compile.log
           python3 scripts/summarize_deprecations.py build/reports/deprecation-compile.log --fail-on-warnings
           cat build/reports/deprecations.md >> "$GITHUB_STEP_SUMMARY"
 
