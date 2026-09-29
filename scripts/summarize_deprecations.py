@@ -19,10 +19,14 @@ def main() -> int:
     log = Path(args.log)
     text = log.read_text(encoding="utf-8", errors="replace") if log.is_file() else ""
     findings = []
-    for line in text.splitlines():
-        match = WARNING.search(line)
-        if match:
-            findings.append((match.group(1), line.strip()))
+    for raw_line in text.splitlines():
+        line = ANSI.sub("", raw_line)
+        if "warning:" not in line:
+            continue
+        if "[deprecation]" in line:
+            findings.append(("deprecation", line.strip()))
+        elif "[removal]" in line:
+            findings.append(("removal", line.strip()))
 
     deprecations = sum(kind == "deprecation" for kind, _ in findings)
     removals = sum(kind == "removal" for kind, _ in findings)
