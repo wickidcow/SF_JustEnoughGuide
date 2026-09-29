@@ -37,6 +37,7 @@ import java.util.logging.Level;
  * When Legacy is present, the browser uses its registered providers and delegates
  * transfers back to Legacy's transaction/rollback/protection implementation.</p>
  */
+@SuppressWarnings("deprecation") // Slimefun Legacy ChestMenu/ClickAction compatibility boundary.
 public final class LegacyMachineRecipeBridge {
 
     private static final String PROVIDER_REGISTRY =
