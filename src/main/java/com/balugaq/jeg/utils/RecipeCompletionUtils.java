@@ -268,7 +268,7 @@ public class RecipeCompletionUtils {
                     if (stack != null && stack.getType() != Material.AIR) {
                         if (!StackUtils.itemsMatch(stack, template) || stack.getAmount() >= template.getMaxStackSize()) {
                             // 无法放置
-                            return IntObjectPair.of(0, null);
+                            return IntObjectPair.of(0, Map.of());
                         }
 
                         // stack maybe overstacked
@@ -276,7 +276,8 @@ public class RecipeCompletionUtils {
                     }
                 }
             }
-            return IntObjectPair.of(maxTimes, null);
+            // ItemSource reads this map before pushing ingredients, including ordered recipes.
+            return IntObjectPair.of(maxTimes, Map.of());
         }
     }
 

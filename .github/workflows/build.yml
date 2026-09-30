@@ -180,6 +180,22 @@ jobs:
             exit 1
           fi
 
+      - name: Verify recipe completion result maps
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import re
+          from pathlib import Path
+
+          source = Path("src/main/java/com/balugaq/jeg/utils/RecipeCompletionUtils.java").read_text()
+          start = source.index("public static IntObjectPair<Map<ItemStack, IntSet>> maxCraftable(")
+          end = source.index("public static String getAmountString(", start)
+          method = source[start:end]
+          if re.search(r"return\s+IntObjectPair\.of\([^,]+,\s*null\s*\)", method):
+              raise SystemExit("Recipe completion must return a non-null preferred-slot map, including ordered recipes.")
+          print("Recipe completion result-map regression check: PASS")
+          PYTHON
+
       - name: Verify canonical shaded addon JAR
         shell: bash
         run: |
