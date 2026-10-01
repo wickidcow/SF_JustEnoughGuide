@@ -63,7 +63,7 @@ public class JEGGuideGroup extends ClassicGuideGroup {
     public static final int[] BORDER_SLOTS =
         Formats.helper.getChars('B').stream().mapToInt(i -> i).toArray();
 
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "deprecation"}) // Classic guide click handlers still expose Legacy ClickAction.
     protected JEGGuideGroup(NamespacedKey key, ItemStack icon) {
         super(key, icon, Integer.MAX_VALUE);
         for (int slot : BORDER_SLOTS) {

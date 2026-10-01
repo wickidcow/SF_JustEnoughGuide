@@ -15,7 +15,6 @@ import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +31,7 @@ import java.util.List;
  * duplicating Doctor or ticker logic. This keeps permission and safety checks in
  * the Slimefun core that owns them.</p>
  */
+@SuppressWarnings("deprecation") // Slimefun Legacy ChestMenu/ClickAction compatibility boundary.
 public final class LegacyDoctorMenu {
 
     private static final String DOCTOR_PERMISSION = "slimefun.command.doctor";
@@ -161,7 +161,10 @@ public final class LegacyDoctorMenu {
                 pl.closeInventory();
                 boolean handled = pl.performCommand("sf tick top");
                 if (!handled) {
-                    pl.sendMessage(ChatColor.RED + "Slimefun Legacy did not accept /sf tick top.");
+                    pl.sendMessage(Component.text(
+                        "Slimefun Legacy did not accept /sf tick top.",
+                        NamedTextColor.RED
+                    ));
                 }
                 return false;
             });
@@ -213,7 +216,10 @@ public final class LegacyDoctorMenu {
         @Nullable ItemStack settingsGuide
     ) {
         if (!canAccessRecoveryCenter(player)) {
-            player.sendMessage(ChatColor.RED + "The Slimefun Recovery Center is restricted to server operators/admins.");
+            player.sendMessage(Component.text(
+                "The Slimefun Recovery Center is restricted to server operators/admins.",
+                NamedTextColor.RED
+            ));
             return;
         }
 
@@ -413,8 +419,10 @@ public final class LegacyDoctorMenu {
         } catch (NoSuchMethodException | LinkageError ignored) {
             return false;
         } catch (IllegalAccessException | InvocationTargetException ex) {
-            player.sendMessage(ChatColor.YELLOW
-                + "Native Recovery Center could not be opened; using the JEG fallback menu.");
+            player.sendMessage(Component.text(
+                "Native Recovery Center could not be opened; using the JEG fallback menu.",
+                NamedTextColor.YELLOW
+            ));
             return false;
         }
     }
@@ -457,7 +465,10 @@ public final class LegacyDoctorMenu {
             player.closeInventory();
             boolean handled = player.performCommand("sf " + command);
             if (!handled) {
-                player.sendMessage(ChatColor.RED + "Slimefun Legacy did not accept /sf " + command + '.');
+                player.sendMessage(Component.text(
+                    "Slimefun Legacy did not accept /sf " + command + '.',
+                    NamedTextColor.RED
+                ));
             }
             return false;
         });

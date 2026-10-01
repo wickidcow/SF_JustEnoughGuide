@@ -5,6 +5,8 @@ package com.balugaq.jeg.utils;
 
 import java.util.Locale;
 import java.util.StringJoiner;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,8 +30,11 @@ public final class ItemStackHelper {
         }
 
         ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.hasDisplayName()) {
-            return meta.getDisplayName();
+        if (meta != null) {
+            Component displayName = meta.displayName();
+            if (displayName != null) {
+                return LegacyComponentSerializer.legacySection().serialize(displayName);
+            }
         }
 
         return humanize(item.getType());

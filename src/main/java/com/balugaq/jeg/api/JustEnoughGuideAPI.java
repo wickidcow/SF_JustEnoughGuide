@@ -105,6 +105,7 @@ public final class JustEnoughGuideAPI {
          * @param recipeDepth     补全递归深度
          * @return 会话是否成功创建并打开
          */
+        @SuppressWarnings("deprecation") // Public compatibility API retains Slimefun Legacy ClickAction.
         public boolean openSlimefun(BlockMenu menu, Player player, ClickAction clickAction, int[] ingredientSlots, boolean unordered, int recipeDepth) {
             RecipeCompleteSession session = RecipeCompleteSession.create(menu, player, clickAction, ingredientSlots, unordered, recipeDepth);
             if (session == null) {
@@ -120,6 +121,7 @@ public final class JustEnoughGuideAPI {
          *
          * @see #openSlimefun(BlockMenu, Player, ClickAction, int[], boolean, int)
          */
+        @SuppressWarnings("deprecation") // Public compatibility API retains Slimefun Legacy ClickAction.
         public boolean openVanilla(Block block, Inventory inventory, Player player, ClickAction clickAction, int[] ingredientSlots, boolean unordered, int recipeDepth) {
             RecipeCompleteSession session = RecipeCompleteSession.create(block, inventory, player, clickAction, ingredientSlots, unordered, recipeDepth);
             if (session == null) {

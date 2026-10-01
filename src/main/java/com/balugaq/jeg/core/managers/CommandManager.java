@@ -68,10 +68,16 @@ public class CommandManager extends AbstractManager {
             result.add("clear");
             if (!args.isEmpty()) {
                 switch (args.getFirst()) {
-                    case "1", "kw", "keyword" ->
-                        SearchGroup.KEYWORD_CACHE.keySet().stream().map(String::valueOf).forEach(result::add);
-                    case "2", "dr", "display_recipes" ->
-                        SearchGroup.DISPLAY_RECIPES_CACHE.keySet().stream().map(String::valueOf).forEach(result::add);
+                    case "1", "kw", "keyword" -> {
+                        for (char key : SearchGroup.KEYWORD_CACHE.keySet()) {
+                            result.add(String.valueOf(key));
+                        }
+                    }
+                    case "2", "dr", "display_recipes" -> {
+                        for (char key : SearchGroup.DISPLAY_RECIPES_CACHE.keySet()) {
+                            result.add(String.valueOf(key));
+                        }
+                    }
                     default -> { /* 未知 section 仅给 clear */ }
                 }
             }

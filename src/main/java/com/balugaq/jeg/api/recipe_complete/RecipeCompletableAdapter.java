@@ -63,6 +63,7 @@ public interface RecipeCompletableAdapter {
         }
     }
 
+    @SuppressWarnings("deprecation") // BlockMenu click handler uses Slimefun Legacy ClickAction.
     static void addJEGButton(@NotNull SlimefunItem slimefunItem, @NotNull BlockMenu blockMenu, @Range(from = 0, to = 53) int slot) {
         blockMenu.replaceExistingItem(slot, Converter.getItem(Models.JEG_RECIPE_COMPLETE_BUTTON));
         blockMenu.addMenuClickHandler(slot, (player, slot1, item, action) -> {

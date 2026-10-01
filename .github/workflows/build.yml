@@ -28,6 +28,30 @@ jobs:
           chmod +x gradlew
           ./gradlew clean shadowJar --no-daemon
 
+      - name: Verify Legacy menu deprecation boundary
+        run: python3 scripts/verify_legacy_menu_deprecation_boundary.py
+
+      - name: Compatibility warning parser self-test
+        run: python3 scripts/test_summarize_deprecations.py
+
+      - name: Compatibility warning gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/reports
+          ./gradlew compileJava -PjegDeprecationReport=true --rerun-tasks --no-daemon 2>&1 | tee build/reports/deprecation-compile.log
+          python3 scripts/summarize_deprecations.py build/reports/deprecation-compile.log --fail-on-warnings
+          cat build/reports/deprecations.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload compatibility warning report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jeg-deprecation-removal-report
+          path: |
+            build/reports/deprecation-compile.log
+            build/reports/deprecations.md
+          if-no-files-found: error
+
       - name: Extract version
         id: version
         shell: bash
@@ -173,6 +197,22 @@ jobs:
             echo 'Generated search flags must not depend on Set iteration order.' >&2
             exit 1
           fi
+
+      - name: Verify recipe completion result maps
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import re
+          from pathlib import Path
+
+          source = Path("src/main/java/com/balugaq/jeg/utils/RecipeCompletionUtils.java").read_text()
+          start = source.index("public static IntObjectPair<Map<ItemStack, IntSet>> maxCraftable(")
+          end = source.index("public static String getAmountString(", start)
+          method = source[start:end]
+          if re.search(r"return\s+IntObjectPair\.of\([^,]+,\s*null\s*\)", method):
+              raise SystemExit("Recipe completion must return a non-null preferred-slot map, including ordered recipes.")
+          print("Recipe completion result-map regression check: PASS")
+          PYTHON
 
       - name: Verify canonical shaded addon JAR
         shell: bash

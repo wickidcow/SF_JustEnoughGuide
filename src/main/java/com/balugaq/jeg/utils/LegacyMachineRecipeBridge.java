@@ -11,7 +11,11 @@ import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -33,6 +37,7 @@ import java.util.logging.Level;
  * When Legacy is present, the browser uses its registered providers and delegates
  * transfers back to Legacy's transaction/rollback/protection implementation.</p>
  */
+@SuppressWarnings("deprecation") // Slimefun Legacy ChestMenu/ClickAction compatibility boundary.
 public final class LegacyMachineRecipeBridge {
 
     private static final String PROVIDER_REGISTRY =
@@ -240,11 +245,10 @@ public final class LegacyMachineRecipeBridge {
             appendLore(
                 icon,
                 "",
-                ChatColor.GOLD + "Machine recipe " + ChatColor.WHITE + (recipeIndex + 1)
-                    + ChatColor.GRAY + "/" + recipes.size(),
-                ChatColor.GRAY + "Inputs: " + ChatColor.WHITE + recipe.inputs().size(),
-                ChatColor.GRAY + "Outputs: " + ChatColor.WHITE + recipe.outputs().size(),
-                ChatColor.YELLOW + "Click to view details"
+                "&6Machine recipe &f" + (recipeIndex + 1) + "&7/" + recipes.size(),
+                "&7Inputs: &f" + recipe.inputs().size(),
+                "&7Outputs: &f" + recipe.outputs().size(),
+                "&eClick to view details"
             );
 
             int slot = LIST_SLOTS[index];
@@ -345,7 +349,7 @@ public final class LegacyMachineRecipeBridge {
         int outputCount = Math.min(recipe.outputs().size(), DETAIL_OUTPUT_SLOTS.length);
         for (int i = 0; i < outputCount; i++) {
             ItemStack output = recipe.outputs().get(i).clone();
-            appendLore(output, "", ChatColor.GREEN + "Machine output");
+            appendLore(output, "", "&aMachine output");
             menu.addItem(
                 DETAIL_OUTPUT_SLOTS[i],
                 output,
@@ -432,7 +436,10 @@ public final class LegacyMachineRecipeBridge {
     ) {
         Class<?> managerClass = loadClass(INPUT_FILL_MANAGER);
         if (managerClass == null) {
-            player.sendMessage(ChatColor.RED + "Slimefun Legacy's safe input-fill service is unavailable.");
+            player.sendMessage(Component.text(
+                "Slimefun Legacy's safe input-fill service is unavailable.",
+                NamedTextColor.RED
+            ));
             return;
         }
 
@@ -446,14 +453,17 @@ public final class LegacyMachineRecipeBridge {
             Object manager = get.invoke(null);
             fill.invoke(manager, player, machine, recipe, selectedAlternatives, maximum);
         } catch (ReflectiveOperationException | LinkageError | RuntimeException exception) {
-            player.sendMessage(ChatColor.RED + "Could not safely fill this machine. Check the server console.");
+            player.sendMessage(Component.text(
+                "Could not safely fill this machine. Check the server console.",
+                NamedTextColor.RED
+            ));
             JustEnoughGuide.getInstance().getLogger()
                 .log(Level.WARNING, "Slimefun Legacy safe machine input fill failed", exception);
         }
     }
 
     private static ChestMenu baseMenu(String title) {
-        ChestMenu menu = new ChestMenu(ChatColor.translateAlternateColorCodes('&', title));
+        ChestMenu menu = new ChestMenu(legacyString(title));
         menu.setSize(54);
         menu.setEmptySlotsClickable(false);
         for (int slot = 0; slot < 54; slot++) {
@@ -466,12 +476,11 @@ public final class LegacyMachineRecipeBridge {
         ItemStack icon = choices.get(Math.max(0, Math.min(selected, choices.size() - 1))).clone();
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add(ChatColor.AQUA + "Input " + ChatColor.WHITE + (ingredientIndex + 1));
+        lore.add("&bInput &f" + (ingredientIndex + 1));
         if (choices.size() > 1) {
-            lore.add(ChatColor.GRAY + "Alternative " + ChatColor.WHITE + (selected + 1)
-                + ChatColor.GRAY + "/" + choices.size());
-            lore.add(ChatColor.YELLOW + "Left-click: next alternative");
-            lore.add(ChatColor.YELLOW + "Right-click: previous alternative");
+            lore.add("&7Alternative &f" + (selected + 1) + "&7/" + choices.size());
+            lore.add("&eLeft-click: next alternative");
+            lore.add("&eRight-click: previous alternative");
         }
         appendLore(icon, lore.toArray(String[]::new));
         return icon;
@@ -560,12 +569,12 @@ public final class LegacyMachineRecipeBridge {
         ItemStack copy = item.clone();
         ItemMeta meta = copy.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-            List<String> coloredLore = new ArrayList<>();
+            meta.displayName(legacy(name));
+            List<Component> coloredLore = new ArrayList<>();
             for (String line : lore) {
-                coloredLore.add(ChatColor.translateAlternateColorCodes('&', line));
+                coloredLore.add(legacy(line));
             }
-            meta.setLore(coloredLore);
+            meta.lore(coloredLore);
             copy.setItemMeta(meta);
         }
         return copy;
@@ -576,19 +585,29 @@ public final class LegacyMachineRecipeBridge {
         if (meta == null) {
             return;
         }
-        List<String> lore = meta.hasLore() && meta.getLore() != null
-            ? new ArrayList<>(meta.getLore())
-            : new ArrayList<>();
+        List<Component> lore = meta.lore() == null
+            ? new ArrayList<>()
+            : new ArrayList<>(meta.lore());
         for (String line : lines) {
-            lore.add(ChatColor.translateAlternateColorCodes('&', line));
+            lore.add(legacy(line));
         }
-        meta.setLore(lore);
+        meta.lore(lore);
         item.setItemMeta(meta);
     }
 
+    private static Component legacy(String value) {
+        return LegacyComponentSerializer.legacyAmpersand()
+            .deserialize(value)
+            .decoration(TextDecoration.ITALIC, false);
+    }
+
+    private static String legacyString(String value) {
+        return LegacyComponentSerializer.legacySection().serialize(legacy(value));
+    }
+
     private static String strip(String value) {
-        String stripped = ChatColor.stripColor(value);
-        return stripped == null ? value : stripped;
+        return PlainTextComponentSerializer.plainText()
+            .serialize(LegacyComponentSerializer.legacySection().deserialize(value));
     }
 
     private static void logFine(String message, Throwable throwable) {

@@ -33,6 +33,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class CustomMenuHandlerImpl implements CustomMenuHandler {
     @Override
+    @SuppressWarnings("deprecation") // LogiTech adapter contract returns Slimefun Legacy MenuClickHandler.
     public ChestMenu.MenuClickHandler getInstance(
         CustomMenu menu) {
         return (p, s, i, a) -> {

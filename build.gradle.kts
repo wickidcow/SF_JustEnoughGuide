@@ -126,7 +126,15 @@ tasks {
     }
 
     compileJava {
-        options.compilerArgs.add("-Xlint:-removal")
+        val compatibilityReport = providers.gradleProperty("jegDeprecationReport")
+            .map(String::toBoolean)
+            .orElse(false)
+            .get()
+        if (compatibilityReport) {
+            options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:removal"))
+        } else {
+            options.compilerArgs.add("-Xlint:-removal")
+        }
         // ACF uses -parameters for parameter-name based syntax hints
         options.compilerArgs.add("-parameters")
         options.encoding = "UTF-8"

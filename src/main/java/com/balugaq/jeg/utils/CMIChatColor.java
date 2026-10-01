@@ -42,6 +42,7 @@ public class CMIChatColor {
     private static final LinkedHashMap<String, CMIChatColor> CUSTOM_BY_NAME = new LinkedHashMap<>();
     private static final Map<String, CMIChatColor> CUSTOM_BY_HEX = new HashMap<>();
     private static final TreeMap<String, CMIChatColor> CUSTOM_BY_RGB = new TreeMap<>();
+    private static final Pattern LEGACY_COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-ORX]");
 
     static {
         for (CMICustomColors one : CMICustomColors.values()) {
@@ -391,7 +392,30 @@ public class CMIChatColor {
             }
         }
 
-        return ChatColor.translateAlternateColorCodes('&', text);
+        return translateLegacyCodes(text);
+    }
+
+    private static String translateLegacyCodes(String text) {
+        char[] characters = text.toCharArray();
+        for (int i = 0; i < characters.length - 1; i++) {
+            if (characters[i] == '&' && isLegacyCode(characters[i + 1])) {
+                characters[i] = '§';
+                characters[i + 1] = Character.toLowerCase(characters[i + 1]);
+            }
+        }
+        return new String(characters);
+    }
+
+    private static boolean isLegacyCode(char code) {
+        return (code >= '0' && code <= '9')
+            || (code >= 'a' && code <= 'f')
+            || (code >= 'A' && code <= 'F')
+            || (code >= 'k' && code <= 'o')
+            || (code >= 'K' && code <= 'O')
+            || code == 'r'
+            || code == 'R'
+            || code == 'x'
+            || code == 'X';
     }
 
     public static String convertNamedHex(String text) {
@@ -496,7 +520,7 @@ public class CMIChatColor {
     public static String stripColor(String text) {
         if (text == null) return null;
         text = CMIChatColor.translate(text);
-        return ChatColor.stripColor(text);
+        return LEGACY_COLOR_PATTERN.matcher(text).replaceAll("");
     }
 
     public static String stripHexColor(String message) {
@@ -521,6 +545,7 @@ public class CMIChatColor {
         return message;
     }
 
+    @SuppressWarnings("deprecation") // Exact Bukkit legacy-format continuation behavior retained for compatibility.
     public static String getLastColors(String text) {
         if (text == null) return null;
 
@@ -579,6 +604,7 @@ public class CMIChatColor {
         return isReset;
     }
 
+    @SuppressWarnings("deprecation") // Retained public API returns Bukkit ChatColor.
     public ChatColor getColor() {
         return ChatColor.getByChar(this.getChar());
     }
