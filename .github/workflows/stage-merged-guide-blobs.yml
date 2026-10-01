@@ -1,0 +1,51 @@
+name: Stage Verified Guide Source Blobs
+on:
+  push:
+    branches: ['work/reconcile-legacy-release-20261001']
+    paths: ['.github/workflows/stage-merged-guide-blobs.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify successful build evidence and stage content objects only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p evidence
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,io,json,subprocess,tarfile,time,zipfile
+          repo='repos/wickidcow/SF_JustEnoughGuide'
+          raw=subprocess.run(['gh','api',repo+'/actions/artifacts/11172825047/zip'],check=True,capture_output=True,timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest()=='937588e00186032f60c3ee5d46042fb1c35d0f476079cb304fde544c00f16434'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              assert 'BUILD SUCCESSFUL' in z.read('build.log').decode()
+              report=json.loads(z.read('bytecode.json'));assert report['result']=='PASS'
+              tree=z.read('source-tree.txt').decode().strip();assert tree=='cc9436afacd58fde6387c65d358ce9d42f40221f'
+              names=[line[3:] for line in z.read('git-status.txt').decode().splitlines() if line[:3] in ['M  ','A  ']]
+              assert len(names)==18
+              entries=[]
+              with tarfile.open(fileobj=io.BytesIO(z.read('merged-source.tar.gz'))) as archive:
+                  for name in names:
+                      member=archive.getmember(name);assert member.isfile()
+                      data=archive.extractfile(member).read();sha=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+                      response=subprocess.run(['gh','api','--method','POST',repo+'/git/blobs','--input','-'],input=json.dumps(dict(content=data.decode(),encoding='utf-8')),text=True,capture_output=True)
+                      if response.returncode:
+                          print(response.stdout,response.stderr);raise SystemExit(response.returncode)
+                      assert json.loads(response.stdout)['sha']==sha
+                      entries.append(dict(path=name,mode='100755' if member.mode & 0o111 else '100644',type='blob',sha=sha))
+                      time.sleep(0.4)
+              Path('evidence/staged-blobs.json').write_text(json.dumps(dict(tree=tree,entries=entries,unit_test_sources=False,build_passed=True,java_ceiling=21,release_approved=False),indent=2))
+          print('Only content objects staged; no workflow file, ref or release updated.')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: staged-guide-blobs
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
