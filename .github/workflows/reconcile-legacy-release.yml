@@ -1,0 +1,133 @@
+name: Reconcile Guide for Legacy Release
+on:
+  push:
+    branches: ['work/reconcile-legacy-release-20261001']
+    paths: ['.github/workflows/reconcile-legacy-release.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: 1b0e8f7cea66d5208cb412ffaafa1bdb3d0057b2
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: wickidcow/Slimefun-Legacy
+          ref: 20f7c554b9b3543bc99cd9fd367f0149a784829f
+          path: core-tools
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Merge both inspected histories without moving a branch
+        run: |
+          set -euo pipefail
+          mkdir -p evidence inputs
+          git fetch origin master
+          test "$(git rev-parse origin/master)" = eee55bc5cfd774773fe638caaf01498a4b549e5e
+          git config user.name wickidcow
+          git config user.email 185013218+wickidcow@users.noreply.github.com
+          git merge --no-ff --no-commit eee55bc5cfd774773fe638caaf01498a4b549e5e
+          git diff --cached --check
+          git diff --cached --full-index > evidence/integration.patch
+          git diff --cached --stat > evidence/integration-stat.txt
+          git write-tree > evidence/source-tree.txt
+          git archive --format=tar.gz --output=evidence/merged-source.tar.gz "$(cat evidence/source-tree.txt)"
+      - name: Keep both master and pending-branch source guards
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_legacy_menu_deprecation_boundary.py
+          python3 scripts/test_summarize_deprecations.py
+          test -s src/main/java/com/balugaq/jeg/utils/BackpackPersistenceCompat.java
+          test -s src/main/java/com/balugaq/jeg/utils/RecipeChoiceCompat.java
+          if grep -R -n -F 'new RecipeChoice.ExactChoice' src/main/java; then exit 1; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          text=Path('src/main/java/com/balugaq/jeg/utils/RecipeCompletionUtils.java').read_text()
+          assert 'ConcurrentHashMap' in text
+          assert ', false, null)' not in text
+          PY
+      - name: Supply the exact verified Legacy core
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,io,json,subprocess,zipfile
+          raw=subprocess.run(['gh','api','repos/wickidcow/Slimefun-Legacy/actions/artifacts/11161785514/zip'],check=True,capture_output=True,timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest()=='8baf5310a21a8025dc575d4e768a0ba061cca843cd7095581f35f776c6059b39'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              names=[n for n in z.namelist() if n.endswith('.jar')];assert len(names)==1
+              jar=z.read(names[0])
+          assert hashlib.sha256(jar).hexdigest()=='d1e1c8c676fdf4a3806d74a05ca7d7ac797836d3baffc825b91e76f554a823bc'
+          Path('inputs/core.jar').write_bytes(jar)
+          PY
+      - name: Full merged guide build and exact-core tests
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path('core-tools/scripts').resolve()))
+          import compare_addon_slimefun_compatibility
+          import compare_addon_slimefun_compatibility_base as helper
+          init=helper.write_gradle_init_script(Path('.').resolve())
+          Path('inputs/init-path.txt').write_text(str(init))
+          PY
+          export SLIMEFUN_COMPATIBILITY_JAR="$PWD/inputs/core.jar"
+          chmod +x gradlew
+          ./gradlew clean build shadowJar -PjegDeprecationReport=true -I "$(cat inputs/init-path.txt)" --no-daemon --no-build-cache --console=plain 2>&1 | tee evidence/build.log
+          python3 scripts/summarize_deprecations.py evidence/build.log --fail-on-warnings
+          mkdir -p evidence/tests
+          find build/test-results -name 'TEST-*.xml' -exec cp {} evidence/tests/ \; 2>/dev/null || true
+          JAR="$(find build/libs -maxdepth 1 -name 'SF_JustEnoughGuide*.jar' ! -name '*sources*' ! -name '*javadoc*' -print -quit)"
+          test -s "$JAR"
+          python3 core-tools/scripts/verify_addon_bytecode.py "$JAR" --expected-java 21 --report evidence/bytecode.json
+          cp "$JAR" inputs/guide.jar
+          sha256sum inputs/*.jar > evidence/jar-sha256.txt
+      - name: Stage only the reviewed merged source tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          entries=[]
+          for name in filter(None,paths):
+              mode=subprocess.check_output(['git','ls-files','-s','--',name],text=True).split()[0]
+              content=subprocess.check_output(['git','show',':'+name]).decode()
+              assert not name.startswith(('core-tools/','evidence/','inputs/'))
+              entries.append(dict(path=name,mode=mode,type='blob',content=content))
+          base=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()
+          response=subprocess.run(['gh','api','--method','POST','repos/wickidcow/SF_JustEnoughGuide/git/trees','--input','-'],input=json.dumps(dict(base_tree=base,tree=entries)),check=True,text=True,capture_output=True)
+          result=json.loads(response.stdout);assert result['sha']==Path('evidence/source-tree.txt').read_text().strip()
+          Path('evidence/staged-tree.json').write_text(json.dumps(dict(tree=result['sha'],parents=['1b0e8f7cea66d5208cb412ffaafa1bdb3d0057b2','eee55bc5cfd774773fe638caaf01498a4b549e5e'],paths=[r['path'] for r in entries],published=False),indent=2))
+          PY
+      - name: Preserve conflict and failure evidence
+        if: always()
+        run: |
+          mkdir -p evidence
+          git status --porcelain > evidence/git-status.txt
+          git diff --cc > evidence/conflicts.diff
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: reconciled-guide-evidence
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        with:
+          name: reconciled-guide-test-inputs
+          path: inputs/*.jar
+          retention-days: 14
+          if-no-files-found: error
