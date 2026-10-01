@@ -27,6 +27,7 @@ import com.balugaq.jeg.core.integrations.Integration;
 import com.balugaq.jeg.implementation.JustEnoughGuide;
 import com.balugaq.jeg.implementation.option.AbstractItemSettingsGuideOption;
 import com.balugaq.jeg.utils.ItemStackUtil;
+import com.balugaq.jeg.utils.RecipeChoiceCompat;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.guide.options.SlimefunGuideSettings;
@@ -150,9 +151,9 @@ public class LogiTechIntegrationMain implements Integration {
         var t = SlimefunItem.getById("LOGITECH_TRUE_").getItem();
         var f = SlimefunItem.getById("LOGITECH_FALSE_").getItem();
         var g = SlimefunItem.getById("LOGITECH_LOGIGATE").getItem();
-        RecipeChoice tf = new RecipeChoice.ExactChoice(t, f);
-        RecipeChoice ft = new RecipeChoice.ExactChoice(f, t);
-        RecipeChoice gg = new RecipeChoice.ExactChoice(g);
+        RecipeChoice tf = RecipeChoiceCompat.exact(t, f);
+        RecipeChoice ft = RecipeChoiceCompat.exact(f, t);
+        RecipeChoice gg = RecipeChoiceCompat.exact(g);
         for (int i = 0; i < s.length(); i++) {
             var c = s.charAt(i);
             switch (c) {

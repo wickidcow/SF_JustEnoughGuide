@@ -26,8 +26,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.68"
-// 2.1.68: fix cheat-guide item clicks and deterministic English search flags.
+version = "2.1.69"
+// 2.1.69: Paper 26.3 for-removal API compatibility while retaining the 1.21.11 floor.
 
 repositories {
     mavenCentral()
