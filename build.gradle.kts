@@ -1,5 +1,7 @@
 @file:Suppress("VulnerableLibrariesLocal", "UnstableApiUsage")
 
+import java.util.zip.ZipFile
+
 /*
 * Copyright (c) 2024-2026 balugaq
 *
@@ -26,8 +28,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.69"
-// 2.1.69: Paper 26.3 for-removal API compatibility while retaining the 1.21.11 floor.
+version = "2.1.70"
+// 2.1.70: verify and preload guide renderer classes without changing guide data or behavior.
 
 repositories {
     mavenCentral()
@@ -166,6 +168,21 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         mergeServiceFiles()
+
+        doLast {
+            val compiled = sourceSets.main.get().output.classesDirs.files.flatMap { root ->
+                root.resolve("com/balugaq/jeg").walkTopDown().filter { it.isFile && it.extension == "class" }
+                    .map { it.relativeTo(root).invariantSeparatorsPath }.toList()
+            }.toSet()
+            check(compiled.isNotEmpty()) { "No compiled JEG classes to verify" }
+            ZipFile(archiveFile.get().asFile).use { jar ->
+                val missing = compiled.filter { jar.getEntry(it) == null }
+                check(missing.isEmpty()) { "Missing JEG runtime classes: $missing" }
+                check(jar.getEntry("com/balugaq/jeg/utils/clickhandler/OnDisplay\$ItemGroup.class") != null) {
+                    "Missing guide item-group renderer"
+                }
+            }
+        }
     }
 
     processResources {

@@ -16,12 +16,12 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
@@ -51,9 +51,11 @@ jobs:
         if: steps.tag_check.outputs.exists == 'false'
         run: |
           chmod +x gradlew
-          ./gradlew clean shadowJar --no-daemon
+          ./gradlew clean build --no-daemon
           JAR="build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar"
           test -s "$JAR"
+          python3 scripts/test_guide_runtime_jar.py
+          python3 scripts/verify_guide_runtime_jar.py "$JAR" --classes build/classes/java/main --version "${{ steps.version.outputs.version }}"
           jar tf "$JAR" >/dev/null
           jar tf "$JAR" | grep -Fq 'com/balugaq/jeg/libraries/libby/LibraryManager.class'
           if jar tf "$JAR" | grep -Fq 'net/byteflux/libby/LibraryManager.class'; then
@@ -63,10 +65,11 @@ jobs:
 
       - name: Upload Actions artifact
         if: steps.tag_check.outputs.exists == 'false'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
           path: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
+          archive: false
           if-no-files-found: error
 
       - name: Create Release

@@ -42,6 +42,7 @@ import com.balugaq.jeg.implementation.items.ItemsSetup;
 import com.balugaq.jeg.implementation.items.ReplacementCardAdapter;
 import com.balugaq.jeg.utils.Debug;
 import com.balugaq.jeg.utils.GuideUtil;
+import com.balugaq.jeg.utils.GuideRuntimeClasses;
 import com.balugaq.jeg.utils.LegacyConfigMigration;
 import com.balugaq.jeg.utils.MinecraftVersion;
 import com.balugaq.jeg.utils.ReflectionUtil;
@@ -159,6 +160,8 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         new EnumMap<>(SlimefunGuideMode.class);
     private final Map<SlimefunGuideMode, SlimefunGuideImplementation> installedGuides =
         new EnumMap<>(SlimefunGuideMode.class);
+
+    private boolean rejectedIncompleteRuntime;
 
     public JustEnoughGuide() {
         this.author = "wickidcow";
@@ -296,6 +299,20 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
      */
     @Override
     public void onEnable() {
+        rejectedIncompleteRuntime = false;
+        try {
+            int linked = GuideRuntimeClasses.preload(getClassLoader());
+            getLogger().info("Verified " + linked + " guide renderer classes before guide registration.");
+        } catch (ClassNotFoundException | LinkageError | SecurityException failure) {
+            rejectedIncompleteRuntime = true;
+            getLogger().log(Level.SEVERE,
+                "JEG guide renderer classes could not be loaded from " + getFile().getName()
+                    + ". Stop the server, replace JEG with the complete release JAR, remove duplicate JEG JARs,"
+                    + " and restart. If necessary, regenerate only Paper's cached JEG remapped JAR while stopped."
+                    + " Do not delete bookmarks, player data or Slimefun storage. The existing guide is not replaced.", failure);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         instance = this;
 
         if (!Boolean.TRUE.equals(AdventureProperties.TEXT_WARN_WHEN_LEGACY_FORMATTING_DETECTED.value())) {
@@ -455,6 +472,11 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
      */
     @Override
     public void onDisable() {
+        if (rejectedIncompleteRuntime) {
+            // Verification failed before any managers, items or guides were installed.
+            instance = null;
+            return;
+        }
         unloadInternal();
 
         this.bookmarkManager = null;
