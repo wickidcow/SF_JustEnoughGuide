@@ -1,0 +1,130 @@
+name: Guide Renderer Paper Validation
+on:
+  push:
+    branches: ['audit/guide-renderer-linkage-20261001']
+    paths: ['.github/workflows/guide-renderer-paper-validation.yml', '.audit/GuideRendererProbe.java']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Fetch hash-verified complete, original and deliberately damaged inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p inputs evidence
+          python3 - <<'PY'
+          import hashlib,io,subprocess,zipfile
+          from pathlib import Path
+          raw=subprocess.run(['gh','api','repos/wickidcow/SF_JustEnoughGuide/actions/artifacts/11206008781/zip'],capture_output=True,check=True,timeout=120).stdout
+          assert hashlib.sha256(raw).hexdigest()=='8cf44f706c7a47ac86861de5bfa839a007dc78f8bb0be846c4bc3ceab3600399'
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              for n in ['core.jar','original.jar','SF_JustEnoughGuide2.1.70.jar','damaged-for-test.jar']:
+                  Path('inputs',n).write_bytes(z.read(n))
+          assert hashlib.sha256(Path('inputs/core.jar').read_bytes()).hexdigest()=='993b257c54efe19b58cc8f4946d4d39387f7787fe263c9f27123343159344c42'
+          assert hashlib.sha256(Path('inputs/original.jar').read_bytes()).hexdigest()=='08b762197b877d9f2dc85c71456e388df846091754141ddc98da38374685d17b'
+          PY
+      - name: Compile non-shipped native-server probe
+        run: |
+          mkdir -p probe/classes
+          cat > probe/pom.xml <<'XML'
+          <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>audit</groupId><artifactId>guide-probe</artifactId><version>1</version><repositories><repository><id>paper</id><url>https://repo.papermc.io/repository/maven-public/</url></repository></repositories><dependencies><dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>1.21.11-R0.1-SNAPSHOT</version></dependency></dependencies></project>
+          XML
+          mvn -B -ntp -f probe/pom.xml dependency:build-classpath -Dmdep.outputFile=classpath.txt > evidence/probe-build.log 2>&1
+          javac --release 21 -cp "inputs/core.jar:inputs/SF_JustEnoughGuide2.1.70.jar:$(cat probe/classpath.txt)" -d probe/classes .audit/GuideRendererProbe.java >> evidence/probe-build.log 2>&1
+          printf "name: GuideRendererProbe\nmain: audit.GuideRendererProbe\nversion: '1'\napi-version: '1.21.11'\ndepend: [Slimefun]\nsoftdepend: [JustEnoughGuide]\n" > probe/classes/plugin.yml
+          jar --create --file inputs/probe.jar -C probe/classes .
+          sha256sum inputs/*.jar > inputs/SHA256SUMS.txt
+          cp .audit/GuideRendererProbe.java evidence/
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: guide-renderer-probe-build
+          path: evidence/
+          retention-days: 14
+      - uses: actions/upload-artifact@v7
+        with:
+          name: guide-renderer-paper-inputs
+          path: inputs/
+          retention-days: 14
+          if-no-files-found: error
+  runtime:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.21.11'
+            build: 132
+            java: '21'
+            sha: 5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba
+          - minecraft: '26.2'
+            build: 129
+            java: '25'
+            sha: b1d8f6bfa1b6101fa8e947b53041cb3bdf5540e7b83b6547ca19ba7edefeb083
+          - minecraft: '26.3'
+            build: 140
+            java: '25'
+            sha: 98aabc113a80b9b5e183475e839a17cf99c39c915a1f46b8f35a5e89fd5de0f1
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: guide-renderer-paper-inputs
+          path: inputs
+      - name: Render guide history and groups using the actual server class loader
+        env:
+          MC: ${{ matrix.minecraft }}
+          BUILD: ${{ matrix.build }}
+          SHA: ${{ matrix.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          sha256sum --check inputs/SHA256SUMS.txt
+          curl -fLsS --retry 3 --max-time 120 -H 'User-Agent: Slimefun-Legacy-Guide-Test/1.0' "https://fill-data.papermc.io/v1/objects/$SHA/paper-$MC-$BUILD.jar" -o paper.jar
+          printf '%s  paper.jar\n' "$SHA" | sha256sum --check
+          cp inputs/SHA256SUMS.txt evidence/
+          for KIND in original candidate damaged; do
+            JAR=original.jar; DAMAGED=false; MARKER=GUIDE_HISTORY_AND_GROUPS_PASS
+            if [[ "$KIND" == candidate ]]; then JAR=SF_JustEnoughGuide2.1.70.jar; fi
+            if [[ "$KIND" == damaged ]]; then JAR=damaged-for-test.jar; DAMAGED=true; MARKER=GUIDE_DAMAGED_REFUSED_CORE_RETAINED; fi
+            mkdir -p "$KIND/plugins"
+            cp paper.jar "$KIND/server.jar"
+            cp inputs/core.jar "$KIND/plugins/Slimefun.jar"
+            cp "inputs/$JAR" "$KIND/plugins/JustEnoughGuide.jar"
+            cp inputs/probe.jar "$KIND/plugins/GuideRendererProbe.jar"
+            printf 'eula=true\n' > "$KIND/eula.txt"
+            printf 'online-mode=false\nserver-ip=127.0.0.1\nserver-port=0\nview-distance=2\nsimulation-distance=2\npause-when-empty-seconds=-1\n' > "$KIND/server.properties"
+            STATUS=0
+            (cd "$KIND" && timeout --kill-after=20s 220s java -Xms512M -Xmx2G -Dguide.probe.damaged="$DAMAGED" -jar server.jar --nogui > server.log 2>&1) || STATUS=$?
+            mkdir -p "evidence/$KIND"
+            cp "$KIND/server.log" "evidence/$KIND/"
+            test ! -f "$KIND/guide-result.txt" || cp "$KIND/guide-result.txt" "evidence/$KIND/"
+            if [[ "$STATUS" != 0 ]] || ! grep -Fq "$MARKER" "$KIND/guide-result.txt"; then tail -n 110 "$KIND/server.log"; exit 1; fi
+            if grep -Fq 'GUIDE_RENDERER_PROBE_FAILED' "$KIND/server.log"; then exit 1; fi
+            if [[ "$KIND" != damaged ]] && grep -Eq 'Slimefun Guide action failed|NoClassDefFoundError|ClassNotFoundException|Error occurred while enabling' "$KIND/server.log"; then tail -n 110 "$KIND/server.log"; exit 1; fi
+            cat "$KIND/guide-result.txt"
+          done
+          printf 'PASS: complete original and replacement render menus; missing nested class rejected before guide takeover on %s\n' "$MC" > evidence/result.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: guide-renderer-runtime-${{ matrix.minecraft }}
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
