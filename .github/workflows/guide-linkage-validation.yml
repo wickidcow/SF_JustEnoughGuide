@@ -1,0 +1,100 @@
+name: Guide Renderer Linkage Validation
+on:
+  push:
+    branches: ['audit/guide-renderer-linkage-20261001']
+    paths: ['.github/workflows/guide-linkage-validation.yml', '.audit/**']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Apply reviewed renderer safety and packaging changes
+        run: |
+          mkdir -p evidence inputs
+          python3 .audit/apply-guide-hotfix.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('build.gradle.kts');s=p.read_text()
+          s=s.replace('@file:Suppress("VulnerableLibrariesLocal", "UnstableApiUsage")','@file:Suppress("VulnerableLibrariesLocal", "UnstableApiUsage")\n\nimport java.util.zip.ZipFile')
+          s=s.replace('java.util.zip.ZipFile(archiveFile.get().asFile)','ZipFile(archiveFile.get().asFile)')
+          p.write_text(s)
+          PY
+          git diff --check
+          python3 scripts/test_guide_runtime_jar.py 2>&1 | tee evidence/archive-tests.log
+          mkdir -p renderer-test
+          javac --release 21 -d renderer-test src/main/java/com/balugaq/jeg/utils/GuideRuntimeClasses.java tests/GuideRuntimeClassesTest.java
+          java -cp renderer-test com.balugaq.jeg.utils.GuideRuntimeClassesTest renderer-test | tee evidence/linkage-tests.log
+      - name: Full build and actual shaded-JAR inspection
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew clean build --no-daemon --no-build-cache --no-configuration-cache 2>&1 | tee evidence/build.log
+          python3 scripts/verify_guide_runtime_jar.py build/libs/SF_JustEnoughGuide2.1.70.jar --classes build/classes/java/main --version 2.1.70 | tee evidence/jar-check.log
+          cp build/libs/SF_JustEnoughGuide2.1.70.jar inputs/
+          sha256sum inputs/*.jar > evidence/candidate-sha256.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess,zipfile
+          source=Path('inputs/SF_JustEnoughGuide2.1.70.jar')
+          damaged=Path('inputs/damaged-for-test.jar')
+          target='com/balugaq/jeg/utils/clickhandler/OnDisplay$ItemGroup.class'
+          with zipfile.ZipFile(source) as original,zipfile.ZipFile(damaged,'w') as out:
+              for n in original.namelist():
+                  if n!=target: out.writestr(n,original.read(n))
+          result=subprocess.run(['python3','scripts/verify_guide_runtime_jar.py',str(damaged)],capture_output=True,text=True)
+          assert result.returncode!=0 and target in result.stderr, result.stdout+result.stderr
+          Path('evidence/missing-class-control.txt').write_text(result.stdout+result.stderr)
+          PY
+      - name: Inspect exact original released JAR and supplied server core
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --max-time 120 https://github.com/wickidcow/SF_JustEnoughGuide/releases/download/v2.1.69/SF_JustEnoughGuide2.1.69.jar -o inputs/original.jar
+          printf '%s  inputs/original.jar\n' 08b762197b877d9f2dc85c71456e388df846091754141ddc98da38374685d17b | sha256sum --check
+          python3 scripts/verify_guide_runtime_jar.py inputs/original.jar --version 2.1.69 | tee evidence/original-jar-check.log
+          curl -fLsS --retry 3 --max-time 120 https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.63/Slimefun-Legacy4.1.63.jar -o inputs/core.jar
+          printf '%s  inputs/core.jar\n' 993b257c54efe19b58cc8f4946d4d39387f7787fe263c9f27123343159344c42 | sha256sum --check
+          sha256sum inputs/*.jar > inputs/SHA256SUMS.txt
+      - name: Preserve exact reviewed sources without moving release refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess,tarfile
+          from pathlib import Path
+          names=['src/main/java/com/balugaq/jeg/utils/GuideRuntimeClasses.java','src/main/java/com/balugaq/jeg/implementation/JustEnoughGuide.java','tests/GuideRuntimeClassesTest.java','scripts/verify_guide_runtime_jar.py','scripts/test_guide_runtime_jar.py','build.gradle.kts','.github/workflows/build.yml','.github/workflows/release.yml']
+          blobs={}
+          for n in names:
+              data=Path(n).read_bytes();sha=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              result=subprocess.run(['gh','api','--method','POST','repos/wickidcow/SF_JustEnoughGuide/git/blobs','--input','-'],input=json.dumps(dict(content=data.decode(),encoding='utf-8')),capture_output=True,text=True,check=True)
+              assert json.loads(result.stdout)['sha']==sha;blobs[n]=sha
+              p=Path('evidence/reviewed-source')/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+          Path('evidence/reviewed-blobs.json').write_text(json.dumps(blobs,indent=2)+'\n')
+          with tarfile.open('evidence/current-source.tar.gz','w:gz') as archive:
+              archive.add('src',arcname='src')
+              archive.add('gradle',arcname='gradle')
+              archive.add('build.gradle.kts',arcname='build.gradle.kts')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: guide-renderer-linkage-evidence
+          path: evidence/
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        with:
+          name: guide-renderer-runtime-inputs
+          path: inputs/
+          retention-days: 14
+          if-no-files-found: error
