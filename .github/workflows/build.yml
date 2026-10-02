@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
@@ -23,10 +23,17 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Guide renderer regression tests
+        run: |
+          python3 scripts/test_guide_runtime_jar.py
+          mkdir -p build/renderer-test
+          javac --release 21 -d build/renderer-test src/main/java/com/balugaq/jeg/utils/GuideRuntimeClasses.java tests/GuideRuntimeClassesTest.java
+          java -cp build/renderer-test com.balugaq.jeg.utils.GuideRuntimeClassesTest build/renderer-test
+
       - name: Build
         run: |
           chmod +x gradlew
-          ./gradlew clean shadowJar --no-daemon
+          ./gradlew clean build --no-daemon
 
       - name: Verify Legacy menu deprecation boundary
         run: python3 scripts/verify_legacy_menu_deprecation_boundary.py
@@ -44,7 +51,7 @@ jobs:
           cat build/reports/deprecations.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload compatibility warning report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jeg-deprecation-removal-report
           path: |
@@ -227,9 +234,13 @@ jobs:
             exit 1
           fi
 
+      - name: Verify complete guide runtime artifact
+        run: python3 scripts/verify_guide_runtime_jar.py "build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar" --classes build/classes/java/main --version "${{ steps.version.outputs.version }}"
+
       - name: Upload addon JAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
           path: build/libs/SF_JustEnoughGuide${{ steps.version.outputs.version }}.jar
+          archive: false
           if-no-files-found: error
