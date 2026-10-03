@@ -39,6 +39,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.skins.PlayerHead;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.skins.PlayerSkin;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import lombok.Getter;
 import com.balugaq.jeg.utils.ItemStackHelper;
 import org.bukkit.*;
@@ -52,9 +53,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -595,9 +594,11 @@ public class RTSListener implements Listener {
 
     /**
      * Cancels the event when a player sends a chat message while in RTS mode.
+     * Only the concurrent membership map is read here; inventory and world APIs
+     * must not be accessed from this asynchronous handler.
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onAsyncChat(AsyncPlayerChatEvent event) {
+    public void onAsyncChat(AsyncChatEvent event) {
         if (isRTSPlayer(event.getPlayer())) {
             event.setCancelled(true);
         }
@@ -618,16 +619,6 @@ public class RTSListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        if (isRTSPlayer(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    /**
-     * Cancels the event when a player sends a chat message while in RTS mode.
-     */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onChat(PlayerChatEvent event) {
         if (isRTSPlayer(event.getPlayer())) {
             event.setCancelled(true);
         }

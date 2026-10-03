@@ -7,6 +7,10 @@ import zipfile
 from pathlib import Path
 
 PREFIX = 'com/balugaq/jeg/'
+SYNCHRONOUS_CHAT_APIS = (
+    b'org/bukkit/event/player/PlayerChatEvent',
+    b'io/papermc/paper/event/player/ChatEvent',
+)
 REQUIRED = {PREFIX + name + '.class' for name in (
     'implementation/JustEnoughGuide',
     'api/interfaces/JEGSlimefunGuideImplementation',
@@ -54,6 +58,8 @@ def verify(path: Path, classes: Path | None = None, version: str | None = None) 
                 minor, major = int.from_bytes(data[4:6], 'big'), int.from_bytes(data[6:8], 'big')
                 if major > 65 or minor == 65535:
                     raise ValueError('Unsupported Java bytecode: ' + name)
+                if name.startswith(PREFIX) and any(api in data for api in SYNCHRONOUS_CHAT_APIS):
+                    raise ValueError('Synchronous chat API forces chat onto the main thread: ' + name)
                 count += 1
     return count
 

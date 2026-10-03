@@ -28,8 +28,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.70"
-// 2.1.70: verify and preload guide renderer classes without changing guide data or behavior.
+version = "2.1.71"
+// 2.1.71: keep RTS chat cancellation asynchronous without legacy chat listeners.
 
 repositories {
     mavenCentral()
