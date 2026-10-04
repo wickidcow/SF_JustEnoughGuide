@@ -68,5 +68,15 @@ class GuideJarTest(unittest.TestCase):
             with self.subTest(name=name):
                 self.write(additions={name: HEADER})
                 with self.assertRaisesRegex(ValueError, 'Unexpected'): verify(self.jar)
+    def test_synchronous_chat_api_refused(self):
+        for api in (b'org/bukkit/event/player/PlayerChatEvent', b'io/papermc/paper/event/player/ChatEvent'):
+            with self.subTest(api=api):
+                self.write(additions={PREFIX + 'core/listeners/ChatListener.class': HEADER + api})
+                with self.assertRaisesRegex(ValueError, 'Synchronous chat API'):
+                    verify(self.jar)
+    def test_asynchronous_chat_api_allowed(self):
+        self.write(additions={PREFIX + 'core/listeners/ChatListener.class':
+                              HEADER + b'io/papermc/paper/event/player/AsyncChatEvent'})
+        self.assertEqual(len(REQUIRED) + 1, verify(self.jar))
 
 if __name__ == '__main__': unittest.main()
