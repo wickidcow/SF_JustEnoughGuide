@@ -32,8 +32,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class GuideHistoryPatchListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onProfileLoad(AsyncProfileLoadEvent event) {
-        Debug.info("Patched " + event.getProfile().getPlayer().getName() + "'s Slimefun PlayerProfile");
-        GuideUtil.getProfile(event.getProfile()); // trigger patch
+        var profile = event.getProfile();
+        // Offline loads have no live Player, and this callback is asynchronous.
+        GuideUtil.getProfile(profile);
+        Debug.info("Patched Slimefun PlayerProfile " + profile.getUUID());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
