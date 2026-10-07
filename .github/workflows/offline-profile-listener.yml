@@ -1,0 +1,29 @@
+name: Offline Profile Listener Regression
+
+on:
+  pull_request:
+    paths:
+      - 'src/main/java/com/balugaq/jeg/core/listeners/GuideHistoryPatchListener.java'
+      - 'scripts/verify_offline_profile_listener.py'
+      - '.github/workflows/offline-profile-listener.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'src/main/java/com/balugaq/jeg/core/listeners/GuideHistoryPatchListener.java'
+      - 'scripts/verify_offline_profile_listener.py'
+      - '.github/workflows/offline-profile-listener.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Guard the reproduced offline-profile listener boundary
+        run: python3 scripts/verify_offline_profile_listener.py

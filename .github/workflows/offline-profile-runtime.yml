@@ -1,0 +1,113 @@
+name: Offline Profile Real Server Regression
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'build.gradle.kts'
+      - 'gradle/**'
+      - 'scripts/offline_profile_runtime.py'
+      - 'scripts/test_offline_profile_runtime.py'
+      - 'tests/offline-profile-runtime/**'
+      - '.github/workflows/offline-profile-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jeg-offline-profile-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Verify runtime evidence rejection
+        run: python3 -m unittest discover -s scripts -p 'test_offline_profile_runtime.py' -v
+      - name: Build actual candidate JAR
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build --no-daemon
+      - name: Stage exact candidate identity
+        shell: python
+        run: |
+          import hashlib, json, os, shutil, subprocess
+          from pathlib import Path
+          jars = list(Path('build/libs').glob('SF_JustEnoughGuide*.jar'))
+          assert len(jars) == 1, jars
+          source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert source == os.environ['GITHUB_SHA']
+          Path('candidate').mkdir()
+          shutil.copy2(jars[0], 'candidate/jeg-candidate.jar')
+          Path('candidate/source.json').write_text(json.dumps({
+              'source': source, 'sha256': hashlib.sha256(jars[0].read_bytes()).hexdigest(),
+              'scope': 'unreleased PR/source candidate, not the published 2.1.71 asset'
+          }, indent=2) + '\n')
+      - uses: actions/upload-artifact@v7
+        with:
+          name: jeg-offline-profile-candidate
+          path: candidate/
+          if-no-files-found: error
+
+  runtime:
+    name: Offline profile on Paper ${{ matrix.minecraft }}
+    needs: candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        minecraft: ['1.21.11', '26.2', '26.3']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check out immutable published-release fixture utilities
+        uses: actions/checkout@v6
+        with:
+          repository: wickidcow/Slimefun-Legacy
+          ref: 97afb3b74668775f1b36386d48a727cf00b8faec
+          path: _legacy
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.minecraft == '1.21.11' && '21' || '25' }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: jeg-offline-profile-candidate
+          path: candidate
+      - name: Reproduce published failure and verify actual candidate callback
+        run: |
+          python3 scripts/offline_profile_runtime.py \
+            --minecraft '${{ matrix.minecraft }}' \
+            --work-dir 'build/offline-profile-${{ matrix.minecraft }}' \
+            --tools _legacy \
+            --candidate candidate/jeg-candidate.jar \
+            --candidate-meta candidate/source.json
+      - name: Preserve runtime evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jeg-offline-profile-${{ matrix.minecraft }}
+          path: |
+            build/offline-profile-${{ matrix.minecraft }}/compile.log
+            build/offline-profile-${{ matrix.minecraft }}/*.console.log
+            build/offline-profile-${{ matrix.minecraft }}/runtime-evidence.json
+            build/offline-profile-${{ matrix.minecraft }}/server/probe-*.txt
+            build/offline-profile-${{ matrix.minecraft }}/server/plugins/worldedit-runtime.json
+          if-no-files-found: warn
+          retention-days: 30
