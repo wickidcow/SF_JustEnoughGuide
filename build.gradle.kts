@@ -28,8 +28,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.71"
-// 2.1.71: keep RTS chat cancellation asynchronous without legacy chat listeners.
+version = "2.1.72"
+// 2.1.72: preserve guide history when asynchronous profiles load without a live player.
 
 repositories {
     mavenCentral()

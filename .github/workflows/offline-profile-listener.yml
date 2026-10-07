@@ -3,12 +3,14 @@ name: Offline Profile Listener Regression
 on:
   pull_request:
     paths:
+      - 'build.gradle.kts'
       - 'src/main/java/com/balugaq/jeg/core/listeners/GuideHistoryPatchListener.java'
       - 'scripts/verify_offline_profile_listener.py'
       - '.github/workflows/offline-profile-listener.yml'
   push:
     branches: [master]
     paths:
+      - 'build.gradle.kts'
       - 'src/main/java/com/balugaq/jeg/core/listeners/GuideHistoryPatchListener.java'
       - 'scripts/verify_offline_profile_listener.py'
       - '.github/workflows/offline-profile-listener.yml'
