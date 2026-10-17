@@ -1,0 +1,9 @@
+name: JEGPinyinProbe
+version: '1'
+main: io.github.wickidcow.jegtest.PinyinStartupProbe
+api-version: '1.21'
+depend: [Slimefun]
+softdepend: [JustEnoughGuide]
+commands:
+  pinyinprobe:
+    description: Disposable Pinyin startup acceptance probe

@@ -1,0 +1,12 @@
+cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30  APACHE-2.0.txt
+6ebdfc90d96877421bae11d4575e31c50a1bff28987ed479eee24b1dff62cdaf  ATTRIBUTION.txt
+4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726  GPL-2.0-with-classpath-exception.txt
+7184cc84c381d50a8511d049a1ca7b32c4f597193d3a122dbb17e1993f588e9e  artifact-sources.json
+72fb4c36c72ed82959e7d992484f0d67de1d89f25323af28a3d9a58cd19f870b  heaven-source-notices.txt
+78eed9ae510e58a13cf00744856982265882f227bac8aa5dc7566e0864e0d5c5  sources/heaven-0.13.0/com/github/houbb/heaven/util/codec/CodecException.java.txt
+ce18782c5930ba28587bc5c8ecc81096b05c52ae0b3701c3ef7efd2e881f28f0  sources/heaven-0.13.0/com/github/houbb/heaven/util/codec/CodecSupport.java.txt
+eb7797a407027c84fe8153ea1f1c837a1f816f344883a414f694de7a4791118c  sources/heaven-0.13.0/com/github/houbb/heaven/util/codec/H64.java.txt
+c7440eaf8b164b6fdaa70ca05e22eef142a01faf03335ef86417ae64bb824534  sources/heaven-0.13.0/com/github/houbb/heaven/util/codec/Hex.java.txt
+6267544bea33919df670fdbd7d47d9d87aa6c4ecd46ab4c092403cf295292f5f  sources/heaven-0.13.0/com/github/houbb/heaven/util/util/internal/Base64.java.txt
+73350b43540067f44d3dda00c406c9815fd2518be3c638508c8105447a7799b3  upstream/heaven-LICENSE.txt
+68f716036e0a24f3b23f6fc0c6342db0ef936fb397ad077cc1b6e9e9ba31da26  upstream/pinyin-opencc4j-LICENSE.txt

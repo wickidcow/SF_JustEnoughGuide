@@ -28,8 +28,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.72"
-// 2.1.72: preserve guide history when asynchronous profiles load without a live player.
+version = "2.1.73"
+// 2.1.73: package search dictionaries so optional Pinyin never requires a startup download.
 
 repositories {
     mavenCentral()
@@ -73,11 +73,12 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    // Dependencies loaded dynamically by LibraryManager
-    compileOnly(libs.houbb.pinyin)
-    compileOnly(libs.houbb.opencc4j)
-    compileOnly(libs.houbb.heaven)
-    compileOnly(libs.houbb.nlp.common)
+    // Search and shared-character dictionaries must work with an empty runtime
+    // library cache and no Maven access, including when Pinyin search is disabled.
+    implementation(libs.houbb.pinyin)
+    implementation(libs.houbb.opencc4j)
+    implementation(libs.houbb.heaven)
+    implementation(libs.houbb.nlp.common)
 
     compileOnly(libs.slimefun.translation)
     compileOnly(libs.placeholderapi)
@@ -118,6 +119,8 @@ tasks.withType<JavaExec>().configureEach {
     systemProperty("sun.stdout.encoding", "UTF-8")
     systemProperty("sun.stderr.encoding", "UTF-8")
 }
+
+val searchRuntimeClasspath = configurations.named("runtimeClasspath")
 
 tasks {
     // The thin Gradle JAR is not a runnable plugin because runtime libraries such
@@ -160,6 +163,10 @@ tasks {
         relocate("co.aikar.commands", "com.balugaq.jeg.libraries.acf.commands")
         relocate("co.aikar.locales", "com.balugaq.jeg.libraries.acf.locales")
 
+        // Keep Houbb's existing namespaces and absolute dictionary paths. The
+        // public SearchGroup.getPinyin overload exposes PinyinStyleEnum, and
+        // previous Libby loading exposed these same unrelocated classes.
+
         // Exclude unwanted files
         exclude("META-INF/*")
         exclude("META-INF/maven/**")
@@ -180,6 +187,43 @@ tasks {
                 check(missing.isEmpty()) { "Missing JEG runtime classes: $missing" }
                 check(jar.getEntry("com/balugaq/jeg/utils/clickhandler/OnDisplay\$ItemGroup.class") != null) {
                     "Missing guide item-group renderer"
+                }
+                val notices = layout.projectDirectory.dir("src/main/resources/licenses/houbb").asFile
+                check(notices.resolve("checksums.sha256").isFile && notices.resolve("ATTRIBUTION.txt").isFile) {
+                    "Missing bundled search dependency notices"
+                }
+                for (notice in notices.walkTopDown().filter { it.isFile }) {
+                    val name = "licenses/houbb/" + notice.relativeTo(notices).invariantSeparatorsPath
+                    val packaged = jar.getEntry(name)
+                    check(packaged != null && notice.readBytes().contentEquals(
+                        jar.getInputStream(packaged).use { it.readBytes() }
+                    )) { "Missing or changed search dependency notice: $name" }
+                }
+                val expectedLibraries = mapOf(
+                    "pinyin" to libs.versions.houbbPinyin.get(),
+                    "opencc4j" to libs.versions.houbbOpencc4j.get(),
+                    "heaven" to libs.versions.houbbHeaven.get(),
+                    "nlp-common" to libs.versions.houbbNlpCommon.get()
+                )
+                val libraries = searchRuntimeClasspath.get().resolvedConfiguration.resolvedArtifacts
+                    .filter { it.moduleVersion.id.group == "com.github.houbb" }
+                check(libraries.associate { it.name to it.moduleVersion.id.version } == expectedLibraries) {
+                    "Unexpected packaged search dependency versions"
+                }
+                for (library in libraries) {
+                    ZipFile(library.file).use { original ->
+                        for (entry in original.entries().asSequence().filter {
+                            !it.isDirectory && (it.name.startsWith("com/github/houbb/") || it.name.endsWith(".txt"))
+                        }) {
+                            val packaged = jar.getEntry(entry.name)
+                            check(packaged != null) { "Missing packaged search dependency entry: ${entry.name}" }
+                            if (!entry.name.endsWith(".class")) {
+                                check(original.getInputStream(entry).use { it.readBytes() }.contentEquals(
+                                    jar.getInputStream(packaged).use { it.readBytes() }
+                                )) { "Changed packaged search dictionary: ${entry.name}" }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -277,6 +321,62 @@ publishing {
         }
     }
 }
+
+// Isolate the packaged search runtime from every server, Gradle dependency and
+// Libby cache. HTTP(S) is refused inside this process. These fixture classes are
+// outside the main source set and are never included in the distributable JAR.
+val compilePackagedPinyinProbe = tasks.register<JavaCompile>("compilePackagedPinyinProbe") {
+    source("tests/packaged-pinyin/PackagedPinyinProbe.java")
+    classpath = files()
+    destinationDirectory.set(layout.buildDirectory.dir("classes/packaged-pinyin-probe"))
+    javaCompiler.set(javaToolchains.compilerFor { languageVersion.set(JavaLanguageVersion.of(25)) })
+    options.release.set(21)
+    options.encoding = "UTF-8"
+}
+
+val verifyPackagedPinyinRuntime = tasks.register<JavaExec>("verifyPackagedPinyinRuntime") {
+    group = "verification"
+    description = "Verify packaged search classes and dictionaries with HTTP(S) acquisition refused"
+    dependsOn(tasks.shadowJar, compilePackagedPinyinProbe)
+    classpath = files(compilePackagedPinyinProbe.flatMap { it.destinationDirectory })
+    mainClass.set("io.github.wickidcow.jegtest.PackagedPinyinProbe")
+    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(25)) })
+    args(tasks.shadowJar.flatMap { it.archiveFile }.get().asFile.absolutePath,
+        file("tests/packaged-pinyin/dictionaries.sha256").absolutePath)
+}
+
+tasks.check { dependsOn(verifyPackagedPinyinRuntime) }
+
+val compilePinyinStartupFixture = tasks.register<JavaCompile>("compilePinyinStartupFixture") {
+    source(fileTree("tests/pinyin-startup") { include("*.java") })
+    classpath = sourceSets.main.get().compileClasspath
+    destinationDirectory.set(layout.buildDirectory.dir("classes/pinyin-startup-fixture"))
+    javaCompiler.set(javaToolchains.compilerFor { languageVersion.set(JavaLanguageVersion.of(25)) })
+    options.release.set(21)
+    options.encoding = "UTF-8"
+}
+
+val pinyinStartupProbeJar = tasks.register<Jar>("pinyinStartupProbeJar") {
+    dependsOn(compilePinyinStartupFixture)
+    archiveFileName.set("JEGPinyinProbe.jar")
+    destinationDirectory.set(layout.buildDirectory.dir("pinyin-fixtures"))
+    from(compilePinyinStartupFixture.flatMap { it.destinationDirectory }) {
+        include("**/PinyinStartupProbe*.class")
+    }
+    from("tests/pinyin-startup/plugin.yml")
+}
+
+val pinyinAcquisitionBlockerJar = tasks.register<Jar>("pinyinAcquisitionBlockerJar") {
+    dependsOn(compilePinyinStartupFixture)
+    archiveFileName.set("JEGAcquisitionBlocker.jar")
+    destinationDirectory.set(layout.buildDirectory.dir("pinyin-fixtures"))
+    from(compilePinyinStartupFixture.flatMap { it.destinationDirectory }) {
+        include("**/AcquisitionBlocker*.class")
+    }
+    manifest { attributes("Premain-Class" to "io.github.wickidcow.jegtest.AcquisitionBlocker") }
+}
+
+tasks.check { dependsOn(pinyinStartupProbeJar, pinyinAcquisitionBlockerJar) }
 
 // Signing configuration
 signing {

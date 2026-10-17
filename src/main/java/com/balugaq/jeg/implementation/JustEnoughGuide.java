@@ -63,9 +63,6 @@ import io.github.thebusybiscuit.slimefun4.implementation.guide.CheatSheetSlimefu
 import io.github.thebusybiscuit.slimefun4.implementation.guide.SurvivalSlimefunGuide;
 import io.github.thebusybiscuit.slimefun4.utils.NumberUtils;
 import lombok.Getter;
-import net.byteflux.libby.BukkitLibraryManager;
-import net.byteflux.libby.Library;
-import net.byteflux.libby.LibraryManager;
 import net.kyori.adventure.internal.properties.AdventureProperties;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -337,8 +334,8 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         PlatformUtil.initialize();
         this.scheduler = TaskScheduler.create();
 
-        getLogger().info("Loading dependencies...");
-        loadLibraries();
+        // Pinyin and shared-character dictionaries are packaged in the plugin.
+        // Reading the guide configuration must not depend on Maven availability.
 
         getLogger().info("Loading configuration...");
         boolean freshConfig = !new File(getDataFolder(), "config.yml").isFile();
@@ -637,40 +634,4 @@ public class JustEnoughGuide extends JavaPlugin implements SlimefunAddon {
         }
     }
 
-    private void loadLibraries() {
-        LibraryManager libraryManager = new BukkitLibraryManager(this);
-        libraryManager.addMavenCentral();
-
-        getLogger().info("Loading Pinyin support");
-        Library pinyin = Library.builder()
-            .groupId("com{}github{}houbb")
-            .artifactId("pinyin")
-            .version("0.4.0")
-            .build();
-        libraryManager.loadLibrary(pinyin);
-
-        getLogger().info("Loading opencc4j");
-        Library opencc4j = Library.builder()
-            .groupId("com{}github{}houbb")
-            .artifactId("opencc4j")
-            .version("1.14.0")
-            .build();
-        libraryManager.loadLibrary(opencc4j);
-
-        getLogger().info("Loading heaven");
-        Library heaven = Library.builder()
-            .groupId("com{}github{}houbb")
-            .artifactId("heaven")
-            .version("0.13.0")
-            .build();
-        libraryManager.loadLibrary(heaven);
-
-        getLogger().info("Loading nlp-common");
-        Library nlp = Library.builder()
-            .groupId("com{}github{}houbb")
-            .artifactId("nlp-common")
-            .version("0.0.5")
-            .build();
-        libraryManager.loadLibrary(nlp);
-    }
 }
