@@ -1,0 +1,74 @@
+[
+  {
+    "name": "opencc4j-1.14.0.pom",
+    "bytes": 11788,
+    "sha256": "77d50fe75daf9b9b1836db90b7df15b7dc26a3e8611db26a0fbcef76aaf7750c",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/opencc4j/1.14.0/opencc4j-1.14.0.pom"
+  },
+  {
+    "name": "pinyin-0.4.0.pom",
+    "bytes": 11020,
+    "sha256": "b204a35aad8408a485dbcb5603940adb7aeba90fda33698d618948051a4c3c37",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/pinyin/0.4.0/pinyin-0.4.0.pom"
+  },
+  {
+    "name": "pinyin-0.4.0.jar",
+    "bytes": 706554,
+    "sha256": "b202205ce1e9d659d00e88711f1debfc208a94b063b9885ed2de43a7a3e729be",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/pinyin/0.4.0/pinyin-0.4.0.jar"
+  },
+  {
+    "name": "heaven-0.13.0.pom",
+    "bytes": 10227,
+    "sha256": "d7ffb88a5edfd086a9cb5f33a0d8df9d77c4ea9c877d00a4239ba501d34bbd80",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/heaven/0.13.0/heaven-0.13.0.pom"
+  },
+  {
+    "name": "opencc4j-1.14.0.jar",
+    "bytes": 560283,
+    "sha256": "5a22347f9f3f0811c201e19681b1237b36165ceb2041ed2efd49ba40358a598a",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/opencc4j/1.14.0/opencc4j-1.14.0.jar"
+  },
+  {
+    "name": "pinyin-0.4.0-sources.jar",
+    "bytes": 695841,
+    "sha256": "3b7c8c4b1f1a021bf645bfb9060072fa8c436c672c1e26ad6edc19b1a13def49",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/pinyin/0.4.0/pinyin-0.4.0-sources.jar"
+  },
+  {
+    "name": "nlp-common-0.0.5.pom",
+    "bytes": 9174,
+    "sha256": "b1bbd951636459536f52c35f500b9865098b47fafb3fab9dfd304f91d5c68bc5",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/nlp-common/0.0.5/nlp-common-0.0.5.pom"
+  },
+  {
+    "name": "heaven-0.13.0.jar",
+    "bytes": 332070,
+    "sha256": "1f259aa14711f45467011e6f9fdd054f57f48e654938c6e81c6c3c8ee608ba97",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/heaven/0.13.0/heaven-0.13.0.jar"
+  },
+  {
+    "name": "nlp-common-0.0.5.jar",
+    "bytes": 1969684,
+    "sha256": "50b0c3944e2fea5381db0d0e7b924a15424b6ed37104763a57e5d59b3b930d90",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/nlp-common/0.0.5/nlp-common-0.0.5.jar"
+  },
+  {
+    "name": "heaven-0.13.0-sources.jar",
+    "bytes": 257111,
+    "sha256": "1bcfabdb8e991c283782e0cd28da4fc4c79831798c5fdd81bc6846dccb8fec6f",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/heaven/0.13.0/heaven-0.13.0-sources.jar"
+  },
+  {
+    "name": "nlp-common-0.0.5-sources.jar",
+    "bytes": 1968396,
+    "sha256": "af4e57847ae2fe455acb4c206bd6d09fb6a7f80c928ca8fcfd7a0ecba81f4ae3",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/nlp-common/0.0.5/nlp-common-0.0.5-sources.jar"
+  },
+  {
+    "name": "opencc4j-1.14.0-sources.jar",
+    "bytes": 545920,
+    "sha256": "f12cb55bde9a50bd902aecea0dd7ca0e0839bf4d20f664b5705cd906bee13a65",
+    "url": "https://repo.maven.apache.org/maven2/com/github/houbb/opencc4j/1.14.0/opencc4j-1.14.0-sources.jar"
+  }
+]

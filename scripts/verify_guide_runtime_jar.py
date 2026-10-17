@@ -25,6 +25,13 @@ REQUIRED = {PREFIX + name + '.class' for name in (
     'utils/clickhandler/OnClick$ItemGroup$Normal',
     'libraries/libby/LibraryManager',
 )}
+REQUIRED.update({name + '.class' for name in (
+    'com/github/houbb/pinyin/util/PinyinHelper',
+    'com/github/houbb/pinyin/constant/enums/PinyinStyleEnum',
+    'com/github/houbb/opencc4j/support/data/impl/OpenccDatas',
+    'com/github/houbb/heaven/util/io/StreamUtil',
+    'com/github/houbb/nlp/common/constant/NlpConst',
+)})
 
 def verify(path: Path, classes: Path | None = None, version: str | None = None) -> int:
     required = set(REQUIRED)
@@ -49,7 +56,7 @@ def verify(path: Path, classes: Path | None = None, version: str | None = None) 
                 raise ValueError('Plugin descriptor version does not match the release')
         count = 0
         for name in names:
-            if name.startswith(('net/byteflux/libby/', 'org/mockbukkit/', 'org/junit/', 'audit/')):
+            if name.startswith(('net/byteflux/libby/', 'org/mockbukkit/', 'org/junit/', 'audit/', 'io/github/wickidcow/jegtest/')):
                 raise ValueError('Unexpected unrelocated or test classes: ' + name)
             if name.endswith('.class') and not name.startswith('META-INF/versions/'):
                 data = jar.read(name)

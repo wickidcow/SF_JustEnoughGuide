@@ -1,0 +1,131 @@
+name: Packaged Pinyin startup regression
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'build.gradle.kts'
+      - 'gradle/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/pinyin-startup-runtime.yml'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pinyin-startup-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: temurin
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test failure evidence and build the complete candidate
+        run: |
+          python3 scripts/test_pinyin_startup_runtime.py
+          ./gradlew clean build --no-daemon
+          python3 scripts/test_guide_runtime_jar.py
+          python3 - <<'PY'
+          import hashlib, json, re, shutil, subprocess
+          from pathlib import Path
+          version = re.search(r'^version = "([^"]+)"', Path('build.gradle.kts').read_text(), re.M)[1]
+          files = {'candidate': Path(f'build/libs/SF_JustEnoughGuide{version}.jar'),
+                   'probe': Path('build/pinyin-fixtures/JEGPinyinProbe.jar'),
+                   'agent': Path('build/pinyin-fixtures/JEGAcquisitionBlocker.jar')}
+          subprocess.run(['python3', 'scripts/verify_guide_runtime_jar.py', str(files['candidate']),
+                          '--classes', 'build/classes/java/main', '--version', version], check=True)
+          subprocess.run(['git', 'diff', '--exit-code'], check=True)
+          out = Path('build/pinyin-candidate')
+          out.mkdir()
+          metadata = {'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+                      'version': version, 'working_tree_clean': True}
+          for key, source in files.items():
+              metadata[key + '_sha256'] = hashlib.sha256(source.read_bytes()).hexdigest()
+              shutil.copy2(source, out / (key + '.jar'))
+          (out / 'metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pinyin-startup-candidate
+          path: build/pinyin-candidate/*
+          if-no-files-found: error
+
+  runtime:
+    needs: candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: '1.21.11'
+            java: '21'
+          - minecraft: '26.2'
+            java: '25'
+          - minecraft: '26.3'
+            java: '25'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v8
+        with:
+          name: pinyin-startup-candidate
+          path: build/pinyin-candidate
+      - name: Prepare the pinned real-player client
+        if: matrix.minecraft != '26.3'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pinyin-client"
+          ASSET="$RUNNER_TEMP/pinyin-client/minecraft-protocol.tgz"
+          curl --fail --location --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 180 \
+            https://github.com/Complexity-ML/node-minecraft-protocol-26.2/releases/download/complexity-26.2.3/minecraft-protocol-complexity-26.2.3.tgz \
+            --output "$ASSET"
+          printf '%s  %s\n' 8b72d382e3cc06779b2b54fc3e402291f46df3bc28fcc2c189b1fc25b3895dab "$ASSET" | sha256sum --check --strict
+          cd "$RUNNER_TEMP/pinyin-client"
+          npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund "$ASSET"
+          echo "PINYIN_PROTOCOL_MODULE=$PWD/node_modules/minecraft-protocol" >> "$GITHUB_ENV"
+      - name: Reproduce the released failure, then test Pinyin disabled and enabled
+        run: |
+          PROTOCOL_ARGUMENTS=()
+          if [ '${{ matrix.minecraft }}' != '26.3' ]; then
+            PROTOCOL_ARGUMENTS=(--protocol-module "$PINYIN_PROTOCOL_MODULE")
+          fi
+          python3 scripts/pinyin_startup_runtime.py \
+            --candidate build/pinyin-candidate/candidate.jar \
+            --probe build/pinyin-candidate/probe.jar \
+            --agent build/pinyin-candidate/agent.jar \
+            --metadata build/pinyin-candidate/metadata.json \
+            --minecraft '${{ matrix.minecraft }}' \
+            "${PROTOCOL_ARGUMENTS[@]}" \
+            --workdir 'build/pinyin-runtime-${{ matrix.minecraft }}'
+      - name: Retain native proof and failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pinyin-startup-paper-${{ matrix.minecraft }}
+          path: |
+            build/pinyin-candidate/metadata.json
+            build/pinyin-runtime-*/evidence.json
+            build/pinyin-runtime-*/**/*.log
+            build/pinyin-runtime-*/**/probe-*.txt
+            build/pinyin-runtime-*/**/acquisition-*.txt
+          if-no-files-found: error

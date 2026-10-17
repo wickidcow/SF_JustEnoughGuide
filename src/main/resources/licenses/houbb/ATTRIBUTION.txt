@@ -1,0 +1,76 @@
+Bundled Houbb search dependencies
+================================
+
+This directory records the provenance and preserves the license and source notices for
+four dependency versions packaged in SF_JustEnoughGuide. It does not replace their
+original license terms. Dependency package names and dictionary paths remain unchanged.
+
+Coordinates and upstream license declarations
+--------------------------------------------
+
+com.github.houbb:pinyin:0.4.0
+  Project: https://github.com/houbb/pinyin
+  Maven artifact directory: https://repo.maven.apache.org/maven2/com/github/houbb/pinyin/0.4.0/
+  Exact version POM declaration: The Apache Software License, Version 2.0
+  Declared license URL: http://www.apache.org/licenses/LICENSE-2.0.txt
+
+com.github.houbb:opencc4j:1.14.0
+  Project: https://github.com/houbb/opencc4j
+  Maven artifact directory: https://repo.maven.apache.org/maven2/com/github/houbb/opencc4j/1.14.0/
+  Exact version POM declaration: The Apache Software License, Version 2.0
+  Declared license URL: http://www.apache.org/licenses/LICENSE-2.0.txt
+
+com.github.houbb:heaven:0.13.0
+  Project: https://github.com/houbb/heaven
+  Maven artifact directory: https://repo.maven.apache.org/maven2/com/github/houbb/heaven/0.13.0/
+  Exact version POM declaration: The Apache Software License, Version 2.0
+  Declared license URL: http://www.apache.org/licenses/LICENSE-2.0.txt
+
+com.github.houbb:nlp-common:0.0.5
+  Project: https://github.com/houbb/nlp-common
+  Maven artifact directory: https://repo.maven.apache.org/maven2/com/github/houbb/nlp-common/0.0.5/
+  Exact version POM declaration: The Apache Software License, Version 2.0
+  Declared license URL: http://www.apache.org/licenses/LICENSE-2.0.txt
+
+Exact binary JAR, source JAR, and POM URLs, SHA-256 digests, and sizes are listed
+in artifact-sources.json. No separate LICENSE, NOTICE, or COPYING archive entry was
+present in these four binary JARs or their four corresponding source JARs.
+
+Preserved license texts
+-----------------------
+APACHE-2.0.txt is copied unmodified from:
+  https://www.apache.org/licenses/LICENSE-2.0.txt
+
+upstream/pinyin-opencc4j-LICENSE.txt is the identical unmodified text from:
+  https://raw.githubusercontent.com/houbb/pinyin/master/LICENSE.txt
+  https://raw.githubusercontent.com/houbb/opencc4j/master/LICENSE.txt
+  Git blob: 5a0dc34e5731486f85174fabc65e9835b12eaabb
+
+upstream/heaven-LICENSE.txt is copied unmodified from:
+  https://raw.githubusercontent.com/houbb/heaven/master/LICENSE.txt
+  Git blob: 916aae213ac99b34b99733bc31a6c676cb9d81ff
+
+These upstream root license files include their original copyright text, translation,
+and other content. They were preserved verbatim. No separate root NOTICE file was
+found in those three upstream repositories. The nlp-common repository was unavailable
+at the time of this check; its exact version Maven POM provides the declaration above.
+
+Notices embedded in the exact Heaven 0.13.0 source artifact
+---------------------------------------------------------
+heaven-source-notices.txt preserves the original leading copyright/license comment
+blocks, including their original file paths, from heaven-0.13.0-sources.jar.
+
+The source com/github/houbb/heaven/util/util/internal/Base64.java carries an Oracle
+copyright notice and expressly identifies GNU GPL version 2 with the Classpath exception.
+The complete original source file is preserved under sources/heaven-0.13.0/ with a
+.txt suffix so it is a notice/source resource, not an additional compiled source file.
+GPL-2.0-with-classpath-exception.txt is copied unmodified from the OpenJDK 8u license:
+  https://raw.githubusercontent.com/openjdk/jdk8u/master/LICENSE
+
+The sources CodecException.java, CodecSupport.java, H64.java, and Hex.java under
+com/github/houbb/heaven/util/codec/ carry Apache Software Foundation license headers.
+Hex.java also identifies Apache Commons Codec SVN revision 560660 and Shiro in its
+original attribution. Their complete original source files are likewise preserved
+under sources/heaven-0.13.0/ with .txt suffixes, including all headers and attribution.
+
+checksums.sha256 identifies the exact bytes of every other file in this directory.

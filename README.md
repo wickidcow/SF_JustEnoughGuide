@@ -70,7 +70,9 @@ Existing JEG configuration is not overwritten.
 
 ## Configuration
 
-The generated `config.yml` is English-facing by default. Pinyin search is disabled by default in this maintained build but can still be enabled by server owners who need it.
+The generated `config.yml` is English-facing by default. Pinyin search is disabled by default in this maintained build but can still be enabled by server owners who need it. Since 2.1.73, its libraries and the shared-character dictionaries are included in the plugin JAR, so starting the guide and enabling Pinyin search do not require a runtime Maven download. The existing public Pinyin API and dictionary contents are preserved.
+
+The build checks the packaged search runtime in an isolated JVM with HTTP(S) acquisition refused. The [native startup regression](.github/workflows/pinyin-startup-runtime.yml) also requires the published 2.1.72 JAR to reproduce the original download failure, then verifies the candidate with Pinyin disabled and enabled on Paper 1.21.11, 26.2 and 26.3. Every candidate boot checks both owned guide modes, original dictionary bytes, initialized search caches and an empty runtime library cache. Paper 1.21.11 and 26.2 additionally exercise actual guide queries with a connected test player. The 26.3 milestone lane verifies native cache and public search API behavior; it does not claim connected-player coverage because the pinned client has no protocol-777 codec. Automatic publication waits for the build, offline-profile listener, offline-profile runtime and Pinyin startup workflows to pass at the exact master commit.
 
 The default guide title is **Slimefun Legacy Guide**. The `custom-format` section controls guide layouts. Legacy-specific markers include:
 

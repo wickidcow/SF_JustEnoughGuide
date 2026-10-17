@@ -64,7 +64,8 @@ class GuideJarTest(unittest.TestCase):
                 self.write(additions={PREFIX + 'Extra.class': data})
                 with self.assertRaises(ValueError): verify(self.jar)
     def test_test_libraries_not_shipped(self):
-        for name in ('org/junit/Test.class', 'org/mockbukkit/Test.class', 'net/byteflux/libby/Manager.class', 'audit/Probe.class'):
+        for name in ('org/junit/Test.class', 'org/mockbukkit/Test.class', 'net/byteflux/libby/Manager.class', 'audit/Probe.class',
+                     'io/github/wickidcow/jegtest/AcquisitionBlocker.class'):
             with self.subTest(name=name):
                 self.write(additions={name: HEADER})
                 with self.assertRaisesRegex(ValueError, 'Unexpected'): verify(self.jar)
