@@ -40,6 +40,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
 import org.jetbrains.annotations.UnknownNullability;
@@ -100,11 +101,14 @@ public class ListenerManager extends AbstractManager {
     @Override
     public void load() {
         registerListeners();
-        for (RegisteredListener rl : PlayerRightClickEvent.getHandlerList().getRegisteredListeners()) {
+        // Upstream #117: disable only the default first-join guide giveaway.
+        // Do not unregister Slimefun's actual right-click guide handler:
+        // JEG's guide replacement must not break vanilla Slimefun guide use.
+        for (RegisteredListener rl : PlayerJoinEvent.getHandlerList().getRegisteredListeners()) {
             if (rl.getListener().getClass().getName().equals("io.github.thebusybiscuit.slimefun4.implementation.listeners.SlimefunGuideListener")) {
                 slimefunGuideListener = rl;
-                PlayerRightClickEvent.getHandlerList().unregister(rl);
-                PlayerRightClickEvent.getHandlerList().bake();
+                PlayerJoinEvent.getHandlerList().unregister(rl);
+                PlayerJoinEvent.getHandlerList().bake();
                 break;
             }
         }
@@ -120,7 +124,10 @@ public class ListenerManager extends AbstractManager {
     public void unload() {
         unregisterListeners();
         if (slimefunGuideListener != null) {
-            PlayerRightClickEvent.getHandlerList().register(slimefunGuideListener);
+            // Restore to the same handler list we removed from. Upstream did
+            // not update this line when changing the listener type in #117.
+            PlayerJoinEvent.getHandlerList().register(slimefunGuideListener);
+            PlayerJoinEvent.getHandlerList().bake();
             slimefunGuideListener = null;
         }
     }
