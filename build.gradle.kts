@@ -28,8 +28,8 @@ plugins {
 }
 
 group = "io.github.balugaq"
-version = "2.1.73"
-// 2.1.73: package search dictionaries so optional Pinyin never requires a startup download.
+version = "2.1.74"
+// 2.1.74: JEG guide listener first-join parity and safe partial recipe withdrawals.
 
 repositories {
     mavenCentral()
