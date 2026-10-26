@@ -30,6 +30,9 @@ jobs:
           javac --release 21 -d build/renderer-test src/main/java/com/balugaq/jeg/utils/GuideRuntimeClasses.java tests/GuideRuntimeClassesTest.java
           java -cp build/renderer-test com.balugaq.jeg.utils.GuideRuntimeClassesTest build/renderer-test
 
+      - name: Verify first-join guide listener ownership
+        run: python3 scripts/verify_guide_join_listener.py
+
       - name: Build
         run: |
           python3 scripts/test_pinyin_startup_runtime.py
