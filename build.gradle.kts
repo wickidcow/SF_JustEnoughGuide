@@ -121,6 +121,8 @@ tasks.withType<JavaExec>().configureEach {
 }
 
 val searchRuntimeClasspath = configurations.named("runtimeClasspath")
+// Resource templates use only version; do not enumerate every Gradle project property.
+val resourceExpansionProperties = mapOf("version" to version.toString())
 
 tasks {
     // The thin Gradle JAR is not a runnable plugin because runtime libraries such
@@ -230,11 +232,12 @@ tasks {
     }
 
     processResources {
+        inputs.properties(resourceExpansionProperties)
         filesMatching("**/*.yml") {
-            expand(project.properties)
+            expand(resourceExpansionProperties)
         }
         filesMatching("**/*.properties") {
-            expand(project.properties)
+            expand(resourceExpansionProperties)
         }
     }
 

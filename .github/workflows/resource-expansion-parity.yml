@@ -1,0 +1,57 @@
+name: Resource Expansion Parity
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  resource-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test parity verifier rejection controls
+        run: |
+          python3 -m unittest scripts.test_resource_expansion -v
+          python3 -O -m unittest scripts.test_resource_expansion -v
+      - name: Compare original and explicit resource expansion
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-reports/resources
+          cp build.gradle.kts ci-reports/resources/candidate.gradle.kts
+          trap 'cp ci-reports/resources/candidate.gradle.kts build.gradle.kts' EXIT
+          git show 1912596e0e417f86db6fd78f670f087486ec9801:build.gradle.kts > build.gradle.kts
+          chmod +x gradlew
+          ./gradlew clean processResources --no-daemon --no-build-cache --no-configuration-cache --warning-mode all --console=plain 2>&1 | tee ci-reports/resources/baseline.log
+          cp -a build/resources/main ci-reports/resources/baseline
+          cp ci-reports/resources/candidate.gradle.kts build.gradle.kts
+          ./gradlew clean processResources --no-daemon --no-build-cache --no-configuration-cache --warning-mode all --console=plain 2>&1 | tee ci-reports/resources/candidate.log
+          cp -a build/resources/main ci-reports/resources/candidate
+          VERSION=$(sed -n 's/^version = "\([^"]*\)"/\1/p' build.gradle.kts)
+          test -n "$VERSION"
+          python3 scripts/verify_resource_expansion.py ci-reports/resources/baseline ci-reports/resources/candidate --version "$VERSION" | tee ci-reports/resources/parity.json
+          if grep -E 'val properties:.*is deprecated|Project.getProperties.*deprecated' ci-reports/resources/candidate.log; then
+            echo 'Deprecated Gradle project-property enumeration returned.' >&2
+            exit 1
+          fi
+          git diff --exit-code -- build.gradle.kts
+      - name: Retain actual Gradle outputs and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: resource-expansion-parity
+          path: ci-reports/resources/
+          if-no-files-found: error
