@@ -5,7 +5,19 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
+
+
+def with_project_version(build_script: str, version: str) -> str:
+    """Give both expansion implementations the same input, not a frozen release version."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", version):
+        raise ValueError("Unsafe or empty resource comparison version")
+    updated, count = re.subn(r'(?m)^version = "[^"\r\n]*"$',
+                             f'version = "{version}"', build_script)
+    if count != 1:
+        raise ValueError("Expected exactly one baseline project version")
+    return updated
 
 
 def snapshot(root: Path) -> dict[str, bytes]:

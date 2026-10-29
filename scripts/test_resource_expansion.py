@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from scripts.verify_resource_expansion import verify
+from scripts.verify_resource_expansion import verify, with_project_version
 
 
 class ResourceExpansionTest(unittest.TestCase):
@@ -68,6 +68,29 @@ class ResourceExpansionTest(unittest.TestCase):
         (self.after / "linked.yml").symlink_to(self.before / "config.yml")
         with self.assertRaisesRegex(ValueError, "Symlink"):
             self.check()
+
+
+class BaselineVersionInputTest(unittest.TestCase):
+    def test_version_bump_preserves_all_other_baseline_bytes(self):
+        baseline = 'plugins { java }\nversion = "2.1.74"\nexpand(project.properties)\n'
+        expected = baseline.replace('"2.1.74"', '"2.1.75"')
+        self.assertEqual(with_project_version(baseline, "2.1.75"), expected)
+
+    def test_same_version_and_qualified_versions_are_supported(self):
+        baseline = 'version = "2.1.74"\n'
+        self.assertEqual(with_project_version(baseline, "2.1.74"), baseline)
+        self.assertEqual(with_project_version(baseline, "2.1.75-SNAPSHOT+test.1"),
+                         'version = "2.1.75-SNAPSHOT+test.1"\n')
+
+    def test_missing_or_duplicate_baseline_version_fails(self):
+        for baseline in ('plugins { java }\n', 'version = "1"\nversion = "2"\n'):
+            with self.subTest(baseline=baseline), self.assertRaisesRegex(ValueError, "exactly one"):
+                with_project_version(baseline, "2.1.75")
+
+    def test_unsafe_version_cannot_inject_build_script(self):
+        for version in ("", '2.1.75"', "2.1.75\n", "${version}", "a\\b", "a b"):
+            with self.subTest(version=version), self.assertRaisesRegex(ValueError, "Unsafe"):
+                with_project_version('version = "2.1.74"\n', version)
 
 
 if __name__ == "__main__":
